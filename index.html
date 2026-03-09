@@ -3986,14 +3986,16 @@ function s2c(svgEl, w, h, cb) {
 
 /**
  * Paar-Export: Front + Vogel übereinander mit 3mm Gap
+ * Beide Ansichten gleich breit (PW), Bird quadratisch (PW × PW)
  */
 function xpP() {
   const gap = Math.round(3 / 25.4 * DPI);
+  const birdH = PW; // Vogelperspektive ist quadratisch
   s2c(document.querySelector('#fw svg'), PW, PH, fc => {
-    s2c(document.querySelector('#bw svg'), PW, PH, bc => {
+    s2c(document.querySelector('#bw svg'), PW, birdH, bc => {
       const c = document.createElement('canvas');
       c.width = PW;
-      c.height = PH * 2 + gap;
+      c.height = PH + gap + birdH;
       const ctx = c.getContext('2d');
       ctx.fillStyle = '#fff';
       ctx.fillRect(0, 0, c.width, c.height);

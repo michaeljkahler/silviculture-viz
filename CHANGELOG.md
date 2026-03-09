@@ -1,5 +1,10 @@
 # Changelog
 
+## [1.0.1] — 2026-03-09
+
+### Bug-Fixes
+- Paar-Export: Vogelperspektive wird jetzt korrekt quadratisch (PW × PW) statt rechteckig (PW × PH) exportiert
+
 ## [1.0.0] — 2026-03-09
 
 ### Features
