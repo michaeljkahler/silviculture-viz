@@ -196,18 +196,34 @@ function genTimelineMaster() {
     const nClusters = Math.max(ac.length, Math.round(PLOT * PLOT / (Math.PI * clusterR * clusterR)));
 
     // Erzeuge Cluster-Zentren mit zugewiesener Baumart
+    // Fix: Proportionale Zuweisung garantiert, dass jede Art mindestens 1 Cluster erhält
     const clusters = [];
-    for (let ci = 0; ci < nClusters; ci++) {
-      const cx = masterRng() * (PLOT - 4) + 2;
-      const cy = masterRng() * (PLOT - 4) + 2;
-      // Art proportional zu Flächenanteil wählen
+    const guaranteed = [];
+    for (const [k, s] of ac) {
+      const count = Math.max(1, Math.round(nClusters * s.pct / tP));
+      for (let g = 0; g < count && guaranteed.length < nClusters; g++) {
+        guaranteed.push(k);
+      }
+    }
+    // Restliche Cluster proportional auffüllen
+    while (guaranteed.length < nClusters) {
       let rVal = masterRng() * tP;
       let chosenSp = ac[0][0];
       for (const [k, s] of ac) {
         rVal -= s.pct;
         if (rVal <= 0) { chosenSp = k; break; }
       }
-      clusters.push({ x: cx, y: cy, sp: chosenSp });
+      guaranteed.push(chosenSp);
+    }
+    // Mischen für räumliche Durchmischung
+    for (let i = guaranteed.length - 1; i > 0; i--) {
+      const j = Math.floor(masterRng() * (i + 1));
+      const tmp = guaranteed[i]; guaranteed[i] = guaranteed[j]; guaranteed[j] = tmp;
+    }
+    for (let ci = 0; ci < nClusters; ci++) {
+      const cx = masterRng() * (PLOT - 4) + 2;
+      const cy = masterRng() * (PLOT - 4) + 2;
+      clusters.push({ x: cx, y: cy, sp: guaranteed[ci] });
     }
 
     // Jeder Baum wird dem nächsten Cluster zugewiesen
@@ -572,17 +588,32 @@ function genTrees() {
       const nClusters = Math.max(ac.length, Math.round(plotSz * plotSz / (Math.PI * clusterR * clusterR)));
 
       // Cluster-Zentren mit zugewiesener Baumart
+      // Fix: Proportionale Zuweisung garantiert, dass jede Art mindestens 1 Cluster erhält
       const clusters = [];
-      for (let ci = 0; ci < nClusters; ci++) {
-        const cx = rng() * (plotSz - 4) + 2;
-        const cy = rng() * (plotSz - 4) + 2;
+      const guaranteed = [];
+      for (const [k, s] of ac) {
+        const count = Math.max(1, Math.round(nClusters * s.pct / tP));
+        for (let g = 0; g < count && guaranteed.length < nClusters; g++) {
+          guaranteed.push(k);
+        }
+      }
+      while (guaranteed.length < nClusters) {
         let rVal = rng() * tP;
         let chosenSp = ac[0][0];
         for (const [k, s] of ac) {
           rVal -= s.pct;
           if (rVal <= 0) { chosenSp = k; break; }
         }
-        clusters.push({ x: cx, y: cy, sp: chosenSp });
+        guaranteed.push(chosenSp);
+      }
+      for (let i = guaranteed.length - 1; i > 0; i--) {
+        const j = Math.floor(rng() * (i + 1));
+        const tmp = guaranteed[i]; guaranteed[i] = guaranteed[j]; guaranteed[j] = tmp;
+      }
+      for (let ci = 0; ci < nClusters; ci++) {
+        const cx = rng() * (plotSz - 4) + 2;
+        const cy = rng() * (plotSz - 4) + 2;
+        clusters.push({ x: cx, y: cy, sp: guaranteed[ci] });
       }
 
       // Jeder Baum wird dem nächsten Cluster zugewiesen

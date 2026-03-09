@@ -247,12 +247,18 @@ function setTimeline(on) {
   document.getElementById('tl-off').className = on ? '' : 'active';
   document.getElementById('tl-content').className = 'tl-content ' + (on ? 'visible' : 'hidden');
 
-  // Nur Stämme/ha deaktivieren (wird im Timeline-Modus von FBB gesteuert)
-  // Transekt Y und Seed bleiben immer interaktiv
+  // Stämme/ha: im gleichförmigen Timeline-Modus deaktivieren (FBB-gesteuert),
+  // im Plenterwald als Gleichgewichtsstammzahl nutzbar lassen
   const densityRow = document.getElementById('density-row');
+  const densityLabel = densityRow ? densityRow.querySelector('label') : null;
+  const isPlenter = S.mode === 'ungleich';
   if (densityRow) {
-    densityRow.style.opacity = on ? '0.4' : '1';
-    densityRow.style.pointerEvents = on ? 'none' : 'auto';
+    const disabled = on && !isPlenter;
+    densityRow.style.opacity = disabled ? '0.4' : '1';
+    densityRow.style.pointerEvents = disabled ? 'none' : 'auto';
+  }
+  if (densityLabel) {
+    densityLabel.textContent = (on && isPlenter) ? 'Gleichg. N/ha' : 'Stämme/ha';
   }
 
   if (on) {

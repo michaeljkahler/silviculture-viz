@@ -358,10 +358,11 @@ function nHa(age) {
   // Plenterwald: Stammzahl bleibt hoch weil alle Altersklassen vorhanden
   // Gleichgewichts-Stammzahl ca. 400-600 N/ha (Schütz 2002)
   // Inverse-J: viele kleine + wenige grosse Bäume
+  // Fix: Density-Slider als Gleichgewichtsstammzahl nutzbar
   if (typeof S !== 'undefined' && S && S.mode === 'ungleich') {
-    // Im Plenterwald: Stammzahl quasi-konstant ab Alter 20
-    // ca. 400-600 (Fichte-Tanne) bzw. 300-500 (Buchen-Plenter)
-    const baseN = 500;
+    const sliderVal = typeof document !== 'undefined' ?
+      +(document.getElementById('density')?.value || 500) : 500;
+    const baseN = Math.max(200, Math.min(600, sliderVal));
     if (age < 20) return Math.round(2400 - (2400 - baseN) * age / 20);
     return baseN;
   }

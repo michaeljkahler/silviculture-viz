@@ -1,0 +1,129 @@
+{
+  "_meta": {
+    "description": "FBB Produktionskonzept 2022 — Stammzahltabellen und Eingriffspläne",
+    "source": "Forstbetrieb Burgergemeinde Bern, Version 28.06.2022",
+    "license": "Digitalisiert aus internem Planungsdokument, Bildungskontext (HAFL)"
+  },
+  "stammzahl_nha": {
+    "_description": "Total N/ha (Stk.) vor Eingriff — [oberhöhe_m, n_ha] Paare",
+    "Fi":   [[12,2400],[14,2000],[17,1500],[20,1000],[23,600],[27,400],[34,200]],
+    "Ta":   [[12,2400],[14,2000],[17,1500],[20,1000],[23,600],[27,400],[34,200]],
+    "Bu":   [[18,1600],[22,1200],[25,800],[28,400],[33,300],[36,200]],
+    "Ei":   [[13,680],[16,580],[20,480],[22,375],[25,265],[28,150],[33,100],[38,50]],
+    "Es":   [[12,2000],[14,1600],[17,1200],[20,800],[23,400],[27,320],[33,80]],
+    "BAh":  [[12,2000],[14,1600],[17,1200],[20,800],[23,400],[27,320],[33,80]],
+    "WFoe": [[10,1450],[12,1250],[15,1050],[19,810],[23,550],[28,350],[34,200],[40,100]],
+    "Lae":  [[10,1450],[12,1250],[15,1050],[19,810],[23,550],[28,350],[34,200],[40,100]],
+    "Dou":  [[12,2200],[14,1800],[17,1300],[20,900],[23,550],[27,350],[34,180]]
+  },
+  "zbaeume_endbestand": {
+    "_description": "Z-Bäume pro ha im Endbestand",
+    "Fi":   200,
+    "Ta":   200,
+    "Bu":   100,
+    "Ei":    50,
+    "Es":    80,
+    "BAh":   80,
+    "WFoe": 100,
+    "Lae":  100,
+    "Dou":  150
+  },
+  "eingriffe": {
+    "_description": "Eingriffstabellen pro Art: hdom, bhdZB, totalN, konZB, entnahmeN, massnahme",
+    "Fi": [
+      {"hdom":12, "bhdZB":12, "totalN":2400, "konZB":2.0, "entnahmeN":2000, "massnahme":"FE einlegen"},
+      {"hdom":14, "bhdZB":15, "totalN":2000, "konZB":2.6, "entnahmeN":1480, "massnahme":"Z-Bäume fördern"},
+      {"hdom":17, "bhdZB":19, "totalN":1500, "konZB":2.6, "entnahmeN":980,  "massnahme":"Z-Bäume fördern"},
+      {"hdom":20, "bhdZB":24, "totalN":1000, "konZB":2.3, "entnahmeN":540,  "massnahme":"Z-Bäume fördern"},
+      {"hdom":23, "bhdZB":29, "totalN":600,  "konZB":1.0, "entnahmeN":400,  "massnahme":"Z-Bäume fördern"},
+      {"hdom":27, "bhdZB":36, "totalN":400,  "konZB":1.0, "entnahmeN":200,  "massnahme":"Letzte Durchforstung"},
+      {"hdom":34,             "totalN":200,                                   "massnahme":"Verjüngung einleiten"}
+    ],
+    "Ta": [
+      {"hdom":12, "bhdZB":12, "totalN":2400, "konZB":2.0, "entnahmeN":2000, "massnahme":"FE einlegen"},
+      {"hdom":14, "bhdZB":15, "totalN":2000, "konZB":2.5, "entnahmeN":1500, "massnahme":"Z-Bäume bestimmen"},
+      {"hdom":17, "bhdZB":19, "totalN":1500, "konZB":2.5, "entnahmeN":1000, "massnahme":"Z-Bäume fördern"},
+      {"hdom":20, "bhdZB":24, "totalN":1000, "konZB":2.0, "entnahmeN":600,  "massnahme":"Z-Bäume fördern"},
+      {"hdom":23, "bhdZB":29, "totalN":600,  "konZB":1.0, "entnahmeN":400,  "massnahme":"Z-Bäume fördern"},
+      {"hdom":27, "bhdZB":37, "totalN":400,  "konZB":1.0, "entnahmeN":200,  "massnahme":"Z-Bäume fördern"},
+      {"hdom":34,             "totalN":200,                                   "massnahme":"Verjüngungshiebe"}
+    ],
+    "Bu": [
+      {"hdom":18, "bhdZB":20, "totalN":1600, "konZB":2.1, "entnahmeN":1390, "massnahme":"FE, Z-Bäume bestimmen"},
+      {"hdom":22, "bhdZB":26, "totalN":1200, "konZB":2.2, "entnahmeN":980,  "massnahme":"Z-Bäume fördern"},
+      {"hdom":25, "bhdZB":32, "totalN":800,  "konZB":2.3, "entnahmeN":570,  "massnahme":"Z-Bäume fördern"},
+      {"hdom":28, "bhdZB":38, "totalN":400,  "konZB":1.0, "entnahmeN":300,  "massnahme":"Z-Bäume fördern"},
+      {"hdom":33, "bhdZB":47, "totalN":300,  "konZB":1.0, "entnahmeN":200,  "massnahme":"Z-Bäume fördern"},
+      {"hdom":36, "bhdZB":60, "totalN":200,  "konZB":1.0, "entnahmeN":100,  "massnahme":"Letzte Durchforstung"}
+    ],
+    "Ei": [
+      {"hdom":13, "bhdZB":13, "totalN":680,  "konZB":2.0, "entnahmeN":580,  "massnahme":"FE einlegen"},
+      {"hdom":16, "bhdZB":17, "totalN":580,  "konZB":2.0, "entnahmeN":480,  "massnahme":"Z-Bäume fördern"},
+      {"hdom":20, "bhdZB":23, "totalN":480,  "konZB":2.1, "entnahmeN":375,  "massnahme":"Z-Bäume fördern"},
+      {"hdom":22, "bhdZB":32, "totalN":375,  "konZB":2.2, "entnahmeN":265,  "massnahme":"Z-Bäume fördern"},
+      {"hdom":25, "bhdZB":46, "totalN":265,  "konZB":2.3, "entnahmeN":150,  "massnahme":"Z-Bäume fördern"},
+      {"hdom":28, "bhdZB":47, "totalN":150,  "konZB":1.0, "entnahmeN":100,  "massnahme":"Z-Bäume fördern"},
+      {"hdom":33, "bhdZB":48, "totalN":100,  "konZB":1.0, "entnahmeN":50,   "massnahme":"Z-Bäume fördern"},
+      {"hdom":38, "bhdZB":70, "totalN":50,                                   "massnahme":"Verjüngungshiebe"}
+    ],
+    "Es": [
+      {"hdom":12, "bhdZB":12, "totalN":2000, "konZB":2.6, "entnahmeN":1792, "massnahme":"FE einlegen"},
+      {"hdom":14, "bhdZB":15, "totalN":1600, "konZB":2.6, "entnahmeN":1392, "massnahme":"Z-Bäume fördern"},
+      {"hdom":17, "bhdZB":19, "totalN":1200, "konZB":2.6, "entnahmeN":992,  "massnahme":"Z-Bäume fördern"},
+      {"hdom":20, "bhdZB":25, "totalN":800,  "konZB":2.3, "entnahmeN":616,  "massnahme":"Z-Bäume fördern"},
+      {"hdom":23, "bhdZB":31, "totalN":400,  "konZB":1.0, "entnahmeN":320,  "massnahme":"Z-Bäume fördern"},
+      {"hdom":27, "bhdZB":40, "totalN":320,  "konZB":1.0, "entnahmeN":240,  "massnahme":"Z-Bäume fördern"},
+      {"hdom":33, "bhdZB":60, "totalN":80,                                   "massnahme":"Verjüngungshiebe"}
+    ],
+    "BAh": [
+      {"hdom":12, "bhdZB":12, "totalN":2000, "konZB":2.6, "entnahmeN":1792, "massnahme":"FE einlegen"},
+      {"hdom":14, "bhdZB":15, "totalN":1600, "konZB":2.6, "entnahmeN":1392, "massnahme":"Z-Bäume fördern"},
+      {"hdom":17, "bhdZB":19, "totalN":1200, "konZB":2.6, "entnahmeN":992,  "massnahme":"Z-Bäume fördern"},
+      {"hdom":20, "bhdZB":25, "totalN":800,  "konZB":2.3, "entnahmeN":616,  "massnahme":"Z-Bäume fördern"},
+      {"hdom":23, "bhdZB":31, "totalN":400,  "konZB":1.0, "entnahmeN":320,  "massnahme":"Z-Bäume fördern"},
+      {"hdom":27, "bhdZB":40, "totalN":320,  "konZB":1.0, "entnahmeN":240,  "massnahme":"Z-Bäume fördern"},
+      {"hdom":33, "bhdZB":60, "totalN":80,                                   "massnahme":"Verjüngungshiebe"}
+    ],
+    "WFoe": [
+      {"hdom":10, "bhdZB":14, "totalN":1450, "konZB":2.0, "entnahmeN":1250, "massnahme":"FE einlegen"},
+      {"hdom":12, "bhdZB":16, "totalN":1250, "konZB":2.0, "entnahmeN":1050, "massnahme":"Z-Bäume bestimmen"},
+      {"hdom":15, "bhdZB":20, "totalN":1050, "konZB":2.4, "entnahmeN":810,  "massnahme":"Z-Bäume fördern"},
+      {"hdom":19, "bhdZB":25, "totalN":810,  "konZB":2.6, "entnahmeN":550,  "massnahme":"Z-Bäume fördern"},
+      {"hdom":23, "bhdZB":31, "totalN":550,  "konZB":2.0, "entnahmeN":350,  "massnahme":"Z-Bäume fördern"},
+      {"hdom":28, "bhdZB":33, "totalN":350,  "konZB":1.5, "entnahmeN":200,  "massnahme":"Z-Bäume fördern"},
+      {"hdom":34, "bhdZB":46, "totalN":200,  "konZB":1.0, "entnahmeN":100,  "massnahme":"Z-Bäume fördern"},
+      {"hdom":40, "bhdZB":80, "totalN":100,                                  "massnahme":"Verjüngungshiebe"}
+    ],
+    "Lae": [
+      {"hdom":10, "bhdZB":14, "totalN":1450, "konZB":2.0, "entnahmeN":1250, "massnahme":"FE einlegen"},
+      {"hdom":12, "bhdZB":16, "totalN":1250, "konZB":2.0, "entnahmeN":1050, "massnahme":"Z-Bäume bestimmen"},
+      {"hdom":15, "bhdZB":20, "totalN":1050, "konZB":2.4, "entnahmeN":810,  "massnahme":"Z-Bäume fördern"},
+      {"hdom":19, "bhdZB":25, "totalN":810,  "konZB":2.6, "entnahmeN":550,  "massnahme":"Z-Bäume fördern"},
+      {"hdom":23, "bhdZB":31, "totalN":550,  "konZB":2.0, "entnahmeN":350,  "massnahme":"Z-Bäume fördern"},
+      {"hdom":28, "bhdZB":33, "totalN":350,  "konZB":1.5, "entnahmeN":200,  "massnahme":"Z-Bäume fördern"},
+      {"hdom":34, "bhdZB":46, "totalN":200,  "konZB":1.0, "entnahmeN":100,  "massnahme":"Z-Bäume fördern"},
+      {"hdom":40, "bhdZB":80, "totalN":100,                                  "massnahme":"Verjüngungshiebe"}
+    ],
+    "Dou": [
+      {"hdom":12, "bhdZB":12, "totalN":2000, "konZB":2.0, "entnahmeN":1700, "massnahme":"FE einlegen"},
+      {"hdom":15, "bhdZB":16, "totalN":1700, "konZB":2.5, "entnahmeN":1200, "massnahme":"Z-Bäume bestimmen"},
+      {"hdom":19, "bhdZB":21, "totalN":1200, "konZB":2.5, "entnahmeN":800,  "massnahme":"Z-Bäume fördern"},
+      {"hdom":23, "bhdZB":27, "totalN":800,  "konZB":2.0, "entnahmeN":500,  "massnahme":"Z-Bäume fördern"},
+      {"hdom":27, "bhdZB":34, "totalN":500,  "konZB":1.5, "entnahmeN":300,  "massnahme":"Z-Bäume fördern"},
+      {"hdom":34, "bhdZB":45, "totalN":300,  "konZB":1.0, "entnahmeN":150,  "massnahme":"Letzte Durchforstung"},
+      {"hdom":40, "bhdZB":70, "totalN":150,                                  "massnahme":"Verjüngungshiebe"}
+    ]
+  },
+  "hiebreife": {
+    "_description": "Umtriebszeit und Zieldurchmesser pro Art",
+    "Fi":   {"harvestAge":60,  "maxAge":80,  "zd_cm":60, "zbHa":200},
+    "Ta":   {"harvestAge":60,  "maxAge":100, "zd_cm":60, "zbHa":200},
+    "Bu":   {"harvestAge":100, "maxAge":140, "zd_cm":60, "zbHa":100},
+    "Ei":   {"harvestAge":110, "maxAge":160, "zd_cm":70, "zbHa":50},
+    "Es":   {"harvestAge":80,  "maxAge":120, "zd_cm":60, "zbHa":80},
+    "BAh":  {"harvestAge":80,  "maxAge":120, "zd_cm":60, "zbHa":80},
+    "WFoe": {"harvestAge":120, "maxAge":160, "zd_cm":80, "zbHa":100},
+    "Lae":  {"harvestAge":120, "maxAge":160, "zd_cm":80, "zbHa":100},
+    "Dou":  {"harvestAge":80,  "maxAge":120, "zd_cm":70, "zbHa":150}
+  }
+}
