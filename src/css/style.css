@@ -1,0 +1,254 @@
+/**
+ * style.css — UI-Layout, Controls, Farbvariablen
+ *
+ * Extrahiert aus v5_baseline.html
+ * Definiert das gesamte UI-Styling: Controls-Panel, Visualisierungs-Bereich,
+ * Baumarten-Blöcke, Statistik, Export-Buttons.
+ */
+
+:root {
+  --bg: #f4f3ee;
+  --panel: #fff;
+  --border: #d4d0c8;
+  --text: #2a2a28;
+  --accent: #2a6a3a;
+}
+
+* { box-sizing: border-box; margin: 0; padding: 0; }
+
+body {
+  font-family: 'Segoe UI', system-ui, sans-serif;
+  background: var(--bg);
+  color: var(--text);
+  display: flex;
+  height: 100vh;
+  overflow: hidden;
+  font-size: 13px;
+}
+
+/* === Controls Panel === */
+#controls {
+  width: 340px;
+  min-width: 340px;
+  background: var(--panel);
+  border-right: 1px solid var(--border);
+  overflow-y: auto;
+  padding: 14px;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+#controls h2 { font-size: 15px; color: var(--accent); }
+#controls h3 {
+  font-size: 11px;
+  color: #888;
+  margin: 8px 0 3px;
+  text-transform: uppercase;
+  letter-spacing: .6px;
+}
+
+/* Mode Toggle */
+.mt {
+  display: flex !important;
+  border: 2px solid var(--accent);
+  border-radius: 5px;
+  overflow: visible !important;
+  min-height: 36px !important;
+  flex-shrink: 0 !important;
+}
+.mt button {
+  flex: 1 1 auto !important;
+  padding: 7px 4px !important;
+  border: none;
+  background: #fff;
+  cursor: pointer;
+  font-size: 12px !important;
+  font-weight: 600;
+  transition: background .2s, color .2s;
+  color: var(--accent);
+  min-height: 32px !important;
+  line-height: 1.3 !important;
+  display: block !important;
+  visibility: visible !important;
+  opacity: 1 !important;
+  max-height: none !important;
+  height: auto !important;
+}
+.mt button.active { background: var(--accent); color: #fff; }
+
+/* Control Row */
+.cr { display: flex; align-items: center; gap: 6px; }
+.cr label { min-width: 72px; font-size: 12px; }
+.cr input[type=range] { flex: 1; accent-color: var(--accent); }
+.cr input[type=number] {
+  width: 52px; padding: 2px 4px;
+  border: 1px solid var(--border); border-radius: 3px; font-size: 12px;
+}
+.cr .v { min-width: 36px; text-align: right; font-size: 11px; color: #888; font-weight: 600; }
+
+/* Statistik-Boxen */
+.sb { display: flex; gap: 6px; flex-wrap: wrap; }
+.st {
+  background: #f7f6f2; border: 1px solid #e8e6df;
+  border-radius: 4px; padding: 4px 8px;
+  font-size: 11px; text-align: center; flex: 1; min-width: 75px;
+}
+.st .n { font-size: 14px; font-weight: 700; color: var(--accent); }
+.st .l { font-size: 9px; color: #999; text-transform: uppercase; }
+
+/* Species Block */
+.spb {
+  background: #fafaf6; border: 1px solid #eae8e0;
+  border-radius: 5px; padding: 7px 9px; margin-bottom: 3px;
+  transition: opacity .2s;
+}
+.spb.off { opacity: .35; }
+
+.sph { display: flex; align-items: center; gap: 5px; margin-bottom: 4px; }
+.sph input[type=checkbox] { accent-color: var(--accent); }
+.spi {
+  width: 18px; height: 18px; border-radius: 3px;
+  display: flex; align-items: center; justify-content: center;
+}
+.spn { font-weight: 700; font-size: 12px; }
+.spl { font-style: italic; font-size: 10px; color: #999; margin-left: auto; }
+
+/* Percent Bar */
+.pb { display: flex; align-items: center; gap: 4px; margin-bottom: 3px; }
+.pb input[type=range] { flex: 1; accent-color: var(--accent); }
+.pv { min-width: 32px; text-align: right; font-weight: 700; font-size: 12px; }
+
+/* Species Parameters */
+.spp { display: grid; grid-template-columns: 1fr 1fr; gap: 2px 6px; font-size: 11px; }
+.spp label { display: flex; align-items: center; gap: 3px; white-space: nowrap; }
+.spp input {
+  width: 46px; padding: 1px 3px;
+  border: 1px solid #ddd; border-radius: 2px; font-size: 11px;
+}
+
+/* Percent Total */
+.pt {
+  font-size: 12px; padding: 4px 8px; border-radius: 4px;
+  text-align: center; font-weight: 700; margin-bottom: 4px;
+}
+.pt.ok { background: #e8f5e9; color: #2e7d32; }
+.pt.warn { background: #fff3e0; color: #e65100; }
+
+/* Buttons */
+.btn {
+  padding: 6px 12px; border: 1px solid var(--accent);
+  background: #fff; color: var(--accent); border-radius: 4px;
+  cursor: pointer; font-size: 12px; font-weight: 600;
+  transition: all .15s;
+}
+.btn:hover { background: var(--accent); color: #fff; }
+.btn.p { background: var(--accent); color: #fff; }
+.btn.p:hover { background: #1e5a2e; }
+.eb { display: flex; flex-wrap: wrap; gap: 4px; }
+
+/* === Visualisierung === */
+#viz {
+  flex: 1; overflow: auto; padding: 12px;
+  display: flex; flex-direction: column; gap: 6px; align-items: center;
+}
+#viz h3 { font-size: 12px; color: var(--accent); align-self: flex-start; }
+
+.sw {
+  background: #fff; border: 1px solid var(--border);
+  border-radius: 4px; box-shadow: 0 1px 3px rgba(0,0,0,.06);
+}
+
+/* Legende */
+#legend {
+  display: flex; gap: 14px; flex-wrap: wrap;
+  padding: 4px 0; font-size: 11px; align-self: flex-start;
+}
+.li { display: flex; align-items: center; gap: 4px; }
+.ls {
+  width: 16px; height: 12px; border-radius: 2px;
+  border: 1px solid rgba(0,0,0,.12);
+}
+
+/* Mode Info */
+.mi {
+  font-size: 11px; padding: 4px 8px;
+  background: #f0f7f1; border-radius: 4px;
+  color: #4a7a4a; line-height: 1.4;
+}
+
+/* === Zeitschiene (Timeline) === */
+.tl-toggle {
+  display: flex; border: 2px solid #5a7a9a; border-radius: 5px; overflow: hidden;
+  margin-bottom: 4px;
+}
+.tl-toggle button {
+  flex: 1; padding: 7px 4px; border: none; background: #fff;
+  cursor: pointer; font-size: 12px; font-weight: 600;
+  transition: all .2s; color: #5a7a9a;
+}
+.tl-toggle button.active { background: #5a7a9a; color: #fff; }
+
+/* Alters-Slider */
+.tl-slider-wrap {
+  position: relative; padding: 2px 0 20px;
+}
+.tl-slider-wrap input[type=range] {
+  width: 100%; accent-color: #5a7a9a;
+}
+.tl-age-val {
+  font-size: 18px; font-weight: 700; color: #5a7a9a;
+  text-align: center; margin: 2px 0;
+}
+
+/* Phase-Indikator */
+.tl-phase {
+  display: flex; align-items: center; gap: 6px;
+  padding: 5px 8px; border-radius: 4px;
+  font-size: 11px; line-height: 1.3;
+  margin-bottom: 2px;
+}
+.tl-phase-dot {
+  width: 10px; height: 10px; border-radius: 50%;
+  flex-shrink: 0;
+}
+.tl-phase-name { font-weight: 700; font-size: 12px; }
+.tl-phase-desc { color: #666; }
+
+/* Snap-Punkte */
+.tl-snaps {
+  display: flex; justify-content: space-between; padding: 0 2px;
+  margin-top: -4px;
+}
+.tl-snap {
+  font-size: 10px; color: #999; cursor: pointer;
+  text-align: center; transition: color .15s;
+  line-height: 1.2; font-weight: 600;
+}
+.tl-snap:hover { color: #5a7a9a; }
+
+/* Phase-Bar (Miniatur-Übersicht) */
+.tl-phase-bar {
+  display: flex; height: 6px; border-radius: 3px; overflow: hidden;
+  margin: 4px 0;
+}
+.tl-phase-seg { transition: opacity .2s; }
+.tl-phase-seg.active { box-shadow: inset 0 -2px 0 rgba(0,0,0,.15); }
+
+/* Timeline verbergen wenn Manuell aktiv */
+.tl-content { transition: max-height .3s, opacity .3s; overflow: hidden; }
+.tl-content.hidden { max-height: 0; opacity: 0; margin: 0; padding: 0; display: none; pointer-events: none; }
+.tl-content.visible { max-height: 400px; opacity: 1; display: block; pointer-events: auto; }
+
+/* Stammzahl-Anzeige in Timeline */
+.tl-stats {
+  display: flex; gap: 6px; font-size: 10px; color: #888;
+  justify-content: center; margin-top: 2px;
+}
+.tl-stats span { font-weight: 600; color: #5a7a9a; }
+
+/* FBB Durchforstungs-Info */
+.tl-df-info { font-size: 10px; line-height: 1.4; }
+
+/* Z-Baum Legend Entry */
+.li-zb { border: 1px dashed #e67300; border-radius: 3px; padding: 1px 4px; }

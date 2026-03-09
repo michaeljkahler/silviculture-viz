@@ -1,0 +1,4128 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Waldbau Zielmischungstyp — BLFw426</title>
+<style>
+/**
+ * style.css — UI-Layout, Controls, Farbvariablen
+ *
+ * Extrahiert aus v5_baseline.html
+ * Definiert das gesamte UI-Styling: Controls-Panel, Visualisierungs-Bereich,
+ * Baumarten-Blöcke, Statistik, Export-Buttons.
+ */
+
+:root {
+  --bg: #f4f3ee;
+  --panel: #fff;
+  --border: #d4d0c8;
+  --text: #2a2a28;
+  --accent: #2a6a3a;
+}
+
+* { box-sizing: border-box; margin: 0; padding: 0; }
+
+body {
+  font-family: 'Segoe UI', system-ui, sans-serif;
+  background: var(--bg);
+  color: var(--text);
+  display: flex;
+  height: 100vh;
+  overflow: hidden;
+  font-size: 13px;
+}
+
+/* === Controls Panel === */
+#controls {
+  width: 340px;
+  min-width: 340px;
+  background: var(--panel);
+  border-right: 1px solid var(--border);
+  overflow-y: auto;
+  padding: 14px;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+#controls h2 { font-size: 15px; color: var(--accent); }
+#controls h3 {
+  font-size: 11px;
+  color: #888;
+  margin: 8px 0 3px;
+  text-transform: uppercase;
+  letter-spacing: .6px;
+}
+
+/* Mode Toggle */
+.mt {
+  display: flex !important;
+  border: 2px solid var(--accent);
+  border-radius: 5px;
+  overflow: visible !important;
+  min-height: 36px !important;
+  flex-shrink: 0 !important;
+}
+.mt button {
+  flex: 1 1 auto !important;
+  padding: 7px 4px !important;
+  border: none;
+  background: #fff;
+  cursor: pointer;
+  font-size: 12px !important;
+  font-weight: 600;
+  transition: background .2s, color .2s;
+  color: var(--accent);
+  min-height: 32px !important;
+  line-height: 1.3 !important;
+  display: block !important;
+  visibility: visible !important;
+  opacity: 1 !important;
+  max-height: none !important;
+  height: auto !important;
+}
+.mt button.active { background: var(--accent); color: #fff; }
+
+/* Control Row */
+.cr { display: flex; align-items: center; gap: 6px; }
+.cr label { min-width: 72px; font-size: 12px; }
+.cr input[type=range] { flex: 1; accent-color: var(--accent); }
+.cr input[type=number] {
+  width: 52px; padding: 2px 4px;
+  border: 1px solid var(--border); border-radius: 3px; font-size: 12px;
+}
+.cr .v { min-width: 36px; text-align: right; font-size: 11px; color: #888; font-weight: 600; }
+
+/* Statistik-Boxen */
+.sb { display: flex; gap: 6px; flex-wrap: wrap; }
+.st {
+  background: #f7f6f2; border: 1px solid #e8e6df;
+  border-radius: 4px; padding: 4px 8px;
+  font-size: 11px; text-align: center; flex: 1; min-width: 75px;
+}
+.st .n { font-size: 14px; font-weight: 700; color: var(--accent); }
+.st .l { font-size: 9px; color: #999; text-transform: uppercase; }
+
+/* Species Block */
+.spb {
+  background: #fafaf6; border: 1px solid #eae8e0;
+  border-radius: 5px; padding: 7px 9px; margin-bottom: 3px;
+  transition: opacity .2s;
+}
+.spb.off { opacity: .35; }
+
+.sph { display: flex; align-items: center; gap: 5px; margin-bottom: 4px; }
+.sph input[type=checkbox] { accent-color: var(--accent); }
+.spi {
+  width: 18px; height: 18px; border-radius: 3px;
+  display: flex; align-items: center; justify-content: center;
+}
+.spn { font-weight: 700; font-size: 12px; }
+.spl { font-style: italic; font-size: 10px; color: #999; margin-left: auto; }
+
+/* Percent Bar */
+.pb { display: flex; align-items: center; gap: 4px; margin-bottom: 3px; }
+.pb input[type=range] { flex: 1; accent-color: var(--accent); }
+.pv { min-width: 32px; text-align: right; font-weight: 700; font-size: 12px; }
+
+/* Species Parameters */
+.spp { display: grid; grid-template-columns: 1fr 1fr; gap: 2px 6px; font-size: 11px; }
+.spp label { display: flex; align-items: center; gap: 3px; white-space: nowrap; }
+.spp input {
+  width: 46px; padding: 1px 3px;
+  border: 1px solid #ddd; border-radius: 2px; font-size: 11px;
+}
+
+/* Percent Total */
+.pt {
+  font-size: 12px; padding: 4px 8px; border-radius: 4px;
+  text-align: center; font-weight: 700; margin-bottom: 4px;
+}
+.pt.ok { background: #e8f5e9; color: #2e7d32; }
+.pt.warn { background: #fff3e0; color: #e65100; }
+
+/* Buttons */
+.btn {
+  padding: 6px 12px; border: 1px solid var(--accent);
+  background: #fff; color: var(--accent); border-radius: 4px;
+  cursor: pointer; font-size: 12px; font-weight: 600;
+  transition: all .15s;
+}
+.btn:hover { background: var(--accent); color: #fff; }
+.btn.p { background: var(--accent); color: #fff; }
+.btn.p:hover { background: #1e5a2e; }
+.eb { display: flex; flex-wrap: wrap; gap: 4px; }
+
+/* === Visualisierung === */
+#viz {
+  flex: 1; overflow: auto; padding: 12px;
+  display: flex; flex-direction: column; gap: 6px; align-items: center;
+}
+#viz h3 { font-size: 12px; color: var(--accent); align-self: flex-start; }
+
+.sw {
+  background: #fff; border: 1px solid var(--border);
+  border-radius: 4px; box-shadow: 0 1px 3px rgba(0,0,0,.06);
+}
+
+/* Legende */
+#legend {
+  display: flex; gap: 14px; flex-wrap: wrap;
+  padding: 4px 0; font-size: 11px; align-self: flex-start;
+}
+.li { display: flex; align-items: center; gap: 4px; }
+.ls {
+  width: 16px; height: 12px; border-radius: 2px;
+  border: 1px solid rgba(0,0,0,.12);
+}
+
+/* Mode Info */
+.mi {
+  font-size: 11px; padding: 4px 8px;
+  background: #f0f7f1; border-radius: 4px;
+  color: #4a7a4a; line-height: 1.4;
+}
+
+/* === Zeitschiene (Timeline) === */
+.tl-toggle {
+  display: flex; border: 2px solid #5a7a9a; border-radius: 5px; overflow: hidden;
+  margin-bottom: 4px;
+}
+.tl-toggle button {
+  flex: 1; padding: 7px 4px; border: none; background: #fff;
+  cursor: pointer; font-size: 12px; font-weight: 600;
+  transition: all .2s; color: #5a7a9a;
+}
+.tl-toggle button.active { background: #5a7a9a; color: #fff; }
+
+/* Alters-Slider */
+.tl-slider-wrap {
+  position: relative; padding: 2px 0 20px;
+}
+.tl-slider-wrap input[type=range] {
+  width: 100%; accent-color: #5a7a9a;
+}
+.tl-age-val {
+  font-size: 18px; font-weight: 700; color: #5a7a9a;
+  text-align: center; margin: 2px 0;
+}
+
+/* Phase-Indikator */
+.tl-phase {
+  display: flex; align-items: center; gap: 6px;
+  padding: 5px 8px; border-radius: 4px;
+  font-size: 11px; line-height: 1.3;
+  margin-bottom: 2px;
+}
+.tl-phase-dot {
+  width: 10px; height: 10px; border-radius: 50%;
+  flex-shrink: 0;
+}
+.tl-phase-name { font-weight: 700; font-size: 12px; }
+.tl-phase-desc { color: #666; }
+
+/* Snap-Punkte */
+.tl-snaps {
+  display: flex; justify-content: space-between; padding: 0 2px;
+  margin-top: -4px;
+}
+.tl-snap {
+  font-size: 10px; color: #999; cursor: pointer;
+  text-align: center; transition: color .15s;
+  line-height: 1.2; font-weight: 600;
+}
+.tl-snap:hover { color: #5a7a9a; }
+
+/* Phase-Bar (Miniatur-Übersicht) */
+.tl-phase-bar {
+  display: flex; height: 6px; border-radius: 3px; overflow: hidden;
+  margin: 4px 0;
+}
+.tl-phase-seg { transition: opacity .2s; }
+.tl-phase-seg.active { box-shadow: inset 0 -2px 0 rgba(0,0,0,.15); }
+
+/* Timeline verbergen wenn Manuell aktiv */
+.tl-content { transition: max-height .3s, opacity .3s; overflow: hidden; }
+.tl-content.hidden { max-height: 0; opacity: 0; margin: 0; padding: 0; display: none; pointer-events: none; }
+.tl-content.visible { max-height: 400px; opacity: 1; display: block; pointer-events: auto; }
+
+/* Stammzahl-Anzeige in Timeline */
+.tl-stats {
+  display: flex; gap: 6px; font-size: 10px; color: #888;
+  justify-content: center; margin-top: 2px;
+}
+.tl-stats span { font-weight: 600; color: #5a7a9a; }
+
+/* FBB Durchforstungs-Info */
+.tl-df-info { font-size: 10px; line-height: 1.4; }
+
+/* Z-Baum Legend Entry */
+.li-zb { border: 1px dashed #e67300; border-radius: 3px; padding: 1px 4px; }
+</style>
+</head>
+<body>
+<!-- Debug-Anzeige: zeigt JS-Fehler sichtbar an -->
+<div id="dbg-err" style="display:none;position:fixed;top:0;left:0;right:0;background:#ff0000;color:#fff;font-size:14px;font-weight:bold;padding:10px;z-index:99999;white-space:pre-wrap;"></div>
+<script>
+window.onerror = function(msg, url, line, col, err) {
+  var d = document.getElementById('dbg-err');
+  if (d) { d.style.display = 'block'; d.textContent += 'FEHLER Zeile ' + line + ': ' + msg + '\n'; }
+  return false;
+};
+</script>
+<div id="controls">
+  <h2>Waldbau Zielmischungstyp</h2>
+  <p style="font-size:10px;color:#aaa;">BLFw426 — v8 Vollständiges Audit</p>
+  <h3>Zeitschiene</h3>
+  <div id="tl-container"></div>
+  <h3>Waldtyp</h3>
+  <div class="mt" style="display:flex!important;min-height:36px!important;overflow:visible!important;">
+    <button id="bg" class="active" onclick="setMode('gleich')" style="flex:1;padding:7px 4px;min-height:32px;font-size:12px;font-weight:600;border:none;cursor:pointer;">Gleichf. Hochwald</button>
+    <button id="bu" onclick="setMode('ungleich')" style="flex:1;padding:7px 4px;min-height:32px;font-size:12px;font-weight:600;border:none;cursor:pointer;">Ungleichf. Hochwald</button>
+  </div>
+  <div class="mi" id="mi">Gleichförmig: Bäume ähnlicher Dimension.</div>
+  <h3>Mischungsform</h3>
+  <div class="mt" style="display:flex!important;flex-wrap:wrap;min-height:36px!important;overflow:visible!important;">
+    <button id="mix-einzel" class="active" onclick="setMixPattern('einzel')" style="flex:1;padding:7px 4px;min-height:32px;font-size:12px;font-weight:600;border:none;cursor:pointer;">Einzelmischung</button>
+    <button id="mix-trupp" onclick="setMixPattern('trupp')" style="flex:1;padding:7px 4px;min-height:32px;font-size:12px;font-weight:600;border:none;cursor:pointer;">Trupp</button>
+    <button id="mix-gruppe" onclick="setMixPattern('gruppe')" style="flex:1;padding:7px 4px;min-height:32px;font-size:12px;font-weight:600;border:none;cursor:pointer;">Gruppe</button>
+    <button id="mix-horst" onclick="setMixPattern('horst')" style="flex:1;padding:7px 4px;min-height:32px;font-size:12px;font-weight:600;border:none;cursor:pointer;">Horst</button>
+    <button id="mix-untergeordnet" onclick="setMixPattern('untergeordnet')" style="flex:1;padding:7px 4px;min-height:32px;font-size:12px;font-weight:600;border:none;cursor:pointer;">Unterg.</button>
+  </div>
+  <div class="mi" id="mi-mix" style="font-size:10px;color:#999;">Einzeln: zufällige Verteilung</div>
+  <h3>Optionen</h3>
+  <div class="mt" style="display:flex!important;min-height:36px!important;overflow:visible!important;">
+    <button id="btn-vj" class="active" onclick="toggleVerjuengung()" style="flex:1;padding:7px 4px;min-height:32px;font-size:12px;font-weight:600;border:none;cursor:pointer;">Naturverjüngung</button>
+    <button id="btn-zb" onclick="toggleZBaum()" style="flex:1;padding:7px 4px;min-height:32px;font-size:12px;font-weight:600;border:none;cursor:pointer;">Z-Bäume</button>
+  </div>
+  <h3>Bestand</h3>
+  <div id="manual-ctrls">
+  <div class="cr" id="density-row"><label>Stämme/ha</label><input type="range" id="density" min="60" max="600" step="10" value="220" oninput="uC('density',this.value)"><span class="v" id="vd">220</span></div>
+  <div class="cr"><label>Transekt Y</label><input type="range" id="transectY" min="5" max="95" value="50" oninput="uC('transectY',this.value)"><span class="v" id="vt">50 m</span></div>
+  <div class="cr"><label>Seed</label><input type="number" id="seed" value="42" min="1" max="9999" style="width:60px" onchange="regen()"><button class="btn" onclick="rS()" style="padding:3px 8px;font-size:11px;">Zufall</button></div>
+  </div>
+  <h3>Statistik</h3>
+  <div class="sb"><div class="st"><div class="n" id="sn">—</div><div class="l">Bäume</div></div><div class="st"><div class="n" id="sd">—</div><div class="l">Deckung %</div></div><div class="st"><div class="n" id="sg">—</div><div class="l">GF m²/ha</div></div><div class="st"><div class="n" id="szb">—</div><div class="l">Z-Bäume</div></div><div class="st"><div class="n" id="svol">—</div><div class="l">V m³/ha</div></div><div class="st"><div class="n" id="svdg">—</div><div class="l">Vert. DG</div></div></div>
+  <h3>Baumarten &amp; Mischung</h3>
+  <div id="pt" class="pt ok">Summe: 100%</div>
+  <div id="sc"></div>
+  <h3>Export</h3>
+  <div style="display:flex;flex-direction:column;gap:4px;">
+    <button class="btn p" onclick="regen()">Neu generieren</button>
+    <div class="eb"><button class="btn" onclick="xp('front')">Front PNG</button><button class="btn" onclick="xp('bird')">Vogel PNG</button><button class="btn" onclick="xp('pair')">Paar PNG</button><button class="btn" onclick="xp('timeline')" id="btn-tl-export" title="Frontansicht bei 20J, 60J und 100J als Vergleichsbild">Zeitreihe PNG</button></div>
+    <p style="font-size:9px;color:#bbb;">300 DPI · Panel 135×70mm</p>
+  </div>
+</div>
+<div id="viz">
+  <div id="legend"></div>
+  <h3 id="ft">Frontansicht</h3>
+  <div class="sw" id="fw"></div>
+  <h3 id="bt">Vogelperspektive</h3>
+  <div class="sw" id="bw"></div>
+</div>
+<canvas id="xc" style="display:none"></canvas>
+<script>
+// === config.js ===
+/**
+ * config.js — Globale Konstanten und Kompatibilitäts-Aliase
+ *
+ * Alle Werte die sich auf Plot-Grösse, Export, Rendering beziehen.
+ * Änderungen hier wirken sich auf alle Module aus.
+ *
+ * Abhängigkeiten: keine (wird als erstes geladen)
+ */
+
+const CONFIG = {
+  // Plot
+  PLOT_SIZE: 100,       // Meter (100x100m = 1 ha)
+  MAX_DISPLAY_H: 48,    // Maximale Höhe in der Frontansicht (m)
+  TRANSECT_WIDTH: 10,   // Breite des Transekts (m)
+  BG_DEPTH: 5,          // Tiefe der Hintergrundebene hinter Transekt (m)
+
+  // Export
+  EXPORT_DPI: 300,
+  PANEL_W_MM: 135,      // A3-Panel Breite (mm)
+  PANEL_H_MM: 70,       // A3-Panel Höhe (mm)
+  PANEL_GAP_MM: 3,      // Abstand zwischen Front und Vogel (mm)
+
+  // Berechnet
+  get PANEL_W_PX() { return Math.round(this.PANEL_W_MM / 25.4 * this.EXPORT_DPI); },
+  get PANEL_H_PX() { return Math.round(this.PANEL_H_MM / 25.4 * this.EXPORT_DPI); },
+  get PANEL_GAP_PX() { return Math.round(this.PANEL_GAP_MM / 25.4 * this.EXPORT_DPI); },
+
+  // Deckungsgrad-Raster
+  COVER_RESOLUTION: 0.5, // Meter pro Zelle
+
+  // Rendering
+  GRID_MAJOR: 10,       // Hauptraster-Abstand (m)
+  GRID_MINOR: 5,        // Nebenraster-Abstand (m)
+
+  // Baumgenerierung
+  MIN_SPACING_FACTOR: 0.4,  // Mindestabstand als Faktor der Kronensumme
+  MIN_SPACING_ABS: 1.5,     // Absoluter Mindestabstand (m)
+  PLACEMENT_ATTEMPTS: 120,  // Max. Platzierungsversuche pro Baum
+
+  // Ungleichförmiger Modus: Grössenklassen
+  SIZE_CLASSES: [
+    { maxP: 0.18, minSF: 0.15, rangeSF: 0.15 },  // Jungwuchs
+    { maxP: 0.38, minSF: 0.30, rangeSF: 0.15 },  // Dickung
+    { maxP: 0.58, minSF: 0.50, rangeSF: 0.15 },  // Stangenholz
+    { maxP: 0.78, minSF: 0.70, rangeSF: 0.15 },  // Baumholz
+    { maxP: 1.00, minSF: 0.88, rangeSF: 0.12 },  // Starkes Baumholz
+  ],
+
+  // Gleichförmiger Modus
+  GLEICH_MIN_SF: 0.82,
+  GLEICH_RANGE_SF: 0.18,
+};
+
+// === v5-Kompatibilitäts-Aliase (globaler Scope) ===
+// Diese Variablen werden von allen Modulen verwendet und
+// entsprechen den Originalnamen aus v5_baseline.html.
+const PLOT = CONFIG.PLOT_SIZE;
+const MH = CONFIG.MAX_DISPLAY_H;
+const DPI = CONFIG.EXPORT_DPI;
+const PW = CONFIG.PANEL_W_PX;
+const PH = CONFIG.PANEL_H_PX;
+
+// === species.js ===
+/**
+ * species.js — Baumart-Definitionen
+ *
+ * Farben (Pastell-Palette), Defaults, Kronentypen.
+ * Jede Art hat:
+ *   c   = Hauptfarbe Front (Pastell)
+ *   cs  = Strichfarbe Front
+ *   cd  = Dunklere Variante (Schatten/Textur)
+ *   ct  = Hauptfarbe Top (Vogelperspektive, etwas heller)
+ *   cts = Strichfarbe Top
+ *   crown = Kronentyp-Key (verweist auf crownFront.js / crownBird.js)
+ *   d   = Default-Parameter {h, cw, kl, ka, bhd}
+ *
+ * Abhängigkeiten: keine (wird nach config.js geladen)
+ */
+
+const SPECIES = {
+  Bu: {
+    name: 'Buche',
+    lat: 'Fagus sylvatica',
+    c: '#8bc68b', cs: '#6da86d', cd: '#5a9a5a',
+    ct: '#a0d8a0', cts: '#7aba7a',
+    crown: 'dome',
+    deciduous: true,
+    d: { h: 35, cw: 12, kl: 20, ka: 15, bhd: 50 }
+  },
+  Ta: {
+    name: 'Weisstanne',
+    lat: 'Abies alba',
+    c: '#5b9b8b', cs: '#488878', cd: '#3a7a6a',
+    ct: '#72b0a0', cts: '#5a9888',
+    crown: 'layered',
+    deciduous: false,
+    d: { h: 40, cw: 8, kl: 16, ka: 24, bhd: 55 }
+  },
+  Fi: {
+    name: 'Fichte',
+    lat: 'Picea abies',
+    c: '#7a9ec8', cs: '#6088b0', cd: '#5078a0',
+    ct: '#90b0d8', cts: '#7098c0',
+    crown: 'spire',
+    deciduous: false,
+    d: { h: 38, cw: 6, kl: 13, ka: 25, bhd: 45 }
+  },
+  Ei: {
+    name: 'Eiche (ssp.)',
+    lat: 'Quercus ssp.',
+    c: '#c8b86a', cs: '#b0a050', cd: '#98883a',
+    ct: '#d8c87a', cts: '#c0a860',
+    crown: 'spreading',
+    deciduous: true,
+    d: { h: 30, cw: 14, kl: 18, ka: 12, bhd: 55 }
+  },
+  BAh: {
+    name: 'Ahorn (ssp.)',
+    lat: 'Acer ssp.',
+    c: '#d4a0b0', cs: '#c08898', cd: '#a87080',
+    ct: '#e0b0c0', cts: '#c898a8',
+    crown: 'round',
+    deciduous: true,
+    d: { h: 30, cw: 10, kl: 18, ka: 12, bhd: 40 }
+  },
+  WFoe: {
+    name: 'Waldföhre',
+    lat: 'Pinus sylvestris',
+    c: '#c8a87a', cs: '#b09060', cd: '#98784a',
+    ct: '#d8b88a', cts: '#c0a070',
+    crown: 'umbrella',
+    deciduous: false,
+    d: { h: 28, cw: 8, kl: 9, ka: 19, bhd: 40 }
+  },
+  Lae: {
+    name: 'Lärche',
+    lat: 'Larix decidua',
+    c: '#b8d080', cs: '#a0b868', cd: '#88a050',
+    ct: '#c8e090', cts: '#b0c878',
+    crown: 'lightcone',
+    deciduous: true,  // Sommergrün!
+    d: { h: 35, cw: 7, kl: 12, ka: 23, bhd: 40 }
+  },
+  Es: {
+    name: 'Esche',
+    lat: 'Fraxinus excelsior',
+    c: '#a8b8d0', cs: '#90a0b8', cd: '#7888a0',
+    ct: '#b8c8e0', cts: '#a0b0c8',
+    crown: 'vase',
+    deciduous: true,
+    d: { h: 32, cw: 10, kl: 18, ka: 14, bhd: 45 }
+  },
+  Dou: {
+    name: 'Douglasie',
+    lat: 'Pseudotsuga menziesii',
+    c: '#6aaa6a', cs: '#508850', cd: '#387838',
+    ct: '#80c080', cts: '#609860',
+    crown: 'spire',
+    deciduous: false,
+    d: { h: 42, cw: 7, kl: 14, ka: 28, bhd: 55 }
+  },
+};
+
+// Default active species and percentages (8a Schutzwald)
+const DEFAULT_MIX = { Bu: 65, Ta: 15, Fi: 10, BAh: 10 };
+
+// === v5-Kompatibilitäts-Aliase ===
+const SP = SPECIES;
+const iP = DEFAULT_MIX;
+
+// === timeline.js ===
+/**
+ * timeline.js — Zeitschiene / Wachstumsmodell
+ *
+ * Phase 2: Bestandesentwicklung über die Zeit.
+ *
+ * Enthält:
+ *   - SIWAWA_KURVEN   — Oberhöhen-Stützpunkte aus SiWaWa-Wuchssimulator (ETH-Z/WSL)
+ *   - PHASES          — Waldbauliche Phasen (Qualifizierung, Dimensionierung, Zielvorstellung)
+ *   - hdom(sp, age)   — Dominante Höhe (lineare Interpolation der Stützpunkte)
+ *   - bhdFromH(sp, h) — BHD aus Höhe (allometrisch)
+ *   - crownFromBHD(sp, bhd, h) — Kronendimensionen aus BHD und Höhe
+ *   - nHa(age)        — Stammzahl pro ha (deckungsgrad-gesteuert)
+ *   - getPhase(age)   — Aktuelle Phase bestimmen
+ *   - applyAge(age)   — Aktualisiert S.sp Parameter basierend auf Alter
+ *
+ * Abhängigkeiten: species.js (SPECIES), controls.js (S)
+ *
+ * Quellen:
+ *   - SiWaWa Wuchssimulator (ETH-Z / WSL), HAFL Abb. 4A
+ *   - Bergahorn: Röhle et al. 2009 (Bayern), Lockow 2003 (Brandenburg)
+ *   - Kronenallometrie: Pretzsch (2009), kr ∝ BHD^0.5
+ *   - Stammzahlentwicklung: Deckungsgrad-gesteuert + FBB Produktionskonzept 2022
+ */
+
+// === SiWaWa Wachstumskurven ===
+// Oberhöhe (hdom) in Metern an Stützpunkten [10, 20, 30, 40, 50, 60, 70, 80, 100, 120, 140] Jahre
+// Quelle: Manuelle Digitalisierung aus SiWaWa-Grafiken (3 Iterationen, kreuzvalidiert)
+// Bonität = hdom [m] im Referenzalter 50 Jahre (SiWaWa-Konvention)
+//
+// Zuordnung BLFw426 (8a: Bu65/Ta15/Fi10/BAh10):
+//   Bu  → Bu_26  (SiWaWa B26, nächste verfügbare Klasse zu B24)
+//   Ta  → Ta_22  (SiWaWa max.; FBB-Bon.28 = anderes Referenzsystem)
+//   Fi  → Fi_28  (direkt verfügbar)
+//   BAh → BAh_22 (abgeleitet aus Röhle/Lockow, konservativ)
+//   Ei  → Ei_26  (gut)
+//   WFoe→ Foe_26 (gut)
+//   Lae → La_28  (gut)
+//   Es  → Es_28  (gut)
+
+const SIWAWA_ALTER = [10, 20, 30, 40, 50, 60, 70, 80, 100, 120, 140];
+
+const SIWAWA_KURVEN = {
+  // Korrigiert nach FBB Produktionskonzept 2022 + SiWaWa-Grafiken
+  // Format: hdom [m] bei Alter [10, 20, 30, 40, 50, 60, 70, 80, 100, 120, 140]
+  Bu:   [3.5,  8.5, 14.0, 19.0, 23.0, 26.5, 29.5, 32.0, 36.0, 39.0, 41.0],  // Bu_24 (FBB: B24)
+  Ta:   [3.0,  8.0, 14.0, 20.0, 26.0, 31.0, 35.0, 38.0, 42.0, 45.0, 47.0],  // Ta_28 (FBB: B28)
+  Fi:   [3.5,  9.0, 15.0, 21.0, 28.0, 33.0, 37.0, 40.5, 45.0, 48.5, 50.0],  // Fi_28 (FBB: B28) — unverändert
+  BAh:  [3.0,  8.5, 13.5, 18.0, 22.0, 25.5, 28.0, 29.5, 32.0, 33.5, 34.5],  // BAh_22 (Röhle/Lockow) — unverändert
+  Ei:   [2.5,  7.0, 12.5, 18.5, 24.0, 28.5, 32.0, 34.5, 38.5, 41.5, 43.5],  // Ei_25 (FBB: B25)
+  WFoe: [2.5,  7.0, 12.5, 19.0, 26.0, 29.5, 32.0, 33.5, 37.0, 39.0, 40.5],  // Foe_26 (FBB: B26) — unverändert
+  Lae:  [4.5, 12.0, 20.0, 25.5, 28.0, 32.0, 35.5, 38.0, 41.5, 43.5, 45.0],  // La_28 (FBB: B28) — unverändert
+  Es:   [5.0, 11.0, 17.5, 23.5, 28.0, 32.0, 35.0, 37.0, 40.0, 42.0, 43.5],  // Es_28 (FBB: B28) — unverändert
+  Dou:  [4.5, 12.0, 20.5, 28.0, 34.0, 38.5, 42.0, 44.5, 47.5, 49.5, 51.0],  // Dou_34 (FBB: B34)
+};
+
+// === LEGACY: Chapman-Richards Parameter (Fallback für unbekannte Arten) ===
+const GROWTH_PARAMS = {
+  // Korrigiert nach FBB Produktionskonzept 2022
+  Bu:  { a: 41, si: 24, label: 'Buche B24 (FBB/SiWaWa)' },
+  Ta:  { a: 47, si: 28, label: 'Tanne B28 (FBB/SiWaWa)' },
+  Fi:  { a: 50, si: 28, label: 'Fichte B28 (FBB/SiWaWa)' },
+  BAh: { a: 35, si: 22, label: 'Bergahorn B22 (Röhle/Lockow)' },
+  Ei:  { a: 43, si: 25, label: 'Eiche B25 (FBB/SiWaWa)' },
+  WFoe:{ a: 41, si: 26, label: 'Föhre B26 (FBB/SiWaWa)' },
+  Lae: { a: 45, si: 28, label: 'Lärche B28 (FBB/SiWaWa)' },
+  Es:  { a: 44, si: 28, label: 'Esche B28 (FBB/SiWaWa)' },
+  Dou: { a: 51, si: 34, label: 'Douglasie B34 (FBB/SiWaWa)' },
+};
+
+// === Hiebreife / Umtriebszeit ===
+// Spätester sinnvoller Erntezeitpunkt je Art, aus FBB-Produktionskonzept 2022
+// und SiWaWa-Grafiken (rote Rahmen = Hiebzeitpunktfenster).
+//
+// maxAge: Maximalalter auf der Zeitschiene (Slider-Limit)
+// harvestAge: Typisches Erntealter (FBB Umtrieb)
+// zd_cm: Zieldurchmesser BHD [cm]
+// zbHa: Z-Bäume pro ha bei Hiebreife
+//
+const HIEBREIFE = {
+  // Korrigiert nach FBB Produktionskonzept 2022
+  Bu:   { harvestAge: 100, maxAge: 140, zd_cm: 60,  zbHa: 100, label: 'Buche B24: Umtrieb 100J, ZD 60cm' },
+  Ta:   { harvestAge:  60, maxAge: 100, zd_cm: 60,  zbHa: 200, label: 'Tanne B28: Umtrieb 60J, ZD 60cm' },
+  Fi:   { harvestAge:  60, maxAge:  80, zd_cm: 60,  zbHa: 200, label: 'Fichte B28: Umtrieb 60J, ZD 60cm' },
+  BAh:  { harvestAge:  80, maxAge: 120, zd_cm: 60,  zbHa:  80, label: 'Bergahorn B22: Umtrieb 80J, ZD 60cm' },
+  Ei:   { harvestAge: 110, maxAge: 160, zd_cm: 70,  zbHa:  50, label: 'Eiche B25: Umtrieb 110J, ZD 70cm' },
+  WFoe: { harvestAge: 120, maxAge: 160, zd_cm: 80,  zbHa: 100, label: 'Föhre B26: Umtrieb 120J, ZD 80cm' },
+  Lae:  { harvestAge: 120, maxAge: 160, zd_cm: 80,  zbHa: 100, label: 'Lärche B28: Umtrieb 120J, ZD 80cm' },
+  Es:   { harvestAge:  80, maxAge: 120, zd_cm: 60,  zbHa:  80, label: 'Esche B28: Umtrieb 80J, ZD 60cm' },
+  Dou:  { harvestAge:  80, maxAge: 120, zd_cm: 70,  zbHa: 150, label: 'Douglasie B34: Umtrieb 80J, ZD 70cm' },
+};
+
+/**
+ * Berechnet das gewichtete maximale Bestandesalter (Slider-Maximum)
+ * basierend auf den aktiven Baumarten und ihren Anteilen.
+ * Die früheste Hiebreife der Hauptbaumart bestimmt das Limit.
+ *
+ * @returns {number} Maximalalter in Jahren
+ */
+function getMaxAge() {
+  if (typeof S === 'undefined' || !S || !S.sp) return 120;
+  let weightedMax = 0, totalPct = 0;
+  for (const [k, s] of Object.entries(S.sp)) {
+    if (!s.on || s.pct <= 0) continue;
+    const hr = HIEBREIFE[k];
+    if (hr) {
+      weightedMax += s.pct * hr.maxAge;
+      totalPct += s.pct;
+    }
+  }
+  if (totalPct <= 0) return 120;
+  return Math.round(weightedMax / totalPct);
+}
+
+// === Waldbauliche Phasen ===
+const PHASES = [
+  {
+    id: 'qual',
+    name: 'Qualifizierung',
+    nameShort: 'Qual.',
+    ageStart: 0,
+    ageEnd: 20,
+    color: '#a8d8a0',
+    desc: 'Jungwuchs/Dickung — Stammzahlreduktion, Formauswahl, Z-Baum-Selektion'
+  },
+  {
+    id: 'dim',
+    name: 'Dimensionierung',
+    nameShort: 'Dim.',
+    ageStart: 20,
+    ageEnd: 80,
+    color: '#90c8d8',
+    desc: 'Stangenholz/Baumholz — Kronenfreistellung, Durchmesserwachstum fördern'
+  },
+  {
+    id: 'ziel',
+    name: 'Zielvorstellung',
+    nameShort: 'Ziel',
+    ageStart: 80,
+    ageEnd: 120,
+    color: '#d8c890',
+    desc: 'Reifer Bestand — Zieldurchmesser erreicht, Verjüngungseinleitung'
+  }
+];
+
+// === Phase-Snap-Punkte für Slider ===
+const PHASE_SNAPS = [
+  { age: 0,   label: '0' },
+  { age: 20,  label: '20' },
+  { age: 40,  label: '40' },
+  { age: 60,  label: '60' },
+  { age: 80,  label: '80' },
+  { age: 100, label: '100' },
+  { age: 120, label: '120' },
+  { age: 140, label: '140' },
+];
+
+/**
+ * Dominante Höhe (hdom) als Funktion von Art und Alter.
+ *
+ * Primär: Lineare Interpolation der SiWaWa-Stützpunkte (10-140 Jahre).
+ * Für Alter < 10: Kubische Extrapolation (durchläuft 0,0 und Stützpunkt 10J).
+ * Für Alter > 140: Logarithmische Fortschreibung (flach asymptotisch).
+ * Fallback: Einfaches Potenzgesetz wenn keine SiWaWa-Kurve verfügbar.
+ *
+ * @param {string} sp  — Artkürzel (Bu, Ta, Fi, ...)
+ * @param {number} age — Alter in Jahren
+ * @returns {number} hdom in Metern
+ */
+function hdom(sp, age) {
+  if (age <= 0) return 0;
+
+  const kurve = SIWAWA_KURVEN[sp];
+  if (!kurve) {
+    // Fallback: einfaches Potenzgesetz
+    const gp = GROWTH_PARAMS[sp];
+    if (!gp) return 0;
+    return gp.a * Math.pow(age / 140, 1.3) * (gp.si / 26);
+  }
+
+  const A = SIWAWA_ALTER;
+
+  // Alter < 10: kubische Extrapolation von (0,0) zu (10, kurve[0])
+  if (age < A[0]) {
+    const h10 = kurve[0];
+    const t = age / A[0]; // 0 → 1
+    // Kubisch: sanfter Anstieg, Steigung bei t=0 = 0
+    return h10 * t * t * (3 - 2 * t);
+  }
+
+  // Alter > 140: logarithmische Fortschreibung
+  if (age > A[A.length - 1]) {
+    const hLast = kurve[kurve.length - 1];
+    const hPrev = kurve[kurve.length - 2];
+    // Jährliche Zunahme aus letztem Intervall, abflachend
+    const ratePerYear = (hLast - hPrev) / (A[A.length - 1] - A[A.length - 2]);
+    const extra = age - A[A.length - 1];
+    return hLast + ratePerYear * extra * Math.exp(-extra * 0.02);
+  }
+
+  // Lineare Interpolation zwischen Stützpunkten
+  for (let i = 0; i < A.length - 1; i++) {
+    if (age >= A[i] && age <= A[i + 1]) {
+      const t = (age - A[i]) / (A[i + 1] - A[i]);
+      return kurve[i] + t * (kurve[i + 1] - kurve[i]);
+    }
+  }
+
+  return kurve[kurve.length - 1];
+}
+
+/**
+ * BHD als Funktion von Höhe und Art (allometrisch)
+ *
+ * Vereinfachte Beziehung basierend auf forstlichen Ertragstafeln:
+ *   BHD ≈ bhdRef × (h / hRef)^exp
+ *
+ * Parameter pro Art kalibriert auf Ziel-BHD bei Zielhöhe (aus SPECIES_REFERENCE)
+ *
+ * @param {string} sp — Artkürzel
+ * @param {number} h  — Baumhöhe in m
+ * @returns {number} BHD in cm
+ */
+function bhdFromH(sp, h) {
+  // Sanfter Übergang ab h=1.3m (statt hartem Cutoff)
+  if (h <= 0.5) return 0;
+
+  // Zielwerte kalibriert auf SiWaWa hdom(100) + FBB Produktionskonzept 2022 BHD-Ziele
+  // hRef = hdom bei Alter 100 aus korrigierten SIWAWA_KURVEN
+  const targets = {
+    Bu:  { hRef: 36.0, bhdRef: 60 },   // Bu_24 hdom(100)=36, FBB ZD=60cm
+    Ta:  { hRef: 42.0, bhdRef: 60 },   // Ta_28 hdom(100)=42, FBB ZD=60cm
+    Fi:  { hRef: 45.0, bhdRef: 60 },   // Fi_28 hdom(100)=45, FBB ZD=60cm
+    BAh: { hRef: 32.0, bhdRef: 60 },   // BAh_22 hdom(100)=32, FBB ZD=60cm
+    Ei:  { hRef: 38.5, bhdRef: 70 },   // Ei_25 hdom(100)=38.5, FBB ZD=70cm
+    WFoe:{ hRef: 37.0, bhdRef: 80 },   // Foe_26 hdom(100)=37, FBB ZD=80cm
+    Lae: { hRef: 41.5, bhdRef: 80 },   // La_28 hdom(100)=41.5, FBB ZD=80cm
+    Es:  { hRef: 40.0, bhdRef: 60 },   // Es_28 hdom(100)=40, FBB ZD=60cm
+    Dou: { hRef: 47.5, bhdRef: 70 },   // Dou_34 hdom(100)=47.5, FBB ZD=70cm
+  };
+
+  const t = targets[sp] || { hRef: 30, bhdRef: 40 };
+  const exp = (sp === 'Ei' || sp === 'WFoe') ? 1.5 : 1.3;
+  let bhd = t.bhdRef * Math.pow(h / t.hRef, exp);
+
+  // Weicher Übergang: BHD ramp von 0 bei h=0.5m auf vollen Wert bei h=3m
+  if (h < 3.0) {
+    const blend = (h - 0.5) / 2.5; // 0 → 1
+    bhd *= blend * blend;           // quadratisch für sanften Anstieg
+  }
+
+  return bhd;
+}
+
+/**
+ * Kronendimensionen als Funktion von BHD, Höhe und Art
+ *
+ * Allometrien:
+ *   - Kronenbreite (cw):  cw = 2 × k_cr × BHD^0.5  (Pretzsch 2009)
+ *   - Kronenlänge (kl):   kl = Kronenratio × h       (artenspezifisch)
+ *   - Kronenansatz (ka):  ka = h - kl
+ *
+ * @param {string} sp  — Artkürzel
+ * @param {number} bhd — BHD in cm
+ * @param {number} h   — Baumhöhe in m
+ * @returns {{ cw: number, kl: number, ka: number }}
+ */
+function crownFromBHD(sp, bhd, h) {
+  // Sehr kleine Bäume: Krone proportional zur Höhe (fliessend)
+  if (h <= 0.5) return { cw: Math.max(h * 0.5, 0.2), kl: Math.max(h * 0.8, 0.2), ka: Math.max(h * 0.2, 0.05) };
+  if (bhd <= 0 || h <= 2) {
+    // Übergangsbereich: lineare Interpolation basierend auf Höhe
+    const cwSmall = h * 0.35;
+    const klSmall = h * 0.80;
+    return { cw: Math.max(cwSmall, 0.3), kl: Math.max(klSmall, 0.3), ka: Math.max(h - klSmall, 0.1) };
+  }
+
+  // Kronenbreite: cw = 2 × k_cr × BHD^0.5
+  // k_cr kalibriert auf Defaults aus species.js
+  const crCoeffs = {
+    Bu:  0.85, // → cw ≈ 12.0 bei BHD 50
+    Ta:  0.57, // → cw ≈ 8.5  bei BHD 55
+    Fi:  0.43, // → cw ≈ 5.8  bei BHD 45
+    BAh: 0.79, // → cw ≈ 10.0 bei BHD 40
+    Ei:  0.95, // → cw ≈ 14.1 bei BHD 55
+    WFoe:0.63, // → cw ≈ 8.0  bei BHD 40
+    Lae: 0.55, // → cw ≈ 7.0  bei BHD 40
+    Es:  0.71, // → cw ≈ 9.5  bei BHD 45
+    Dou: 0.50,
+  };
+  const k_cr = crCoeffs[sp] || 0.70;
+  const cw = 2.0 * k_cr * Math.pow(bhd, 0.5);
+
+  // Kronenverhältnis: Anteil der Krone an Gesamthöhe
+  // Junge Bäume ≈ 85%, alte Bäume → artspezifischer Basiswert
+  // Kronenverhältnis im Endzustand (geschlossener, bewirtschafteter Bestand)
+  // Nadelbäume: ca. 1/3 Kronenlänge im dichten Bestand (Forstpraxis)
+  // Laubbäume: artspezifisch, generell kürzere Kronen als Jungbestand
+  const crRatioBase = {
+    Bu:  0.50, // Buche: ca. 50% — breite Krone, mittlerer Kronenansatz
+    Ta:  0.40, // Tanne: ca. 40% — schatttolerant, etwas längere Krone als Fi
+    Fi:  0.33, // Fichte: ca. 1/3 — typischer Nadelbaum im dichten Bestand
+    BAh: 0.50, // Bergahorn: ca. 50%
+    Ei:  0.45, // Eiche: ca. 45% — hoher Kronenansatz im Bestand
+    WFoe:0.30, // Föhre: ca. 30% — kurze Krone, hoher Kronenansatz
+    Lae: 0.33, // Lärche: ca. 1/3 — lichtbedürftig, kurze Krone
+    Es:  0.45, // Esche: ca. 45%
+    Dou: 0.33, // Douglasie: ca. 1/3 — ähnlich Fi im Bestand
+  };
+
+  const baseRatio = crRatioBase[sp] || 0.55;
+  // Referenzhöhe = Höhe bei Hiebreife (nicht bei 140J), damit bei Erntealter baseRatio erreicht wird
+  const hr = (typeof HIEBREIFE !== 'undefined' && HIEBREIFE[sp]) ? HIEBREIFE[sp] : null;
+  const hRef = hr ? hdom(sp, hr.harvestAge) : (SIWAWA_KURVEN[sp] ? SIWAWA_KURVEN[sp][SIWAWA_KURVEN[sp].length - 1] : 35);
+  const relH = Math.min(h / hRef, 1.0);
+  // Jung: 85% Krone, Alt (bei Hiebreife): baseRatio
+  const crRatio = 0.85 - (0.85 - baseRatio) * Math.pow(relH, 0.7);
+
+  const kl = h * crRatio;
+  const ka = h - kl;
+
+  return { cw, kl, ka: Math.max(ka, 1.0) };
+}
+
+// === FBB Produktionskonzept 2022: Stammzahltabellen ===
+// "Total N / ha (Stk.) vor Eingriff" — Oberhöhe [m] → N/ha
+// Quelle: Produktionskonzept Forstbetrieb Burgergemeinde Bern, 28.06.2022
+//
+// Format: [oberhöhe_m, n_ha] Paare, aufsteigend nach Oberhöhe.
+// Zwischen Stützpunkten wird linear interpoliert.
+const FBB_NHA = {
+  Fi:   [[12,2400],[14,2000],[17,1500],[20,1000],[23,600],[27,400],[34,200]],
+  Ta:   [[12,2400],[14,2000],[17,1500],[20,1000],[23,600],[27,400],[34,200]],
+  Bu:   [[18,1600],[22,1200],[25,800],[28,400],[33,300],[36,200]],
+  Ei:   [[13,680],[16,580],[20,480],[22,375],[25,265],[28,150],[33,100],[38,50]],
+  Es:   [[12,2000],[14,1600],[17,1200],[20,800],[23,400],[27,320],[33,80]],
+  BAh:  [[12,2000],[14,1600],[17,1200],[20,800],[23,400],[27,320],[33,80]],
+  WFoe: [[10,1450],[12,1250],[15,1050],[19,810],[23,550],[28,350],[34,200],[40,100]],
+  Lae:  [[10,1450],[12,1250],[15,1050],[19,810],[23,550],[28,350],[34,200],[40,100]],
+  Dou:  [[12,2200],[14,1800],[17,1300],[20,900],[23,550],[27,350],[34,180]],
+};
+
+/**
+ * Stammzahl pro ha — Interpolation der FBB-Produktionskonzept-Tabellen.
+ *
+ * Für jede aktive Art wird anhand der aktuellen Oberhöhe die Stammzahl
+ * aus der FBB-Tabelle interpoliert. Gewichtet nach Artanteil.
+ *
+ * Quelle: FBB Burgergemeinde Bern 2022 — echte waldbauliche Stammzahlen
+ * inkl. Konkurrenten (nicht nur Z-Bäume).
+ *
+ * @param {number} age — Bestandesalter in Jahren
+ * @returns {number} Stammzahl N/ha
+ */
+function nHa(age) {
+  if (age <= 0) return 2400;
+
+  // Plenterwald: Stammzahl bleibt hoch weil alle Altersklassen vorhanden
+  // Gleichgewichts-Stammzahl ca. 400-600 N/ha (Schütz 2002)
+  // Inverse-J: viele kleine + wenige grosse Bäume
+  if (typeof S !== 'undefined' && S && S.mode === 'ungleich') {
+    // Im Plenterwald: Stammzahl quasi-konstant ab Alter 20
+    // ca. 400-600 (Fichte-Tanne) bzw. 300-500 (Buchen-Plenter)
+    const baseN = 500;
+    if (age < 20) return Math.round(2400 - (2400 - baseN) * age / 20);
+    return baseN;
+  }
+
+  let totalPct = 0, weightedN = 0;
+
+  if (typeof S !== 'undefined' && S && S.sp) {
+    for (const [k, s] of Object.entries(S.sp)) {
+      if (!s.on || s.pct <= 0) continue;
+      const h = hdom(k, age);
+      const table = FBB_NHA[k];
+
+      if (table && h > 0) {
+        // Interpolation der FBB-Tabelle
+        let n;
+        if (h <= table[0][0]) {
+          // Unter erster Stufe: extrapoliere linear von 2400 bei h=0
+          n = 2400 + (table[0][1] - 2400) * (h / table[0][0]);
+        } else if (h >= table[table.length - 1][0]) {
+          // Über letzter Stufe: Endbestand halten
+          n = table[table.length - 1][1];
+        } else {
+          // Lineare Interpolation
+          for (let i = 0; i < table.length - 1; i++) {
+            if (h >= table[i][0] && h <= table[i + 1][0]) {
+              const t = (h - table[i][0]) / (table[i + 1][0] - table[i][0]);
+              n = table[i][1] + t * (table[i + 1][1] - table[i][1]);
+              break;
+            }
+          }
+        }
+        if (n !== undefined) {
+          weightedN += s.pct * n;
+          totalPct += s.pct;
+        }
+      } else {
+        // Fallback: einfache Schätzung
+        weightedN += s.pct * Math.max(200, 2400 - age * 25);
+        totalPct += s.pct;
+      }
+    }
+  }
+
+  // Fallback: Buche
+  if (totalPct <= 0) {
+    const h = hdom('Bu', age);
+    return nHaFromTable(FBB_NHA.Bu, h);
+  }
+
+  return Math.max(Math.round(weightedN / totalPct), 50);
+}
+
+/**
+ * Bestimmt die aktuelle waldbauliche Phase für ein Alter
+ * @param {number} age
+ * @returns {Object} Phase-Objekt aus PHASES
+ */
+function getPhase(age) {
+  for (const p of PHASES) {
+    if (age >= p.ageStart && age < p.ageEnd) return p;
+  }
+  return PHASES[PHASES.length - 1];
+}
+
+/**
+ * Aktualisiert alle Baum-Parameter basierend auf Alter.
+ *
+ * Berechnet für jede aktive Art: H, BHD, CW, KL, KA aus Wachstumskurven.
+ * Passt auch die Stammzahl (density) an.
+ *
+ * @param {number} age — Bestandesalter in Jahren (0-120)
+ */
+function applyAge(age) {
+  if (typeof S === 'undefined' || !S || !S.sp) return;
+
+  S.age = age;
+  S.density = nHa(age);
+
+  for (const [k, s] of Object.entries(S.sp)) {
+    if (!s.on) continue;
+    const gp = GROWTH_PARAMS[k];
+    if (!gp) continue;
+
+    const h = hdom(k, age);
+    if (h < 1) {
+      s.h = Math.max(h, 0.5);
+      s.cw = 0.3;
+      s.kl = Math.max(h * 0.8, 0.3);
+      s.ka = Math.max(h - s.kl, 0.1);
+      s.bhd = 0;
+      continue;
+    }
+
+    const bhd = bhdFromH(k, h);
+    const crown = crownFromBHD(k, bhd, h);
+
+    s.h   = +h.toFixed(1);
+    s.bhd = +bhd.toFixed(0);
+    s.cw  = +crown.cw.toFixed(1);
+    s.kl  = +crown.kl.toFixed(1);
+    s.ka  = +crown.ka.toFixed(1);
+  }
+}
+
+// === ztree.js ===
+/**
+ * ztree.js — Z-Baum-Logik und FBB-Eingriffstabellen
+ *
+ * Z-Bäume (Zukunftsbäume / Crop Trees) sind die besten Bäume im Bestand,
+ * die für die Endnutzung vorgesehen sind. Sie werden ab der Dimensionierungs-
+ * phase ausgewählt und durch Kronfreistellung gefördert.
+ *
+ * Enthält:
+ *   - FBB_ZB         — Z-Baum-Anzahl pro ha (aus FBB Produktionskonzept 2022)
+ *   - FBB_EINGRIFFE  — Vollständige Eingriffstabellen pro Art
+ *   - getZBaumCount() — Aktuelle Z-Baum-Anzahl für Art und Oberhöhe
+ *   - getIntervention() — Nächster/aktueller Eingriff
+ *   - markZBaeume()   — Markiert Z-Bäume in Baumliste
+ *
+ * Abhängigkeiten: timeline.js (hdom), species.js (SP), controls.js (S)
+ *
+ * Quelle: Produktionskonzept Forstbetrieb Burgergemeinde Bern, 28.06.2022
+ */
+
+// === Z-Baum Endbestand pro ha ===
+const FBB_ZB = {
+  // FBB Produktionskonzept 2022: Z-Bäume im Endbestand
+  Fi:   200,  // Fichte: 200 Z-Bäume/ha, Endabstand 8m
+  Ta:   200,  // Tanne: 200, Endabstand 8m
+  Bu:   100,  // Buche: 100, Endabstand 11m
+  Ei:    50,  // Eiche: 50, Endabstand 15m
+  Es:    80,  // Esche: 80, Endabstand 12m
+  BAh:   80,  // Ahorn: 80, Endabstand 12m
+  WFoe: 100,  // Föhre: 100, Endabstand 11m
+  Lae:  100,  // Lärche: 100, Endabstand 11m
+  Dou:  150,  // Douglasie: 150 Z-Bäume/ha, Endabstand 9m (FBB 2022)
+};
+
+// === FBB Eingriffstabellen ===
+// Format: Array von { hdom, bhdZB, totalN, konZB, entnahmeN, massnahme }
+// konZB = Verhältnis Konkurrenten pro Z-Baum
+const FBB_EINGRIFFE = {
+  Fi: [
+    { hdom:12, bhdZB:12, totalN:2400, konZB:2,   entnahmeN:2000, massnahme:'FE einlegen' },
+    { hdom:14, bhdZB:15, totalN:2000, konZB:2.6, entnahmeN:1480, massnahme:'Z-Bäume fördern' },
+    { hdom:17, bhdZB:19, totalN:1500, konZB:2.6, entnahmeN:980,  massnahme:'Z-Bäume fördern' },
+    { hdom:20, bhdZB:24, totalN:1000, konZB:2.3, entnahmeN:540,  massnahme:'Z-Bäume fördern' },
+    { hdom:23, bhdZB:29, totalN:600,  konZB:1,   entnahmeN:400,  massnahme:'Z-Bäume fördern' },
+    { hdom:27, bhdZB:36, totalN:400,  konZB:1,   entnahmeN:200,  massnahme:'Letzte Durchforstung' },
+    { hdom:34,           totalN:200,                               massnahme:'Verjüngung einleiten' },
+  ],
+  Ta: [
+    { hdom:12, bhdZB:12, totalN:2400, konZB:2,   entnahmeN:2000, massnahme:'FE einlegen' },
+    { hdom:14, bhdZB:15, totalN:2000, konZB:2.5, entnahmeN:1500, massnahme:'Z-Bäume bestimmen' },
+    { hdom:17, bhdZB:19, totalN:1500, konZB:2.5, entnahmeN:1000, massnahme:'Z-Bäume fördern' },
+    { hdom:20, bhdZB:24, totalN:1000, konZB:2,   entnahmeN:600,  massnahme:'Z-Bäume fördern' },
+    { hdom:23, bhdZB:29, totalN:600,  konZB:1,   entnahmeN:400,  massnahme:'Z-Bäume fördern' },
+    { hdom:27, bhdZB:37, totalN:400,  konZB:1,   entnahmeN:200,  massnahme:'Z-Bäume fördern' },
+    { hdom:34,           totalN:200,                               massnahme:'Verjüngungshiebe' },
+  ],
+  Bu: [
+    { hdom:18, bhdZB:20, totalN:1600, konZB:2.1, entnahmeN:1390, massnahme:'FE, Z-Bäume bestimmen' },
+    { hdom:22, bhdZB:26, totalN:1200, konZB:2.2, entnahmeN:980,  massnahme:'Z-Bäume fördern' },
+    { hdom:25, bhdZB:32, totalN:800,  konZB:2.3, entnahmeN:570,  massnahme:'Z-Bäume fördern' },
+    { hdom:28, bhdZB:38, totalN:400,  konZB:1,   entnahmeN:300,  massnahme:'Z-Bäume fördern' },
+    { hdom:33, bhdZB:47, totalN:300,  konZB:1,   entnahmeN:200,  massnahme:'Z-Bäume fördern' },
+    { hdom:36, bhdZB:60, totalN:200,  konZB:1,   entnahmeN:100,  massnahme:'Letzte Durchforstung' },
+  ],
+  Ei: [
+    { hdom:13, bhdZB:13, totalN:680,  konZB:2,   entnahmeN:580,  massnahme:'FE einlegen' },
+    { hdom:16, bhdZB:17, totalN:580,  konZB:2,   entnahmeN:480,  massnahme:'Z-Bäume fördern' },
+    { hdom:20, bhdZB:23, totalN:480,  konZB:2.1, entnahmeN:375,  massnahme:'Z-Bäume fördern' },
+    { hdom:22, bhdZB:32, totalN:375,  konZB:2.2, entnahmeN:265,  massnahme:'Z-Bäume fördern' },
+    { hdom:25, bhdZB:46, totalN:265,  konZB:2.3, entnahmeN:150,  massnahme:'Z-Bäume fördern' },
+    { hdom:28, bhdZB:47, totalN:150,  konZB:1,   entnahmeN:100,  massnahme:'Z-Bäume fördern' },
+    { hdom:33, bhdZB:48, totalN:100,  konZB:1,   entnahmeN:50,   massnahme:'Z-Bäume fördern' },
+    { hdom:38, bhdZB:70, totalN:50,                                massnahme:'Verjüngungshiebe' },
+  ],
+  Es: [
+    { hdom:12, bhdZB:12, totalN:2000, konZB:2.6, entnahmeN:1792, massnahme:'FE einlegen' },
+    { hdom:14, bhdZB:15, totalN:1600, konZB:2.6, entnahmeN:1392, massnahme:'Z-Bäume fördern' },
+    { hdom:17, bhdZB:19, totalN:1200, konZB:2.6, entnahmeN:992,  massnahme:'Z-Bäume fördern' },
+    { hdom:20, bhdZB:25, totalN:800,  konZB:2.3, entnahmeN:616,  massnahme:'Z-Bäume fördern' },
+    { hdom:23, bhdZB:31, totalN:400,  konZB:1,   entnahmeN:320,  massnahme:'Z-Bäume fördern' },
+    { hdom:27, bhdZB:40, totalN:320,  konZB:1,   entnahmeN:240,  massnahme:'Z-Bäume fördern' },
+    { hdom:33, bhdZB:60, totalN:80,                                massnahme:'Verjüngungshiebe' },
+  ],
+  BAh: [
+    { hdom:12, bhdZB:12, totalN:2000, konZB:2.6, entnahmeN:1792, massnahme:'FE einlegen' },
+    { hdom:14, bhdZB:15, totalN:1600, konZB:2.6, entnahmeN:1392, massnahme:'Z-Bäume fördern' },
+    { hdom:17, bhdZB:19, totalN:1200, konZB:2.6, entnahmeN:992,  massnahme:'Z-Bäume fördern' },
+    { hdom:20, bhdZB:25, totalN:800,  konZB:2.3, entnahmeN:616,  massnahme:'Z-Bäume fördern' },
+    { hdom:23, bhdZB:31, totalN:400,  konZB:1,   entnahmeN:320,  massnahme:'Z-Bäume fördern' },
+    { hdom:27, bhdZB:40, totalN:320,  konZB:1,   entnahmeN:240,  massnahme:'Z-Bäume fördern' },
+    { hdom:33, bhdZB:60, totalN:80,                                massnahme:'Verjüngungshiebe' },
+  ],
+  WFoe: [
+    { hdom:10, bhdZB:14, totalN:1450, konZB:2,   entnahmeN:1250, massnahme:'FE einlegen' },
+    { hdom:12, bhdZB:16, totalN:1250, konZB:2,   entnahmeN:1050, massnahme:'Z-Bäume bestimmen' },
+    { hdom:15, bhdZB:20, totalN:1050, konZB:2.4, entnahmeN:810,  massnahme:'Z-Bäume fördern' },
+    { hdom:19, bhdZB:25, totalN:810,  konZB:2.6, entnahmeN:550,  massnahme:'Z-Bäume fördern' },
+    { hdom:23, bhdZB:31, totalN:550,  konZB:2,   entnahmeN:350,  massnahme:'Z-Bäume fördern' },
+    { hdom:28, bhdZB:33, totalN:350,  konZB:1.5, entnahmeN:200,  massnahme:'Z-Bäume fördern' },
+    { hdom:34, bhdZB:46, totalN:200,  konZB:1,   entnahmeN:100,  massnahme:'Z-Bäume fördern' },
+    { hdom:40, bhdZB:80, totalN:100,                               massnahme:'Verjüngungshiebe' },
+  ],
+  Lae: [
+    { hdom:10, bhdZB:14, totalN:1450, konZB:2,   entnahmeN:1250, massnahme:'FE einlegen' },
+    { hdom:12, bhdZB:16, totalN:1250, konZB:2,   entnahmeN:1050, massnahme:'Z-Bäume bestimmen' },
+    { hdom:15, bhdZB:20, totalN:1050, konZB:2.4, entnahmeN:810,  massnahme:'Z-Bäume fördern' },
+    { hdom:19, bhdZB:25, totalN:810,  konZB:2.6, entnahmeN:550,  massnahme:'Z-Bäume fördern' },
+    { hdom:23, bhdZB:31, totalN:550,  konZB:2,   entnahmeN:350,  massnahme:'Z-Bäume fördern' },
+    { hdom:28, bhdZB:33, totalN:350,  konZB:1.5, entnahmeN:200,  massnahme:'Z-Bäume fördern' },
+    { hdom:34, bhdZB:46, totalN:200,  konZB:1,   entnahmeN:100,  massnahme:'Z-Bäume fördern' },
+    { hdom:40, bhdZB:80, totalN:100,                               massnahme:'Verjüngungshiebe' },
+  ],
+  Dou: [
+    // FBB Produktionskonzept 2022: Douglasie B34, 150 Z-Bäume/ha
+    { hdom:12, bhdZB:12, totalN:2000, konZB:2,   entnahmeN:1700, massnahme:'FE einlegen' },
+    { hdom:15, bhdZB:16, totalN:1700, konZB:2.5, entnahmeN:1200, massnahme:'Z-Bäume bestimmen' },
+    { hdom:19, bhdZB:21, totalN:1200, konZB:2.5, entnahmeN:800,  massnahme:'Z-Bäume fördern' },
+    { hdom:23, bhdZB:27, totalN:800,  konZB:2,   entnahmeN:500,  massnahme:'Z-Bäume fördern' },
+    { hdom:27, bhdZB:34, totalN:500,  konZB:1.5, entnahmeN:300,  massnahme:'Z-Bäume fördern' },
+    { hdom:34, bhdZB:45, totalN:300,  konZB:1,   entnahmeN:150,  massnahme:'Letzte Durchforstung' },
+    { hdom:42, bhdZB:70, totalN:150,                               massnahme:'Verjüngung einleiten' },
+  ],
+};
+
+/**
+ * Gibt die Z-Baum-Anzahl pro ha für eine Art bei gegebener Oberhöhe zurück.
+ *
+ * Die Z-Baum-Anzahl ist im Wesentlichen konstant = FBB_ZB[sp] sobald
+ * Z-Bäume bestimmt wurden (ab 2. Eingriff). Vor der Bestimmung: 0.
+ *
+ * Quelle: FBB Produktionskonzept 2022 — Z-Bäume im Endbestand
+ */
+function getZBaumCount(sp, h) {
+  const zbFinal = FBB_ZB[sp] || 100;
+  const table = FBB_EINGRIFFE[sp];
+  if (!table || h < table[0].hdom) return 0;
+  // Ab dem 1. Eingriff (FE einlegen) werden Z-Bäume bestimmt → Konstante Anzahl
+  return zbFinal;
+}
+
+/**
+ * Bestimmt den aktuellen/nächsten Eingriff für eine Art basierend auf Oberhöhe.
+ */
+function getIntervention(sp, h) {
+  const table = FBB_EINGRIFFE[sp];
+  if (!table) return null;
+  for (let i = table.length - 1; i >= 0; i--) {
+    if (h >= table[i].hdom) {
+      return {
+        current: table[i],
+        next: i < table.length - 1 ? table[i + 1] : null,
+        index: i,
+        total: table.length
+      };
+    }
+  }
+  return { current: null, next: table[0], index: -1, total: table.length };
+}
+
+/**
+ * Markiert Z-Bäume in der Baumliste.
+ * Im Timeline-Modus: isZBaum wird persistent vom Master übernommen (in genTrees).
+ * Diese Funktion ergänzt nur fehlende Z-Bäume (z.B. nach Hiebreife-Ernte).
+ * Im manuellen Modus: Keine Z-Baum-Markierung.
+ */
+function markZBaeume(trees) {
+  if (!trees || trees.length === 0) return trees;
+
+  if (!S.timelineOn || S.age < 15 || !S.showZBaum) {
+    trees.forEach(t => { t.isZBaum = false; });
+    return trees;
+  }
+
+  // isZBaum kommt bereits aus genTrees() via Master.
+  // Prüfe ob genug Z-Bäume vorhanden, sonst Nachfolger bestimmen
+  const ZB_ENDABSTAND = {
+    Fi: 8, Ta: 8, Bu: 11, Ei: 15, Es: 12, BAh: 12, WFoe: 11, Lae: 11, Dou: 9
+  };
+  const ac = Object.entries(S.sp).filter(([_, s]) => s.on && s.pct > 0);
+  const tP = ac.reduce((a, [_, s]) => a + s.pct, 0);
+
+  for (const [k, s] of ac) {
+    if (!s.on || s.pct <= 0) continue;
+    const zbTotal = FBB_ZB[k] || 100;
+    const plotArea = (typeof PLOT !== 'undefined' ? PLOT * PLOT : 10000);
+    const zbOnPlot = Math.round(zbTotal * (plotArea / 10000) * s.pct / tP);
+    const minDist = ZB_ENDABSTAND[k] || 10;
+
+    const currentZB = trees.filter(t => t.sp === k && t.isZBaum);
+    if (currentZB.length >= zbOnPlot) continue;
+
+    // Brauche Nachfolger
+    const needed = zbOnPlot - currentZB.length;
+    const candidates = trees
+      .filter(t => t.sp === k && !t.isZBaum && !t.isVerjuengung && t.bhd > 0)
+      .sort((a, b) => b.bhd - a.bhd);
+
+    let added = 0;
+    for (const cand of candidates) {
+      if (added >= needed) break;
+      let tooClose = false;
+      for (const zb of trees.filter(t => t.isZBaum)) {
+        if (Math.hypot(cand.x - zb.x, cand.y - zb.y) < minDist) { tooClose = true; break; }
+      }
+      if (!tooClose) {
+        cand.isZBaum = true;
+        added++;
+      }
+    }
+  }
+  return trees;
+}
+
+// === generator.js ===
+/**
+ * generator.js — Baumgenerierung, Spacing, Modus-Logik, Seeded RNG
+ *
+ * Extrahiert aus v5_baseline.html
+ *
+ * Enthält:
+ *   - mR(seed)    — Mulberry32 Seeded Random Number Generator
+ *   - genTrees()  — Generiert Baumliste basierend auf State S
+ *   - W(j,f,a)    — Wellenform-Hilfsfunktion (Wobble)
+ *   - genTimelineMaster() — Master-Population für persistente Zeitschiene
+ *
+ * Abhängigkeiten: config.js (PLOT), species.js (SP), controls.js (S),
+ *   timeline.js (applyAge, hdom, bhdFromH, crownFromBHD — optional)
+ * Wird benötigt von: renderFront.js, renderBird.js, stats.js
+ */
+
+let rng;
+
+/**
+ * Mulberry32 — Seeded Pseudo-Random Number Generator
+ * Gibt eine Funktion zurück die bei jedem Aufruf einen Wert [0,1) liefert.
+ */
+function mR(s) {
+  return function() {
+    s |= 0;
+    s = s + 0x6D2B79F5 | 0;
+    let t = Math.imul(s ^ s >>> 15, 1 | s);
+    t = t + Math.imul(t ^ t >>> 7, 61 | t) ^ t;
+    return ((t ^ t >>> 14) >>> 0) / 4294967296;
+  };
+}
+
+/**
+ * Wellenform-Hilfsfunktion für organische Variationen
+ * @param {number} j - Jitter/Phase
+ * @param {number} f - Frequenz
+ * @param {number} a - Amplitude
+ */
+const W = (j, f, a) => Math.sin(j * f) * a;
+
+// === Timeline Master-Population ===
+// Persistente Bäume: gleiche Positionen über alle Altersstufen.
+// Bäume mit niedrigem survivalRank überleben am längsten.
+let _masterKey = '';
+let _masterTrees = [];
+let _untergeordnetMinor = null; // Set of minor species in 'untergeordnet' mode
+
+/**
+ * Generiert eine Master-Population für den Zeitschienen-Modus.
+ *
+ * Positionen: Gejittertes Hexagonalgitter (≈1500 Punkte auf 100×100m).
+ *
+ * Survival-Rang: RÄUMLICH GESCHICHTET (nicht zufällig!).
+ * → Fläche wird rekursiv in Zellen aufgeteilt.
+ *   In jeder Runde überlebt pro Zelle ein Baum.
+ *   → Für jedes N sind die Überlebenden gleichmässig verteilt.
+ *   → Grid-Deckungsgrad ≈ Raw-Deckungsgrad (minimale Überlappung).
+ *
+ * [Designentscheidung D007: Hex-Gitter + stratifizierter Survival]
+ */
+function genTimelineMaster() {
+  const maxN = 2400; // FBB: max 2400 N/ha (Fichte/Tanne Jungbestand)
+  const masterRng = mR(S.seed);
+  const ac = Object.entries(S.sp).filter(([_, s]) => s.on && s.pct > 0);
+  const tP = ac.reduce((a, [_, s]) => a + s.pct, 0);
+
+  if (!tP) { _masterTrees = []; return; }
+
+  // --- Gejittertes Hexagonalgitter ---
+  const area = PLOT * PLOT;
+  const hexSpacing = Math.sqrt(area * 2 / (maxN * Math.sqrt(3)));
+  const jitterAmt = hexSpacing * 0.18;
+  const margin = 2;
+
+  const gridPoints = [];
+  const rowH = hexSpacing * Math.sqrt(3) / 2;
+  let row = 0;
+  for (let y = margin; y < PLOT - margin; y += rowH) {
+    const xOff = (row % 2 === 1) ? hexSpacing / 2 : 0;
+    for (let x = margin + xOff; x < PLOT - margin; x += hexSpacing) {
+      const jx = x + (masterRng() - 0.5) * 2 * jitterAmt;
+      const jy = y + (masterRng() - 0.5) * 2 * jitterAmt;
+      if (jx >= margin && jx <= PLOT - margin && jy >= margin && jy <= PLOT - margin) {
+        gridPoints.push({ x: jx, y: jy });
+      }
+    }
+    row++;
+  }
+  while (gridPoints.length > maxN) {
+    gridPoints.splice(Math.floor(masterRng() * gridPoints.length), 1);
+  }
+
+  // --- Räumlich stratifizierter Survival-Rang ---
+  // Rekursive Zell-Ebenen: 5×5, 10×10, 20×20, 40×40 Zellen
+  // In jeder Runde pro Zelle 1 Baum → gleichmässige Verteilung der Überlebenden
+  const totalN = gridPoints.length;
+  const survRanks = new Float64Array(totalN); // 0=überlebt am längsten
+
+  // Gruppen-basierte Rang-Vergabe
+  const cellLevels = [5, 10, 15, 20, 30, 40]; // Zunehmend fein
+  let rankCounter = 0;
+  const assigned = new Uint8Array(totalN); // 0=noch nicht zugewiesen
+
+  for (const nCells of cellLevels) {
+    const cellW = PLOT / nCells;
+    // Sammle nicht-zugewiesene Bäume pro Zelle
+    const cells = {};
+    for (let i = 0; i < totalN; i++) {
+      if (assigned[i]) continue;
+      const cx = Math.min(nCells - 1, Math.floor(gridPoints[i].x / cellW));
+      const cy = Math.min(nCells - 1, Math.floor(gridPoints[i].y / cellW));
+      const key = cx + '_' + cy;
+      if (!cells[key]) cells[key] = [];
+      cells[key].push(i);
+    }
+    // Pro Zelle: einen zufälligen Baum auswählen
+    const cellKeys = Object.keys(cells);
+    // Shuffle cell order
+    for (let i = cellKeys.length - 1; i > 0; i--) {
+      const j = Math.floor(masterRng() * (i + 1));
+      const tmp = cellKeys[i]; cellKeys[i] = cellKeys[j]; cellKeys[j] = tmp;
+    }
+    for (const key of cellKeys) {
+      const arr = cells[key];
+      if (!arr.length) continue;
+      // Zufällig einen aus der Zelle wählen
+      const pick = Math.floor(masterRng() * arr.length);
+      const idx = arr[pick];
+      survRanks[idx] = rankCounter++;
+      assigned[idx] = 1;
+    }
+  }
+  // Restliche Bäume: zufällige Ränge am Ende
+  for (let i = 0; i < totalN; i++) {
+    if (!assigned[i]) {
+      survRanks[i] = rankCounter + masterRng();
+    }
+  }
+
+  // --- Baumarten zuweisen ---
+  // Mischungsform bestimmt räumliche Verteilung der Arten:
+  //   einzel: Zufällige Einzelmischung (Fisher-Yates Shuffle)
+  //   trupp:  Kleine Cluster ≤5 Aren (~12m Radius, 3-5 Bäume)
+  //   gruppe: Mittlere Cluster 5-10 Aren (~18m Radius, 10-20 Bäume)
+  //   horst:  Grosse Cluster 10-50 Aren (~30m Radius, >20 Bäume)
+  // Ref: BLFw426 2025, Schütz (2003): Mischungsformen
+  const cn = [];
+  let u = 0;
+  ac.forEach(([k, s], i) => {
+    const n = i === ac.length - 1 ? totalN - u : Math.round(totalN * s.pct / tP);
+    cn.push({ k, n });
+    u += n;
+  });
+
+  let spArr;
+  const mixP = (typeof S !== 'undefined' && S.mixPattern) ? S.mixPattern : 'einzel';
+
+  _untergeordnetMinor = null; // Reset bei jedem Modus
+  if (mixP === 'einzel') {
+    // Einzelmischung: Zufällige Verteilung
+    spArr = [];
+    for (const { k, n } of cn) {
+      for (let i = 0; i < n; i++) spArr.push(k);
+    }
+    for (let i = spArr.length - 1; i > 0; i--) {
+      const j = Math.floor(masterRng() * (i + 1));
+      const tmp = spArr[i]; spArr[i] = spArr[j]; spArr[j] = tmp;
+    }
+  } else if (mixP === 'untergeordnet') {
+    // Untergeordnete Mischung: Hauptbaumart in Oberschicht, Nebenbaumarten in Unterschicht
+    // Räumlich zufällig verteilt (wie Einzelmischung), aber Nebenbaumarten werden
+    // über hVar in die Unterschicht gedrückt (in genTrees via _isMinorSpecies Flag).
+    // Ref: Schütz (2003) — Nebenbaumarten im Zwischenstand/Unterstand
+    const sorted = [...ac].sort((a, b) => b[1].pct - a[1].pct);
+    const dominantSp = sorted[0][0];
+    const minorSet = new Set(sorted.slice(1).map(s => s[0]));
+
+    // Alle Arten nach Prozent verteilen, räumlich zufällig (Fisher-Yates Shuffle)
+    spArr = [];
+    for (const { k, n } of cn) {
+      for (let i = 0; i < n; i++) spArr.push(k);
+    }
+    for (let i = spArr.length - 1; i > 0; i--) {
+      const j = Math.floor(masterRng() * (i + 1));
+      const tmp = spArr[i]; spArr[i] = spArr[j]; spArr[j] = tmp;
+    }
+
+    // Merke welche Arten untergeordnet sind (wird im tree-Objekt gespeichert)
+    // _untergeordnetMinor Set wird unten beim tree-push verwendet
+    _untergeordnetMinor = minorSet;
+  } else {
+    // Clustered: Trupp/Gruppe/Horst
+    // Generiere Cluster-Zentren und weise Bäume nach Nähe zu
+    const clusterR = mixP === 'trupp' ? 12 : mixP === 'gruppe' ? 18 : 30;
+    const nClusters = Math.max(ac.length, Math.round(PLOT * PLOT / (Math.PI * clusterR * clusterR)));
+
+    // Erzeuge Cluster-Zentren mit zugewiesener Baumart
+    const clusters = [];
+    for (let ci = 0; ci < nClusters; ci++) {
+      const cx = masterRng() * (PLOT - 4) + 2;
+      const cy = masterRng() * (PLOT - 4) + 2;
+      // Art proportional zu Flächenanteil wählen
+      let rVal = masterRng() * tP;
+      let chosenSp = ac[0][0];
+      for (const [k, s] of ac) {
+        rVal -= s.pct;
+        if (rVal <= 0) { chosenSp = k; break; }
+      }
+      clusters.push({ x: cx, y: cy, sp: chosenSp });
+    }
+
+    // Jeder Baum wird dem nächsten Cluster zugewiesen
+    spArr = new Array(totalN);
+    for (let i = 0; i < totalN; i++) {
+      const px = gridPoints[i].x;
+      const py = gridPoints[i].y;
+      let bestDist = Infinity;
+      let bestSp = ac[0][0];
+      for (const cl of clusters) {
+        const d = Math.hypot(cl.x - px, cl.y - py);
+        if (d < bestDist) { bestDist = d; bestSp = cl.sp; }
+      }
+      spArr[i] = bestSp;
+    }
+  }
+
+  const trees = [];
+  for (let i = 0; i < totalN; i++) {
+    const sp = spArr[i] || ac[0][0];
+    // Untergeordnete Mischung: Nebenbaumarten bekommen jüngeres indAge
+    // (über ageOffset), sodass sie natürlich in der Unterschicht wachsen.
+    // Dominant: normaler ageOffset (±15%), Minor: -40% bis -70% jünger
+    const isMinor = _untergeordnetMinor && _untergeordnetMinor.has(sp);
+    const ageOff = isMinor
+      ? -(0.40 + masterRng() * 0.30)  // -40% bis -70% → deutlich jünger/kleiner
+      : masterRng() * 0.30 - 0.15;    // ±15% normal
+    trees.push({
+      sp,
+      x: gridPoints[i].x,
+      y: gridPoints[i].y,
+      jit: masterRng() * 6.28,
+      survivalRank: survRanks[i],
+      ageOffset: ageOff,
+      hVar: 0.90 + masterRng() * 0.20,
+      cwVar: 0.85 + masterRng() * 0.30,
+      klVar: 0.90 + masterRng() * 0.20,
+      isMinorSpecies: isMinor || false,
+    });
+  }
+
+  trees.sort((a, b) => a.survivalRank - b.survivalRank);
+
+  // === Z-Bäume auf Master-Population markieren (persistent über Altersstufen) ===
+  // Endabstände pro Art (aus FBB_ZB Kommentaren)
+  const ZB_ENDABSTAND = {
+    Fi: 8, Ta: 8, Bu: 11, Ei: 15, Es: 12, BAh: 12, WFoe: 11, Lae: 11, Dou: 9
+  };
+  // Z-Bäume pro Art bestimmen: nach survivalRank (niedrigster = bester/grösster)
+  const acZB = Object.entries(S.sp).filter(([_, s]) => s.on && s.pct > 0);
+  const tPzb = acZB.reduce((a, [_, s]) => a + s.pct, 0);
+  trees.forEach(t => { t.isZBaum = false; });
+
+  for (const [k, s] of acZB) {
+    if (!s.on || s.pct <= 0) continue;
+    const zbTotal = FBB_ZB[k] || 100;
+    // Proportional auf Plot-Fläche (1ha = 10000m², Plot = PLOT²)
+    const plotArea = (typeof PLOT !== 'undefined' ? PLOT * PLOT : 10000);
+    const zbOnPlot = Math.round(zbTotal * (plotArea / 10000) * s.pct / tPzb);
+    const minDist = ZB_ENDABSTAND[k] || 10;
+
+    // Kandidaten: Bäume dieser Art, nach survivalRank (niedrigster = stärkster)
+    const candidates = trees
+      .map((t, i) => ({ t, i }))
+      .filter(({ t }) => t.sp === k);
+    // survivalRank ist bereits sortiert (trees sind sortiert)
+
+    let marked = 0;
+    for (const { t: cand, i: ci } of candidates) {
+      if (marked >= zbOnPlot) break;
+      // Abstandscheck: kein anderer Z-Baum innerhalb minDist
+      let tooClose = false;
+      for (let j = 0; j < trees.length; j++) {
+        if (!trees[j].isZBaum) continue;
+        const d = Math.hypot(cand.x - trees[j].x, cand.y - trees[j].y);
+        if (d < minDist) { tooClose = true; break; }
+      }
+      if (!tooClose) {
+        trees[ci].isZBaum = true;
+        marked++;
+      }
+    }
+  }
+
+  _masterTrees = trees;
+}
+
+/**
+ * Generiert Baumliste basierend auf aktuellem State S
+ * Platziert Bäume mit Mindestabstand auf 100×100m Plot
+ *
+ * Zeitschienen-Modus (S.age > 0):
+ *   Verwendet Master-Population → Bäume sind persistent über Altersstufen.
+ *   Bei höherem Alter: weniger Bäume (Mortalität), gleiche Positionen.
+ *
+ * Manueller Modus (S.age = 0):
+ *   Klassische Generierung wie bisher.
+ */
+function genTrees() {
+  const useTimeline = S.age > 0 && typeof hdom === 'function';
+
+  if (useTimeline) {
+    // --- Zeitschienen-Modus: Master-Population verwenden ---
+
+    // Cache-Key: Seed + aktive Arten + Prozente + Modus
+    const key = S.seed + '_' + S.mode + '_' + Object.entries(S.sp)
+      .filter(([_, s]) => s.on && s.pct > 0)
+      .map(([k, s]) => k + s.pct)
+      .join(',');
+
+    if (key !== _masterKey) {
+      genTimelineMaster();
+      _masterKey = key;
+    }
+
+    // Wie viele Bäume überleben bei diesem Alter?
+    const nSurvive = Math.min(Math.round(S.density), _masterTrees.length);
+
+    // === Plenterwald (ungleich): breite Altersverteilung ===
+    // Im Plenterwald gibt es alle Entwicklungsstufen gleichzeitig.
+    // Inverse-J Durchmesserverteilung: viele kleine, wenige grosse Bäume.
+    // Ref: Schütz (2002), Plenterskript Abb. 1.1
+    const isPlenter = S.mode === 'ungleich';
+
+    const trees = [];
+    for (let i = 0; i < nSurvive; i++) {
+      const mt = _masterTrees[i];
+
+      let indAge;
+      if (isPlenter) {
+        // Plenterwald: Jeder Baum hat ein individuelles Alter
+        // von Jungwuchs (1J) bis zum ältesten Bestandesalter.
+        // Niedrige survivalRank-Bäume = die ältesten/grössten.
+        // Inverse-J: Die meisten Bäume sind jung.
+        const relRank = i / Math.max(nSurvive - 1, 1); // 0=ältester, 1=jüngster
+        // Exponentiell: mehr junge Bäume (Plenter-Gleichgewicht)
+        const ageFrac = Math.pow(1 - relRank, 0.6); // 1→0 (alt→jung)
+        const maxAge = typeof getMaxAge === 'function' ? getMaxAge() : 120;
+        const ageRange = Math.min(S.age, maxAge);
+        indAge = Math.max(1, ageRange * ageFrac * (0.9 + mt.ageOffset * 0.4));
+      } else {
+        // Gleichförmig: alle ähnlich alt (±15% Variation)
+        indAge = Math.max(1, S.age * (1 + mt.ageOffset));
+      }
+
+      const hBase = hdom(mt.sp, indAge);
+      const h = Math.max(hBase * mt.hVar, 0.5);
+
+      let cw, kl, ka, bhd;
+      if (h < 1.3) {
+        // Jungwuchs
+        bhd = 0;
+        cw = Math.max(h * 0.4, 0.3);
+        kl = Math.max(h * 0.8, 0.3);
+        ka = Math.max(h - kl, 0.1);
+      } else {
+        bhd = bhdFromH(mt.sp, h);
+        const crown = crownFromBHD(mt.sp, bhd, h);
+        cw = crown.cw * mt.cwVar;
+        kl = crown.kl * mt.klVar;
+        ka = Math.max(h - kl, 1);
+
+        // Plenterwald: Kronenlänge nach Schichtposition anpassen (Schütz 2002)
+        // Unterschicht (<10m): ~30% → kl *= 0.55
+        // Mittelschicht (10-25m): ~45% → kl *= 0.80
+        // Oberschicht (>25m): unverändert
+        if (isPlenter && h > 2) {
+          const klFactor = h < 10 ? 0.55 : h < 25 ? 0.55 + (h - 10) / 15 * 0.45 : 1.0;
+          kl *= klFactor;
+          ka = Math.max(h - kl, 1);
+        }
+      }
+
+      // === Hiebreife-Check: Baum wird geerntet wenn indAge > harvestAge + 8 ===
+      const hr5 = HIEBREIFE[mt.sp];
+      if (hr5 && indAge > hr5.harvestAge + 8) {
+        if (isPlenter) {
+          // Plenterwald (Dauerwald): Alten Baum durch jungen ersetzen (Verjüngung)
+          const youngAge = 1 + Math.random() * 10;
+          const youngH = hdom(mt.sp, youngAge);
+          trees.push({
+            sp: mt.sp, x: mt.x, y: mt.y,
+            h: youngH, cw: Math.max(youngH * 0.4, 0.3), kl: Math.max(youngH * 0.8, 0.3),
+            ka: Math.max(youngH * 0.2, 0.1), bhd: youngH > 1.3 ? bhdFromH(mt.sp, youngH) : 0,
+            jit: mt.jit, indAge: Math.round(youngAge), isVerjuengung: true
+          });
+        }
+        continue; // Gleichförmig: Baum gefällt, nicht ersetzen
+      }
+
+      trees.push({
+        sp: mt.sp, x: mt.x, y: mt.y,
+        h, cw, kl, ka, bhd,
+        jit: mt.jit,
+        indAge: Math.round(indAge),
+        isZBaum: mt.isZBaum || false  // Persistent vom Master übernehmen
+      });
+    }
+    // === Naturverjüngung (ab Zielphase, fakultativ) ===
+    // Artspezifischer Verjüngungsbeginn: min(harvestAge) - 20 der aktiven Arten
+    // Im Plenterwald: permanente Verjüngung ab ~40J
+    // Ref: BLFw426 2026 Slide 2, Schütz (2002)
+    const acVj6 = Object.entries(S.sp).filter(([_, s]) => s.on && s.pct > 0);
+    let minHarvest = 100;
+    for (const [k6] of acVj6) {
+      if (HIEBREIFE[k6]) minHarvest = Math.min(minHarvest, HIEBREIFE[k6].harvestAge);
+    }
+    const vjStart = isPlenter ? 40 : Math.max(20, minHarvest - 20);
+    if (S.showVerjuengung && S.age >= vjStart) {
+      const vjRng = mR(S.seed + 7777);
+      // Verjüngungsintensität steigt mit Alter — stärker in Zielphase
+      const vjIntensity = Math.min(1.0, (S.age - vjStart) / 30); // 0→1 über 30 Jahre
+      const maxVJ = Math.round(vjIntensity * (isPlenter ? 200 : 350));
+
+      const vjSpecies = [];
+      for (const [k6, s6] of acVj6) {
+        for (let i = 0; i < Math.round(s6.pct / 10); i++) vjSpecies.push(k6);
+      }
+      if (vjSpecies.length === 0) vjSpecies.push('Bu');
+
+      for (let i = 0; i < maxVJ; i++) {
+        const x = vjRng() * 88 + 6;
+        const y = vjRng() * 88 + 6;
+
+        // Lückenprüfung gelockert: cw * 0.5 statt 0.3
+        let inGap = true;
+        for (const t of trees) {
+          if (t.isVerjuengung) continue;
+          const dist = Math.hypot(t.x - x, t.y - y);
+          if (dist < t.cw * 0.5) { inGap = false; break; }
+        }
+
+        if (inGap) {
+          const sp = vjSpecies[Math.floor(vjRng() * vjSpecies.length)];
+          const h = 0.3 + vjRng() * 5.7; // 0.3-6.0m (erweitert von 4.8m)
+          const cw = Math.max(h * 0.35, 0.2);
+          const kl = Math.max(h * 0.85, 0.2);
+          trees.push({
+            sp, x, y,
+            h, cw, kl,
+            ka: Math.max(h - kl, 0.05),
+            bhd: h > 1.3 ? h * 1.5 : 0,
+            jit: vjRng() * 6.28,
+            isVerjuengung: true
+          });
+        }
+      }
+    }
+
+    // === Konkurrenz-Interaktion (spatial hash optimiert) ===
+    const COMP = {Bu:2.0, Ta:1.5, Fi:1.0, BAh:1.5, Ei:1.8, WFoe:0.8, Lae:0.7, Es:1.3, Dou:1.2};
+    const cellSz = 15, nC = Math.ceil((typeof PLOT!=='undefined'?PLOT:100)/cellSz);
+    const grid = {};
+    for (let i = 0; i < trees.length; i++) {
+      const cx = Math.min(nC-1, Math.floor(trees[i].x/cellSz));
+      const cy = Math.min(nC-1, Math.floor(trees[i].y/cellSz));
+      const key = cx+'_'+cy;
+      if (!grid[key]) grid[key] = [];
+      grid[key].push(i);
+    }
+    for (let i = 0; i < trees.length; i++) {
+      const t = trees[i];
+      if (t.h < 5) continue;
+      const cx = Math.min(nC-1, Math.floor(t.x/cellSz));
+      const cy = Math.min(nC-1, Math.floor(t.y/cellSz));
+      let pressure = 0, nn = 0;
+      for (let dx = -1; dx <= 1; dx++) for (let dy = -1; dy <= 1; dy++) {
+        const nbs = grid[(cx+dx)+'_'+(cy+dy)];
+        if (!nbs) continue;
+        for (const j of nbs) {
+          if (i === j) continue;
+          const n = trees[j];
+          const dist = Math.hypot(t.x-n.x, t.y-n.y);
+          const reach = (t.cw+n.cw)/2;
+          if (dist < reach*1.5 && n.h >= t.h*0.7) {
+            pressure += (COMP[n.sp]||1.0) * (1 - dist/(reach*1.5));
+            nn++;
+          }
+        }
+      }
+      if (nn > 0) t.cw *= (1 - Math.min(0.15, pressure * 0.03));
+    }
+
+    S.trees = trees;
+
+  } else {
+    // --- Klassischer Modus (manuell) ---
+    rng = mR(S.seed);
+    const nT = Math.round(S.density);
+    const ac = Object.entries(S.sp).filter(([_, s]) => s.on && s.pct > 0);
+    const tP = ac.reduce((a, [_, s]) => a + s.pct, 0);
+
+    if (!tP) { S.trees = []; return; }
+
+    const cn = [];
+    let u = 0;
+    ac.forEach(([k, s], i) => {
+      const n = i === ac.length - 1 ? nT - u : Math.round(nT * s.pct / tP);
+      cn.push({ k, n });
+      u += n;
+    });
+
+    // === Mischungsform: Artzuordnung bestimmen ===
+    // Schritt 1: Positionen generieren (unabhängig von Art)
+    const positions = [];
+    const tmpCw = []; // temporäre Kronenbreiten für Kollisionsprüfung
+    const avgH = ac.reduce((a, [_, s]) => a + s.h * s.pct, 0) / tP;
+    const avgCwEst = ac.reduce((a, [_, s]) => a + s.cw * s.pct, 0) / tP;
+    for (let i = 0; i < nT; i++) {
+      const cwEst = avgCwEst * (.82 + rng() * .18) * (.9 + rng() * .2);
+      let x, y, ok, at = 0;
+      do {
+        x = rng() * 92 + 4;
+        y = rng() * 92 + 4;
+        ok = positions.every((p, j) =>
+          Math.hypot(p.x - x, p.y - y) >= Math.max((tmpCw[j] / 2 + cwEst / 2) * .4, 1.5)
+        );
+        at++;
+      } while (!ok && at < 120);
+      if (!ok) { x = rng() * 92 + 4; y = rng() * 92 + 4; }
+      positions.push({ x, y });
+      tmpCw.push(cwEst);
+    }
+
+    // Schritt 2: Baumarten zuweisen je nach S.mixPattern
+    const mixP = S.mixPattern || 'einzel';
+    let spAssign; // Array of species keys, length = nT
+
+    if (mixP === 'einzel') {
+      // Einzelmischung: Zufällige Verteilung
+      spAssign = [];
+      for (const { k, n } of cn) { for (let i = 0; i < n; i++) spAssign.push(k); }
+      // Fisher-Yates Shuffle
+      for (let i = spAssign.length - 1; i > 0; i--) {
+        const j = Math.floor(rng() * (i + 1));
+        const tmp = spAssign[i]; spAssign[i] = spAssign[j]; spAssign[j] = tmp;
+      }
+    } else if (mixP === 'untergeordnet') {
+      // Untergeordnete Mischung: Hauptbaumart dominiert, Nebenbaumarten verstreut
+      spAssign = new Array(nT);
+      const sorted = [...ac].sort((a, b) => b[1].pct - a[1].pct);
+      const dominant = sorted[0][0];
+      const minor = sorted.slice(1);
+      const splitIdx = Math.round(nT * 0.6);
+      for (let i = 0; i < nT; i++) {
+        if (i < splitIdx) {
+          spAssign[i] = dominant;
+        } else {
+          const minorTotal = minor.reduce((s, e) => s + e[1].pct, 0);
+          let rVal = rng() * minorTotal;
+          spAssign[i] = minor.length ? minor[0][0] : dominant;
+          for (const [k, s] of minor) {
+            rVal -= s.pct;
+            if (rVal <= 0) { spAssign[i] = k; break; }
+          }
+        }
+      }
+    } else {
+      // Clustered: Trupp (~12m), Gruppe (~18m), Horst (~30m)
+      const clusterR = mixP === 'trupp' ? 12 : mixP === 'gruppe' ? 18 : 30;
+      const plotSz = typeof PLOT !== 'undefined' ? PLOT : 100;
+      const nClusters = Math.max(ac.length, Math.round(plotSz * plotSz / (Math.PI * clusterR * clusterR)));
+
+      // Cluster-Zentren mit zugewiesener Baumart
+      const clusters = [];
+      for (let ci = 0; ci < nClusters; ci++) {
+        const cx = rng() * (plotSz - 4) + 2;
+        const cy = rng() * (plotSz - 4) + 2;
+        let rVal = rng() * tP;
+        let chosenSp = ac[0][0];
+        for (const [k, s] of ac) {
+          rVal -= s.pct;
+          if (rVal <= 0) { chosenSp = k; break; }
+        }
+        clusters.push({ x: cx, y: cy, sp: chosenSp });
+      }
+
+      // Jeder Baum wird dem nächsten Cluster zugewiesen
+      spAssign = new Array(nT);
+      for (let i = 0; i < nT; i++) {
+        const px = positions[i].x;
+        const py = positions[i].y;
+        let bestDist = Infinity;
+        let bestSp = ac[0][0];
+        for (const cl of clusters) {
+          const d = Math.hypot(cl.x - px, cl.y - py);
+          if (d < bestDist) { bestDist = d; bestSp = cl.sp; }
+        }
+        spAssign[i] = bestSp;
+      }
+    }
+
+    // Schritt 3: Bäume mit zugewiesener Art und Position erzeugen
+    const trees = [];
+    for (let i = 0; i < nT; i++) {
+      const k = spAssign[i] || ac[0][0];
+      const s = S.sp[k];
+      if (!s) continue;
+
+      let sf = 1;
+      if (S.mode === 'ungleich') {
+        const r = rng();
+        if (r < .18) sf = .15 + rng() * .15;
+        else if (r < .38) sf = .3 + rng() * .15;
+        else if (r < .58) sf = .5 + rng() * .15;
+        else if (r < .78) sf = .7 + rng() * .15;
+        else sf = .88 + rng() * .12;
+      } else {
+        sf = .82 + rng() * .18;
+      }
+
+      const h = s.h * sf;
+      let cw, kl, ka, bhd;
+      if (h < 1.3) {
+        bhd = 0;
+        cw = Math.max(h * 0.4, 0.3);
+        kl = Math.max(h * 0.8, 0.3);
+        ka = Math.max(h - kl, 0.1);
+      } else {
+        bhd = bhdFromH(k, h);
+        const crown = crownFromBHD(k, bhd, h);
+        cw = crown.cw * (.9 + rng() * .2);
+        kl = crown.kl * (.9 + rng() * .2);
+        ka = Math.max(h - kl, 1);
+      }
+
+      trees.push({
+        sp: k, x: positions[i].x, y: positions[i].y,
+        h, cw, kl, ka,
+        bhd: bhd,
+        jit: rng() * 6.28
+      });
+    }
+
+    // === Naturverjüngung im manuellen Modus ===
+    if (S.showVerjuengung) {
+      const vjRng = mR(S.seed + 7777);
+      const maxVJ = 100; // Moderate Anzahl für manuellen Modus
+      const vjSpecies = [];
+      const acVj = Object.entries(S.sp).filter(([_, s]) => s.on && s.pct > 0);
+      for (const [k2, s2] of acVj) {
+        for (let ii = 0; ii < Math.round(s2.pct / 10); ii++) vjSpecies.push(k2);
+      }
+      if (vjSpecies.length === 0) vjSpecies.push('Bu');
+
+      for (let vi = 0; vi < maxVJ; vi++) {
+        const vx = vjRng() * 88 + 6;
+        const vy = vjRng() * 88 + 6;
+        // Lückenprüfung: kein grosser Baum innerhalb cw * 0.5
+        let inGap = true;
+        for (const t of trees) {
+          if (t.isVerjuengung) continue;
+          const dist = Math.hypot(t.x - vx, t.y - vy);
+          if (dist < t.cw * 0.5) { inGap = false; break; }
+        }
+        if (inGap) {
+          const vjSp = vjSpecies[Math.floor(vjRng() * vjSpecies.length)];
+          const vh = 0.3 + vjRng() * 4.5; // 0.3-4.8m
+          const vcw = Math.max(vh * 0.35, 0.2);
+          const vkl = Math.max(vh * 0.85, 0.2);
+          trees.push({
+            sp: vjSp, x: vx, y: vy,
+            h: vh, cw: vcw, kl: vkl,
+            ka: Math.max(vh - vkl, 0.05),
+            bhd: vh > 1.3 ? vh * 1.5 : 0,
+            jit: vjRng() * 6.28,
+            isVerjuengung: true
+          });
+        }
+      }
+    }
+
+    // === Konkurrenz-Interaktion (spatial hash optimiert) ===
+    const COMP = {Bu:2.0, Ta:1.5, Fi:1.0, BAh:1.5, Ei:1.8, WFoe:0.8, Lae:0.7, Es:1.3, Dou:1.2};
+    const cellSz = 15, nC = Math.ceil((typeof PLOT!=='undefined'?PLOT:100)/cellSz);
+    const grid = {};
+    for (let i = 0; i < trees.length; i++) {
+      const cx = Math.min(nC-1, Math.floor(trees[i].x/cellSz));
+      const cy = Math.min(nC-1, Math.floor(trees[i].y/cellSz));
+      const key = cx+'_'+cy;
+      if (!grid[key]) grid[key] = [];
+      grid[key].push(i);
+    }
+    for (let i = 0; i < trees.length; i++) {
+      const t = trees[i];
+      if (t.h < 5) continue;
+      const cx = Math.min(nC-1, Math.floor(t.x/cellSz));
+      const cy = Math.min(nC-1, Math.floor(t.y/cellSz));
+      let pressure = 0, nn = 0;
+      for (let dx = -1; dx <= 1; dx++) for (let dy = -1; dy <= 1; dy++) {
+        const nbs = grid[(cx+dx)+'_'+(cy+dy)];
+        if (!nbs) continue;
+        for (const j of nbs) {
+          if (i === j) continue;
+          const n = trees[j];
+          const dist = Math.hypot(t.x-n.x, t.y-n.y);
+          const reach = (t.cw+n.cw)/2;
+          if (dist < reach*1.5 && n.h >= t.h*0.7) {
+            pressure += (COMP[n.sp]||1.0) * (1 - dist/(reach*1.5));
+            nn++;
+          }
+        }
+      }
+      if (nn > 0) t.cw *= (1 - Math.min(0.15, pressure * 0.03));
+    }
+
+    S.trees = trees;
+  }
+}
+
+// === crownFront.js ===
+/**
+ * crownFront.js — Kronenformen Frontansicht (pro Art)
+ *
+ * Extrahiert aus v5_baseline.html
+ *
+ * Enthält:
+ *   - crownPts(type, cx, top, base, hw, cH, jit) — Berechnet Kronenpunkte
+ *   - p2p(pts)                                    — Konvertiert Punkte zu SVG-Pfad
+ *   - genFoliageBlobs(cx, top, base, hw, cH, jit, type) — Foliage-Cluster für Laubbäume
+ *
+ * Abhängigkeiten: generator.js (mR, W)
+ * Wird benötigt von: renderFront.js
+ *
+ * HINWEIS: Diese Datei wird in Phase 1 iterativ verbessert!
+ * Aktueller Stand: v5-Extraktion (Baseline)
+ */
+
+/** Totäste und Klebäste am Stamm (Frontansicht) */
+function drawBranchStubs(t, gY, tw) {
+  let svg = '';
+  if (!t.bhd || t.bhd < 20 || t.h < 15) return svg;
+
+  // Deterministic "random" from jit
+  const s1 = Math.abs(Math.sin(t.jit * 1000));
+  const s2 = Math.abs(Math.cos(t.jit * 777));
+  if (s1 > 0.45) return svg; // only ~45% of mature trees
+
+  const nBr = 1 + Math.floor(s1 * 2.5); // 1-3 branches
+  const kaY = gY - t.ka;
+
+  for (let i = 0; i < nBr; i++) {
+    const frac = 0.25 + (i / nBr) * 0.55;
+    const bY = gY - t.ka * frac;
+    const bLen = tw * 1.8 + s2 * 1.2;
+    const side = (i % 2 === 0) ? 1 : -1;
+    const droop = 0.12 + s1 * 0.15;
+
+    // Totast: kurzer, nach unten hängender Aststummel
+    svg += '<line x1="' + t.x + '" y1="' + bY + '" x2="' + (t.x + side * bLen) + '" y2="' + (bY + droop * bLen) + '" stroke="#7a6a5a" stroke-width=".12" stroke-linecap="round"/>';
+  }
+
+  // Klebast bei Laubbäumen mit grossem BHD
+  const sp = typeof SPECIES !== 'undefined' ? SPECIES[t.sp] : null;
+  if (sp && sp.deciduous && t.bhd > 35 && s2 > 0.4) {
+    const kY = gY - 1.5;
+    const kLen = tw * 2.5;
+    const kSide = s1 > 0.25 ? 1 : -1;
+    svg += '<line x1="' + t.x + '" y1="' + kY + '" x2="' + (t.x + kSide * kLen) + '" y2="' + (kY - 0.3) + '" stroke="#8a7a6a" stroke-width=".15" stroke-linecap="round"/>';
+  }
+
+  return svg;
+}
+
+/**
+ * Berechnet die Kronenpunkte (Umrisslinie) für einen Baum in der Frontansicht
+ *
+ * @param {string} type - Kronentyp (dome, layered, spire, spreading, round, umbrella, lightcone, vase)
+ * @param {number} cx   - X-Position Stammmitte
+ * @param {number} top  - Y-Position Kronenspitze (oben)
+ * @param {number} base - Y-Position Kronenansatz (unten)
+ * @param {number} hw   - Halbe Kronenbreite
+ * @param {number} cH   - Kronenhöhe (Kronenlänge)
+ * @param {number} jit  - Jitter für reproduzierbare Variation
+ * @returns {Array} Array von [x, y] Punkten
+ */
+function crownPts(type, cx, top, base, hw, cH, jit) {
+  const pts = [];
+  const N = 30;
+
+  switch (type) {
+
+    // === LAUBBÄUME ===
+
+    case 'dome': {
+      // Buche (Fagus sylvatica) — Breite, bucklige Kuppel
+      // Natürliches Wachstum: Kronenrand deutlich lobat durch
+      // konkurrierende Astgruppen (Hauptlaubpartien). Im Bestand
+      // höher als breit — Krone füllt die volle Kronenlänge.
+      // Konische Basis: Krone verjüngt sich zum Stamm hin.
+      // Ref: SPECIES_REFERENCE.md, Pampigny-Profile, NaiS 2A
+
+      const rngD = mR(Math.round(jit * 1000));
+
+      // 4-6 Hauptlaubpartien (crown lobes)
+      const nLobes = 4 + Math.floor(rngD() * 3);
+      const lobes = [];
+      for (let l = 0; l < nLobes; l++) {
+        lobes.push({
+          a: (l + 0.3 + rngD() * 0.4) / nLobes * Math.PI,
+          s: 0.06 + rngD() * 0.12,
+          w: 0.08 + rngD() * 0.10
+        });
+      }
+
+      // --- Konische Basis: Krone verjüngt sich zum Stamm ---
+      // Stammbreite-Anteil an der Kronenmitte (schmaler Ansatz)
+      const taperW = hw * 0.15; // Breite am Stammansatz (~15% der halben Kronenbreite)
+      const taperH = cH * 0.08; // Höhe des konischen Übergangs unter dem Dome
+
+      // Linke Taper-Punkte: von Stamm nach aussen
+      pts.push([cx - taperW, base + taperH * 0.3]);
+      pts.push([cx - taperW * 1.3, base]);
+      pts.push([cx - hw * 0.35, base - cH * 0.03]);
+
+      const ND = 56;
+      // Dome-Bogen beginnt bei ~5% und endet bei ~95% (Taper übernimmt die Enden)
+      for (let i = 2; i <= ND - 2; i++) {
+        const t = i / ND;
+        const a = Math.PI * t;
+
+        // Basis: abgeflachte Kuppel (pow < 1 = breiterer Scheitel)
+        let r = Math.pow(Math.sin(a), 0.82);
+
+        // Loben-Modulation (Gauss-Bumps)
+        for (const lb of lobes) {
+          const da = a - lb.a;
+          r += lb.s * Math.exp(-da * da / (2 * lb.w * lb.w));
+        }
+
+        // Mittlere Buckel (Astgruppen-Ebene)
+        r *= 1 + 0.04 * Math.sin(a * 6.7 + jit * 1.3)
+               + 0.03 * Math.sin(a * 10.3 + jit * 2.1)
+               + 0.02 * Math.sin(a * 4.3 + jit * 0.8);
+
+        // Feine Rauhigkeit (Blatt-/Zweig-Ebene)
+        r *= 1 + 0.015 * Math.sin(a * 17.1 + jit * 2.9)
+               + 0.010 * Math.sin(a * 23.7 + jit * 3.6);
+
+        // Leichte Asymmetrie (Wind/Licht)
+        r *= 1 + 0.02 * Math.sin(a * 1.15 + jit * 0.4);
+
+        // Volle Kronenlänge: ry ≈ 0.88 × cH
+        // Mit Loben (~+10-15%) erreicht Scheitel ≈ 95-100% von cH
+        // Clamp bei top verhindert Überschreitung der Baumhöhe
+        const ry = cH * (0.88 + 0.012 * Math.sin(a * 2.3 + jit * 0.6));
+
+        pts.push([
+          cx - hw + t * hw * 2,
+          Math.max(top, base - r * ry)
+        ]);
+      }
+
+      // Rechte Taper-Punkte: von aussen zurück zum Stamm
+      pts.push([cx + hw * 0.35, base - cH * 0.03]);
+      pts.push([cx + taperW * 1.3, base]);
+      pts.push([cx + taperW, base + taperH * 0.3]);
+
+      break;
+    }
+
+    case 'spreading': {
+      // Eiche (Quercus ssp.) — Breite, knorrige, FLACHE Krone
+      // Breiter als hoch: Scheitel abgeflacht (pow 0.55), knorrige Asymmetrie.
+      // 3-5 unregelmässige Loben (weniger als Buche, gröber).
+      // Grösste Kronenbreite aller Arten (14m).
+      // Ref: VISUAL_GUIDELINES.md, Waldbau IV §6.1
+      const rngS = mR(Math.round(jit * 1000 + 1));
+
+      // 3-5 grobe Loben (Eiche hat weniger, kräftigere Astpartien als Buche)
+      const nLobesS = 3 + Math.floor(rngS() * 3);
+      const lobesS = [];
+      for (let l = 0; l < nLobesS; l++) {
+        lobesS.push({
+          a: (l + 0.2 + rngS() * 0.6) / nLobesS * Math.PI,
+          s: 0.08 + rngS() * 0.14, // stärker als Buche (knorriger)
+          w: 0.10 + rngS() * 0.12
+        });
+      }
+
+      // Konische Basis
+      const taperWS = hw * 0.12;
+      pts.push([cx - taperWS, base + cH * 0.04]);
+      pts.push([cx - taperWS * 1.5, base]);
+      pts.push([cx - hw * 0.3, base - cH * 0.02]);
+
+      const NS = 48; // mehr Punkte für glattere Form
+      for (let i = 2; i <= NS - 2; i++) {
+        const t = i / NS;
+        const a = Math.PI * t;
+
+        // Basis: FLACH (pow 0.55 = flacher Scheitel, breite Schultern)
+        let r = Math.pow(Math.sin(a), 0.55);
+
+        // Loben-Modulation (Gauss-Bumps)
+        for (const lb of lobesS) {
+          const da = a - lb.a;
+          r += lb.s * Math.exp(-da * da / (2 * lb.w * lb.w));
+        }
+
+        // Gröbere Buckel (Eiche ist knorriger als Buche)
+        r *= 1 + 0.06 * Math.sin(a * 4.3 + jit * 1.1)
+               + 0.05 * Math.sin(a * 7.1 + jit * 2.3)
+               + 0.03 * Math.sin(a * 2.7 + jit * 0.7);
+
+        // Feinere Rauhigkeit
+        r *= 1 + 0.02 * Math.sin(a * 13.3 + jit * 2.5)
+               + 0.015 * Math.sin(a * 19.7 + jit * 3.2);
+
+        // Stärkere Asymmetrie (Eiche wächst oft einseitig)
+        r *= 1 + 0.04 * Math.sin(a * 1.1 + jit * 0.5);
+
+        // Kronenradius: weniger als Buche (flacher = kürzer vertikal)
+        // 0.72 statt 0.88 → flachere Krone, da Eiche breiter als hoch
+        const ryS = cH * (0.72 + 0.015 * Math.sin(a * 2.1 + jit * 0.8));
+
+        pts.push([
+          cx - hw + t * hw * 2,
+          Math.max(top, base - r * ryS)
+        ]);
+      }
+
+      pts.push([cx + hw * 0.3, base - cH * 0.02]);
+      pts.push([cx + taperWS * 1.5, base]);
+      pts.push([cx + taperWS, base + cH * 0.04]);
+      break;
+    }
+
+    case 'round': {
+      // Bergahorn (Acer pseudoplatanus) — Kompakte, RUNDE Krone
+      // Gleichmässiger als Buche (weniger lobat), höher als Eiche.
+      // Fast kreisrunde Silhouette mit nur leichter Unregelmässigkeit.
+      // 2-4 subtile Loben (Bergahorn hat gleichmässige Krone).
+      // Ref: VISUAL_GUIDELINES.md, Waldbau III Abb. 2.1
+      const rngR = mR(Math.round(jit * 1000 + 2));
+
+      // 2-4 subtile Loben (weniger und schwächer als Buche/Eiche)
+      const nLobesR = 2 + Math.floor(rngR() * 3);
+      const lobesR = [];
+      for (let l = 0; l < nLobesR; l++) {
+        lobesR.push({
+          a: (l + 0.3 + rngR() * 0.4) / nLobesR * Math.PI,
+          s: 0.03 + rngR() * 0.06, // schwächer als Buche (gleichmässiger)
+          w: 0.12 + rngR() * 0.10  // breiter (sanftere Übergänge)
+        });
+      }
+
+      // Konische Basis
+      const taperWR = hw * 0.13;
+      pts.push([cx - taperWR, base + cH * 0.04]);
+      pts.push([cx - taperWR * 1.4, base]);
+      pts.push([cx - hw * 0.32, base - cH * 0.02]);
+
+      const NR = 44;
+      for (let i = 2; i <= NR - 2; i++) {
+        const t = i / NR;
+        const a = Math.PI * t;
+
+        // Fast kreisrund: pow(sin, 0.95) → kaum abgeflacht
+        let r = Math.pow(Math.sin(a), 0.95);
+
+        // Subtile Loben-Modulation
+        for (const lb of lobesR) {
+          const da = a - lb.a;
+          r += lb.s * Math.exp(-da * da / (2 * lb.w * lb.w));
+        }
+
+        // Nur leichte Buckel (gleichmässiger als Buche/Eiche)
+        r *= 1 + 0.03 * Math.sin(a * 5.1 + jit * 1.3)
+               + 0.02 * Math.sin(a * 8.7 + jit * 2.1);
+
+        // Feine Textur
+        r *= 1 + 0.012 * Math.sin(a * 14.5 + jit * 2.7)
+               + 0.008 * Math.sin(a * 21.3 + jit * 3.4);
+
+        // Minimale Asymmetrie
+        r *= 1 + 0.015 * Math.sin(a * 1.2 + jit * 0.3);
+
+        // ry = 0.82 × cH (zwischen Buche 0.88 und Eiche 0.72)
+        const ryR = cH * (0.82 + 0.010 * Math.sin(a * 2.5 + jit * 0.7));
+
+        pts.push([
+          cx - hw + t * hw * 2,
+          Math.max(top, base - r * ryR)
+        ]);
+      }
+
+      pts.push([cx + hw * 0.32, base - cH * 0.02]);
+      pts.push([cx + taperWR * 1.4, base]);
+      pts.push([cx + taperWR, base + cH * 0.04]);
+      break;
+    }
+
+    case 'vase': {
+      // Esche (Fraxinus excelsior) — VASENFÖRMIG
+      // Punkte werden höhenbasiert erzeugt:
+      //   Linke Seite: von unten (base) nach oben (top)
+      //   Rechte Seite: von oben nach unten (base)
+      // Breiten-Envelope: unten schmal (~40%), max bei ~70% Höhe, oben schmaler.
+      // Ref: VISUAL_GUIDELINES.md, Waldbau III Abb. 2.1
+      const rngV = mR(Math.round(jit * 1000 + 3));
+
+      // 3-5 Loben für organischen Rand
+      const nLobesV = 3 + Math.floor(rngV() * 3);
+      const lobesV = [];
+      for (let l = 0; l < nLobesV; l++) {
+        lobesV.push({
+          h: (l + 0.2 + rngV() * 0.6) / nLobesV, // Position als Höhen-Fraktion 0-1
+          s: 0.04 + rngV() * 0.08,
+          w: 0.10 + rngV() * 0.10
+        });
+      }
+
+      // Vasen-Breiten-Funktion: f(hFrac) → Breitenfaktor
+      // hFrac=0 (Basis): schmal (0.35)
+      // hFrac=0.55: breiteste Stelle (~1.0)
+      // hFrac=1.0 (oben): FLACHES PLATEAU (~0.45), NICHT spitz!
+      // Ref: Fraxinus-Habitus — Krone oben aufgefächert, breites Dach
+      function vaseWidth(hFrac) {
+        // Schneller Anstieg von unten, breites Plateau oben
+        // pow(hFrac, 0.35) → schneller Anstieg, oben flach
+        const rise = Math.pow(Math.min(hFrac * 1.5, 1.0), 0.35);
+        // Oben nur leicht verengen: Minimum bei 0.45 (nicht 0)
+        // sin-Kurve mit Maximum bei hFrac~0.55
+        const bellTop = 0.45 + 0.55 * Math.sin(Math.PI * Math.pow(hFrac, 0.60));
+        // Unten einschnüren
+        const pinch = 0.35 + 0.65 * Math.pow(hFrac, 0.45);
+        return Math.min(rise, bellTop, pinch);
+      }
+
+      const NV = 22; // Punkte pro Seite
+      const ryV = cH * 0.82;
+
+      // Konische Basis
+      const taperWV = hw * 0.10;
+      pts.push([cx - taperWV, base + cH * 0.035]);
+      pts.push([cx - taperWV * 1.0, base]);
+
+      // LINKE SEITE: von unten nach oben
+      for (let i = 1; i <= NV; i++) {
+        const hFrac = i / (NV + 1); // 0→1 von Basis nach Spitze
+        let w = vaseWidth(hFrac);
+
+        // Loben-Modulation
+        for (const lb of lobesV) {
+          const dh = hFrac - lb.h;
+          w += lb.s * Math.exp(-dh * dh / (2 * lb.w * lb.w));
+        }
+
+        // Buckel + Rauhigkeit
+        w *= 1 + 0.035 * Math.sin(hFrac * 16.7 + jit * 1.4)
+               + 0.020 * Math.sin(hFrac * 31.3 + jit * 2.8);
+
+        // Asymmetrie (links etwas anders als rechts)
+        w *= 1 + 0.025 * Math.sin(hFrac * 4.1 + jit * 0.5);
+
+        const y = Math.max(top, base - hFrac * ryV);
+        pts.push([cx - hw * w, y]);
+      }
+
+      // FLACHER SCHEITEL statt Spitze: 3 Punkte über die Breite
+      {
+        const topW = vaseWidth(0.96);
+        const topY = Math.max(top, base - ryV);
+        // Leichte Buckel am Scheitel für organischen Look
+        const bL = 0.03 * Math.sin(jit * 2.1);
+        const bR = 0.03 * Math.sin(jit * 3.4);
+        pts.push([cx - hw * (topW * 0.5 + bL), topY + ryV * 0.01]);
+        pts.push([cx + hw * 0.02 * (rngV() - 0.5), topY]);
+        pts.push([cx + hw * (topW * 0.5 + bR), topY + ryV * 0.01]);
+      }
+
+      // RECHTE SEITE: von oben nach unten
+      for (let i = NV; i >= 1; i--) {
+        const hFrac = i / (NV + 1);
+        let w = vaseWidth(hFrac);
+
+        // Loben (leicht verschoben für Asymmetrie)
+        for (const lb of lobesV) {
+          const dh = hFrac - lb.h;
+          w += lb.s * 0.9 * Math.exp(-dh * dh / (2 * lb.w * lb.w));
+        }
+
+        // Buckel + Rauhigkeit (leicht andere Phase als links)
+        w *= 1 + 0.030 * Math.sin(hFrac * 16.7 + jit * 1.7)
+               + 0.018 * Math.sin(hFrac * 31.3 + jit * 3.1);
+
+        // Asymmetrie rechte Seite
+        w *= 1 - 0.020 * Math.sin(hFrac * 4.1 + jit * 0.5);
+
+        const y = Math.max(top, base - hFrac * ryV);
+        pts.push([cx + hw * w, y]);
+      }
+
+      pts.push([cx + taperWV * 1.0, base]);
+      pts.push([cx + taperWV, base + cH * 0.035]);
+      break;
+    }
+
+    // === NADELBÄUME ===
+
+    case 'layered': {
+      // Weisstanne (Abies alba) — Gestufte Pyramide mit horizontalen Astquirlen
+      // Deutlich sichtbare Etagen (6-8 Quirle), jede Astlage leicht durchhängend
+      // mit aufgebogenen Enden. Konischer Gesamtumriss, deutlich schmaler als Buche.
+      // Einschnitte zwischen Etagen zeigen ~50-60% der Etagenbreite (nicht bis Stamm).
+      // Ref: SPECIES_REFERENCE.md, VISUAL_GUIDELINES.md §2 Tanne
+      const rngL = mR(Math.round(jit * 1000 + 10));
+
+      // 6-8 Astquirle
+      const nTiers = 6 + Math.floor(rngL() * 3);
+
+      // Konische Envelope: Breitenfaktor f(f) — f=0 oben, f=1 Basis
+      function tierEnv(f) {
+        return Math.pow(f, 0.82) * (0.95 + 0.05 * Math.sin(Math.PI * f));
+      }
+
+      // === SPITZE ===
+      pts.push([cx + hw * 0.005 * (rngL() - 0.5), top + cH * 0.005]);
+
+      // Hilfsfunktion: Erzeuge eine Etage (rechte Seite)
+      // Gibt 5 Punkte zurück: aufsteigend → hängend → Spitze (aufgebogen)
+      function tierRight(i) {
+        const f = i / nTiers;
+        const ly = top + cH * f;
+        const envW = tierEnv(f) * hw;
+
+        const vr = 0.93 + rngL() * 0.14; // Breiten-Variation 93-107%
+        const droop = 0.010 + rngL() * 0.015; // Durchhang
+        const upturn = 0.006 + rngL() * 0.010; // Aufbiegung
+
+        // 5 Punkte pro Etage für glattere Kurve:
+        // P1: Astansatz nahe Stamm (leicht aufwärts)
+        const p1x = cx + envW * 0.15;
+        const p1y = ly - cH * (0.015 + rngL() * 0.01);
+
+        // P2: Innerer Ast (30% Breite, auf Etagen-Höhe)
+        const p2x = cx + envW * (0.35 + rngL() * 0.05);
+        const p2y = ly;
+
+        // P3: Ast-Mitte (55% Breite, leicht hängend)
+        const p3x = cx + envW * (0.58 + rngL() * 0.08);
+        const p3y = Math.min(ly + cH * droop * 0.7, base - 0.15);
+
+        // P4: Äusserer Ast (80% Breite, maximaler Durchhang)
+        const p4x = cx + envW * (0.80 + rngL() * 0.06);
+        const p4y = Math.min(ly + cH * droop, base - 0.1);
+
+        // P5: Astspitze (leicht aufgebogen)
+        const tipJit = hw * 0.015 * Math.sin(jit * 3.7 + i * 2.1);
+        const p5x = cx + envW * vr + tipJit;
+        const p5y = Math.min(ly + cH * (droop - upturn), base - 0.05);
+
+        return [[p1x, p1y], [p2x, p2y], [p3x, p3y], [p4x, p4y], [p5x, p5y]];
+      }
+
+      // === RECHTE SEITE: Etagen von oben nach unten ===
+      for (let i = 1; i <= nTiers; i++) {
+        const tierPts = tierRight(i);
+        for (const p of tierPts) pts.push(p);
+
+        // Einschnitt zwischen Etagen
+        if (i < nTiers) {
+          const f = i / nTiers;
+          const ly = top + cH * f;
+          const envW = tierEnv(f) * hw;
+
+          // Einrückung: 45-60% der AKTUELLEN Etagenbreite (nicht bis Stamm!)
+          const indentFrac = 0.45 + rngL() * 0.15;
+          const indentW = envW * indentFrac;
+          const indentY1 = Math.min(ly + cH * 0.003, base - 0.2);
+          const indentY2 = Math.min(top + cH * ((i + 0.35) / nTiers), base - 0.15);
+          pts.push([cx + indentW, indentY1]);
+          pts.push([cx + indentW * 0.92, indentY2]);
+        }
+      }
+
+      // === BASIS ===
+      pts.push([cx + hw * 0.06, base]);
+      pts.push([cx - hw * 0.06, base]);
+
+      // === LINKE SEITE: von unten nach oben (gespiegelt mit Variation) ===
+      for (let i = nTiers; i >= 1; i--) {
+        const f = i / nTiers;
+        const ly = top + cH * f;
+        const envW = tierEnv(f) * hw;
+
+        // Eigener RNG pro Tier für Asymmetrie
+        const rngL2 = mR(Math.round(jit * 1000 + 10 + i * 7));
+        const vr = 0.93 + rngL2() * 0.14;
+        const droop = 0.010 + rngL2() * 0.015;
+        const upturn = 0.006 + rngL2() * 0.010;
+
+        // Einschnitt von unten kommend
+        if (i < nTiers) {
+          const indentFrac = 0.45 + rngL2() * 0.15;
+          const indentW = envW * indentFrac;
+          const transY = Math.min(top + cH * ((i + 0.35) / nTiers), base - 0.15);
+          pts.push([cx - indentW * 0.92, transY]);
+          pts.push([cx - indentW, Math.min(ly + cH * 0.003, base - 0.2)]);
+        }
+
+        // 5 Punkte Astprofil (gespiegelt)
+        const tipJit = hw * 0.015 * Math.sin(jit * 4.1 + i * 1.9);
+        const p5x = cx - envW * vr + tipJit;
+        const p5y = Math.min(ly + cH * (droop - upturn), base - 0.05);
+        pts.push([p5x, p5y]);
+
+        const p4x = cx - envW * (0.80 + rngL2() * 0.06);
+        const p4y = Math.min(ly + cH * droop, base - 0.1);
+        pts.push([p4x, p4y]);
+
+        const p3x = cx - envW * (0.58 + rngL2() * 0.08);
+        const p3y = Math.min(ly + cH * droop * 0.7, base - 0.15);
+        pts.push([p3x, p3y]);
+
+        const p2x = cx - envW * (0.35 + rngL2() * 0.05);
+        pts.push([p2x, ly]);
+
+        const p1x = cx - envW * 0.15;
+        const p1y = ly - cH * (0.015 + rngL2() * 0.01);
+        pts.push([p1x, p1y]);
+      }
+
+      break;
+    }
+
+    case 'spire': {
+      // Fichte (Picea abies) — Schmaler, spitzer Kegel ("Kirchturm")
+      // Gleichmässiger als Tanne, KEINE ausgeprägten Stufen.
+      // Leichte Zacken am Rand (hängende Äste, Lametta-Effekt).
+      // Schmalste Krone der Nadelbäume (cw=6m).
+      // Ref: SPECIES_REFERENCE.md, VISUAL_GUIDELINES.md §2 Fichte
+      const rngF = mR(Math.round(jit * 1000 + 20));
+
+      // Spitze (scharf, leicht asymmetrisch)
+      const spTipOff = hw * 0.01 * (rngF() - 0.5);
+      pts.push([cx + spTipOff, top]);
+
+      // Konische Envelope mit leichter Konkavität (schlanker als Tanne)
+      // pow(f, 0.92) → fast linear, typisch Fichte
+      function spireEnv(f) {
+        return Math.pow(f, 0.92) * (0.96 + 0.04 * Math.sin(Math.PI * f * 0.6));
+      }
+
+      const NF = 28; // Fein genug für glatte Kontur mit Zacken
+
+      // === RECHTE SEITE ===
+      for (let i = 1; i <= NF; i++) {
+        const f = i / NF;
+        const ly = top + cH * f;
+        let w = spireEnv(f);
+
+        // Hängende Ast-Zacken: kleine, regelmässige Einbuchtungen
+        // Amplitude nimmt nach unten zu (ältere, längere Äste)
+        const zackAmp = 0.04 + f * 0.06; // 4-10% Einbuchtung
+        const zackFreq = 8 + Math.floor(rngF() * 4); // 8-11 Zyklen
+        const zackPhase = rngF() * Math.PI * 2;
+        const zack = zackAmp * Math.sin(f * zackFreq * Math.PI + zackPhase + jit);
+
+        // Feinere Rauhigkeit (Nadelsilhouette)
+        const fine = 0.015 * Math.sin(f * 19.3 + jit * 2.7)
+                   + 0.010 * Math.sin(f * 31.7 + jit * 3.9);
+
+        // Leichte Asymmetrie (Wind)
+        const asym = 0.02 * Math.sin(f * 1.3 + jit * 0.6);
+
+        w *= (1 + zack + fine + asym);
+
+        // Variation pro Individuum
+        w *= (0.95 + rngF() * 0.10);
+
+        pts.push([cx + w * hw, Math.min(ly, base)]);
+      }
+
+      // Basis
+      pts.push([cx + hw * 0.05, base]);
+      pts.push([cx - hw * 0.05, base]);
+
+      // === LINKE SEITE (gespiegelt mit anderer Phase) ===
+      for (let i = NF; i >= 1; i--) {
+        const f = i / NF;
+        const ly = top + cH * f;
+        let w = spireEnv(f);
+
+        // Gleiche Struktur, andere Phase für Asymmetrie
+        const zackAmp = 0.04 + f * 0.06;
+        const zackFreq = 8 + Math.floor(rngF() * 4);
+        const zackPhase = rngF() * Math.PI * 2;
+        const zack = zackAmp * Math.sin(f * zackFreq * Math.PI + zackPhase + jit + 1.5);
+
+        const fine = 0.015 * Math.sin(f * 19.3 + jit * 3.1)
+                   + 0.010 * Math.sin(f * 31.7 + jit * 4.3);
+
+        const asym = -0.02 * Math.sin(f * 1.3 + jit * 0.6);
+
+        w *= (1 + zack + fine + asym);
+        w *= (0.95 + rngF() * 0.10);
+
+        pts.push([cx - w * hw, Math.min(ly, base)]);
+      }
+
+      break;
+    }
+
+    case 'umbrella': {
+      // Waldföhre (Pinus sylvestris) — Schirmförmig, flach, hoher Kronenansatz
+      // Höhenbasierter Ansatz (wie 'vase'): Punkte von unten nach oben (links),
+      // flacher Scheitel, dann von oben nach unten (rechts).
+      // Breitenprofil: unten schmal (~20%), schnell ausladend, oben BREIT (~100%).
+      // Scheitel: FLACH (breites Plateau, nicht spitz).
+      // Ref: SPECIES_REFERENCE.md, VISUAL_GUIDELINES.md §2 Waldföhre
+      const rngU = mR(Math.round(jit * 1000 + 30));
+
+      // Breiter als Nominal
+      const umbW = hw * (1.05 + rngU() * 0.10);
+
+      // 3-4 Loben für knorrige Oberfläche
+      const nLobesU = 3 + Math.floor(rngU() * 2);
+      const lobesU = [];
+      for (let l = 0; l < nLobesU; l++) {
+        lobesU.push({
+          h: (l + 0.2 + rngU() * 0.6) / nLobesU, // Position als Höhenfraktion
+          s: 0.04 + rngU() * 0.08,
+          w: 0.10 + rngU() * 0.10
+        });
+      }
+
+      // Breitenprofil: f=0 (Basis), f=1 (Scheitel)
+      // Unten schmal, schnell ausladend, Maximum bei ~70% Höhe,
+      // oben sanft verjüngt auf ~75% → breiter, flacher Schirm
+      function umbWidth(f) {
+        // Anstieg: pow(f, 0.50) → schnell breit
+        const rise = Math.pow(f, 0.50);
+        // Sanfte Verjüngung am Scheitel: ab f>0.7 auf 75%
+        const topCap = f > 0.7 ? 1.0 - 0.25 * Math.pow((f - 0.7) / 0.3, 2) : 1.0;
+        return rise * topCap;
+      }
+
+      const NU = 22; // Punkte pro Seite
+      const ryU = cH * 0.92;
+
+      // Taper-Basis links
+      const taperWU = umbW * 0.10;
+      pts.push([cx - taperWU, base + cH * 0.02]);
+      pts.push([cx - taperWU, base]);
+
+      // === LINKE SEITE: von unten nach oben (i=1..NU) ===
+      for (let i = 1; i <= NU; i++) {
+        const f = i / (NU + 1);
+        let w = umbWidth(f);
+
+        for (const lb of lobesU) {
+          const dh = f - lb.h;
+          w += lb.s * Math.exp(-dh * dh / (2 * lb.w * lb.w));
+        }
+
+        // Knorrige Buckel (typisch Föhre, moderat)
+        w *= 1 + 0.035 * Math.sin(f * 8.3 + jit * 1.3)
+               + 0.025 * Math.sin(f * 13.7 + jit * 2.1);
+        // Feine Rauhigkeit
+        w *= 1 + 0.012 * Math.sin(f * 21.1 + jit * 2.9);
+        // Asymmetrie links
+        w *= 1 + 0.02 * Math.sin(f * 2.7 + jit * 0.5);
+
+        const y = Math.max(top, base - f * ryU);
+        pts.push([cx - umbW * w, y]);
+      }
+
+      // === FLACHER SCHEITEL ===
+      // 3 Punkte: genau so breit wie letzter Seitenpunkt → kein V-Einschnitt
+      {
+        const topY = Math.max(top, base - ryU);
+        const topF = NU / (NU + 1);
+        const topW = umbWidth(topF) * umbW;
+        pts.push([cx - topW * 0.95, topY + cH * 0.002]);
+        pts.push([cx + umbW * 0.01 * (rngU() - 0.5), topY]);
+        pts.push([cx + topW * 0.95, topY + cH * 0.002]);
+      }
+
+      // === RECHTE SEITE: von oben nach unten (i=NU..1) ===
+      for (let i = NU; i >= 1; i--) {
+        const f = i / (NU + 1);
+        let w = umbWidth(f);
+
+        for (const lb of lobesU) {
+          const dh = f - lb.h;
+          w += lb.s * 0.9 * Math.exp(-dh * dh / (2 * lb.w * lb.w));
+        }
+
+        // Buckel (andere Phase als links)
+        w *= 1 + 0.030 * Math.sin(f * 8.3 + jit * 1.6)
+               + 0.020 * Math.sin(f * 13.7 + jit * 2.5);
+        w *= 1 + 0.012 * Math.sin(f * 21.1 + jit * 3.2);
+        // Asymmetrie rechts
+        w *= 1 - 0.018 * Math.sin(f * 2.7 + jit * 0.5);
+
+        const y = Math.max(top, base - f * ryU);
+        pts.push([cx + umbW * w, y]);
+      }
+
+      // Taper-Basis rechts
+      pts.push([cx + taperWU, base]);
+      pts.push([cx + taperWU, base + cH * 0.02]);
+
+      break;
+    }
+
+    case 'lightcone': {
+      // Lärche (Larix decidua) — Lockerer, leichter, LUFTIGER Kegel
+      // Sommergrüner Nadelbaum → lichtdurchlässiger als Fichte/Tanne.
+      // Äste dünn, leicht hängend. Krone wirkt transparent/offen.
+      // Unregelmässiger als Fichte, mit grösseren Einbuchtungen (Luftlöcher).
+      // Ref: SPECIES_REFERENCE.md, VISUAL_GUIDELINES.md §2 Lärche
+      const rngLa = mR(Math.round(jit * 1000 + 40));
+
+      // Spitze
+      pts.push([cx + hw * 0.008 * (rngLa() - 0.5), top + cH * 0.003]);
+
+      // Konische Envelope — etwas unregelmässiger als Fichte
+      function larchEnv(f) {
+        return Math.pow(f, 0.88) * (0.92 + 0.08 * Math.sin(Math.PI * f * 0.7));
+      }
+
+      const NLa = 24; // Weniger Punkte → gröbere Kontur (luftiger Look)
+
+      // 3-5 "Luftlöcher" (grössere Einbuchtungen wo Äste fehlen/dünn sind)
+      const nGaps = 3 + Math.floor(rngLa() * 3);
+      const gaps = [];
+      for (let g = 0; g < nGaps; g++) {
+        gaps.push({
+          f: 0.15 + rngLa() * 0.70, // Position (15-85% der Höhe)
+          s: 0.08 + rngLa() * 0.12, // Stärke (8-20% Einbuchtung)
+          w: 0.06 + rngLa() * 0.06  // Breite
+        });
+      }
+
+      // === RECHTE SEITE ===
+      for (let i = 1; i <= NLa; i++) {
+        const f = i / NLa;
+        const ly = top + cH * f;
+        let w = larchEnv(f);
+
+        // Grundzacken (leicht hängende Äste)
+        const hangAmp = 0.03 + f * 0.04;
+        w *= 1 + hangAmp * Math.sin(f * 7.3 * Math.PI + jit * 1.5);
+
+        // Luftlöcher (grössere Einbuchtungen)
+        for (const gap of gaps) {
+          const df = f - gap.f;
+          w -= gap.s * Math.exp(-df * df / (2 * gap.w * gap.w));
+        }
+
+        // Feine Rauhigkeit
+        w *= 1 + 0.02 * Math.sin(f * 15.7 + jit * 2.3)
+               + 0.015 * Math.sin(f * 22.3 + jit * 3.7);
+
+        // Asymmetrie
+        w *= 1 + 0.025 * Math.sin(f * 1.4 + jit * 0.7);
+
+        // Individuelle Variation
+        w *= 0.93 + rngLa() * 0.14;
+
+        // Mindestbreite (nicht komplett auf 0 einschnüren)
+        w = Math.max(w, 0.08);
+
+        pts.push([cx + w * hw, Math.min(ly, base)]);
+      }
+
+      // Basis
+      pts.push([cx + hw * 0.05, base]);
+      pts.push([cx - hw * 0.05, base]);
+
+      // === LINKE SEITE ===
+      // Eigene Luftlöcher für Asymmetrie
+      const gapsL = [];
+      for (let g = 0; g < nGaps; g++) {
+        gapsL.push({
+          f: 0.15 + rngLa() * 0.70,
+          s: 0.08 + rngLa() * 0.12,
+          w: 0.06 + rngLa() * 0.06
+        });
+      }
+
+      for (let i = NLa; i >= 1; i--) {
+        const f = i / NLa;
+        const ly = top + cH * f;
+        let w = larchEnv(f);
+
+        const hangAmp = 0.03 + f * 0.04;
+        w *= 1 + hangAmp * Math.sin(f * 7.3 * Math.PI + jit * 2.1);
+
+        // Linke Luftlöcher (andere Positionen)
+        for (const gap of gapsL) {
+          const df = f - gap.f;
+          w -= gap.s * Math.exp(-df * df / (2 * gap.w * gap.w));
+        }
+
+        w *= 1 + 0.02 * Math.sin(f * 15.7 + jit * 2.8)
+               + 0.015 * Math.sin(f * 22.3 + jit * 4.1);
+
+        w *= 1 - 0.025 * Math.sin(f * 1.4 + jit * 0.7);
+
+        w *= 0.93 + rngLa() * 0.14;
+        w = Math.max(w, 0.08);
+
+        pts.push([cx - w * hw, Math.min(ly, base)]);
+      }
+
+      break;
+    }
+  }
+
+  return pts;
+}
+
+/**
+ * Konvertiert ein Array von Punkten zu einem SVG-Pfad-String
+ * @param {Array} pts - Array von [x, y] Punkten
+ * @returns {string} SVG path d-Attribut
+ */
+function p2p(pts) {
+  if (!pts.length) return '';
+  return 'M ' + pts.map(p => p[0].toFixed(2) + ',' + p[1].toFixed(2)).join(' L ') + ' Z';
+}
+
+/**
+ * Generiert Foliage-Blobs (Laubcluster) für Laubbäume
+ * Verteilt Kreise innerhalb der Kronenform für volumetrischen Effekt
+ *
+ * @param {number} cx   - X-Position Stammmitte
+ * @param {number} top  - Y Kronenspitze
+ * @param {number} base - Y Kronenansatz
+ * @param {number} hw   - Halbe Kronenbreite
+ * @param {number} cH   - Kronenhöhe
+ * @param {number} jit  - Jitter
+ * @param {string} type - Kronentyp
+ * @returns {Array} Array von {x, y, r, shade} Objekten
+ */
+function genFoliageBlobs(cx, top, base, hw, cH, jit, type) {
+  const blobs = [];
+  const rng2 = mR(Math.round(jit * 1000));
+  const isDecid = ['dome', 'spreading', 'round', 'vase'].includes(type);
+  if (!isDecid) return blobs;
+
+  // Anzahl Blobs proportional zur Kronengrösse
+  const area = hw * cH;
+  // Dome: weniger, grössere Zonen; andere: mehr, kleinere Blobs
+  const nBlobs = type === 'dome'
+    ? Math.max(8, Math.min(22, Math.round(area * 0.18)))
+    : Math.max(8, Math.min(35, Math.round(area * 0.3)));
+  const midY = base - cH * 0.5;
+
+  for (let i = 0; i < nBlobs; i++) {
+    const ang = rng2() * Math.PI * 2;
+    const rFrac = rng2() * 0.85;
+    let bx, by, br;
+    const t = rng2();
+
+    switch (type) {
+      case 'dome': {
+        // Buche: Volumen-basierte Innentextur
+        // Geschichtete Zonen statt kleiner Einzelkreise
+        // Lichtrichtung: oben-links → hell; unten-rechts → dunkel
+        const layerFrac = i / nBlobs;
+        const yFrac = 0.08 + rng2() * 0.82;
+        by = base - cH * yFrac;
+        // Envelope passend zur neuen Dome-Form (pow 0.82, ry 0.92)
+        const envWD = hw * Math.pow(Math.sin(Math.PI * Math.min(yFrac / 0.94, 1)), 0.82) * 0.88;
+        bx = cx + (rng2() - 0.5) * envWD * 1.8;
+        bx = Math.max(cx - envWD, Math.min(cx + envWD, bx));
+        // Grössenstaffelung: erste 30% gross, mittlere mittel, letzte klein
+        if (layerFrac < 0.3) {
+          br = hw * (0.28 + rng2() * 0.18);
+        } else if (layerFrac < 0.7) {
+          br = hw * (0.16 + rng2() * 0.12);
+        } else {
+          br = hw * (0.09 + rng2() * 0.08);
+        }
+        break;
+      }
+      case 'spreading':
+        by = base - cH * (0.05 + t * 0.85);
+        bx = cx + (rng2() - 0.5) * hw * 1.8 * Math.sin(Math.PI * (by - top) / cH);
+        br = hw * (0.14 + rng2() * 0.2);
+        break;
+      case 'round':
+        by = base - cH * (0.08 + t * 0.82);
+        bx = cx + (rng2() - 0.5) * hw * 1.5 * Math.sin(Math.PI * (by - top) / cH);
+        br = hw * (0.11 + rng2() * 0.16);
+        break;
+      case 'vase': {
+        const spread = 0.4 + 0.6 * Math.sin(Math.PI * t);
+        by = base - cH * (0.05 + t * 0.88);
+        bx = cx + (rng2() - 0.5) * hw * spread * 1.5;
+        br = hw * (0.1 + rng2() * 0.15);
+        break;
+      }
+    }
+
+    // Auf Kronenumriss begrenzen (für nicht-Dome Typen)
+    if (type !== 'dome') {
+      const envW = hw * Math.sin(Math.PI * Math.max(0, Math.min(1, (base - by) / cH))) * 1.05;
+      bx = Math.max(cx - envW, Math.min(cx + envW, bx));
+    }
+
+    // Shade: dome nutzt positionsbasiertes Licht, andere zufällig
+    let shade;
+    if (type === 'dome') {
+      const yFracS = Math.max(0, (base - by) / cH);
+      const heightShade = yFracS * 0.55;
+      const sideShade = ((cx - bx) / hw) * 0.12;
+      shade = Math.min(1, Math.max(0, heightShade + sideShade + rng2() * 0.33));
+    } else {
+      shade = rng2();
+    }
+    blobs.push({ x: bx, y: by, r: br, shade });
+  }
+  return blobs;
+}
+
+// === crownBird.js ===
+/**
+ * crownBird.js — Kronen-Vogelperspektive, Voronoi-Logik
+ *
+ * Extrahiert aus v5_baseline.html
+ *
+ * Enthält:
+ *   - computeBR(trees) — Berechnet richtungsabhängige Kronenradien (Voronoi-Clipping)
+ *   - crownTopN(sp, cx, cy, radii, jit) — Generiert SVG-Pfad für Kronenprojektionsform
+ *
+ * Abhängigkeiten: species.js (SP)
+ * Wird benötigt von: renderBird.js
+ */
+
+/**
+ * Berechnet richtungsabhängige Kronenradien für die Vogelperspektive.
+ * Bäume behalten ihren natürlichen Kronendurchmesser.
+ * Nur wo sich Kronen überlappen würden, wird der Rand richtungsabhängig
+ * zurückgedrückt (36 Winkelsegmente). [Designentscheidung D002]
+ *
+ * @param {Array} trees - Array aller Bäume mit {x, y, cw, ...}
+ * @returns {Array} Array von {idx, radii} — radii ist Array[36] mit Radien pro Richtung
+ */
+function computeBR(trees) {
+  const NA = 36;
+  const res = [];
+
+  for (let i = 0; i < trees.length; i++) {
+    const t = trees[i];
+    const nR = t.cw / 2;
+    const radii = new Array(NA).fill(nR);
+
+    for (let j = 0; j < trees.length; j++) {
+      if (i === j) continue;
+      const o = trees[j];
+      const dx = o.x - t.x, dy = o.y - t.y;
+      const dist = Math.hypot(dx, dy);
+      const oR = o.cw / 2;
+
+      // Keine Überlappung → kein Clipping nötig
+      if (dist >= nR + oR) continue;
+
+      const na = Math.atan2(dy, dx);
+      const myS = nR / (nR + oR);
+      const maxR = dist * myS - .08;
+
+      for (let a = 0; a < NA; a++) {
+        const ang = 2 * Math.PI * a / NA;
+        let diff = Math.abs(ang - na);
+        if (diff > Math.PI) diff = 2 * Math.PI - diff;
+
+        if (diff < Math.PI * .55) {
+          const inf = Math.cos(diff / .55 * Math.PI / 2);
+          const cR = nR * (1 - inf) + maxR * inf;
+          if (cR < radii[a]) radii[a] = Math.max(cR, .2);
+        }
+      }
+    }
+    res.push({ idx: i, radii });
+  }
+  return res;
+}
+
+/**
+ * Generiert einen SVG-Pfad für die Kronenprojektion in der Vogelperspektive.
+ * Erzeugt glatte Catmull-Rom-Splines mit artspezifischer Formmodulation.
+ *
+ * @param {string} sp   - Baumart-Key (z.B. 'Bu')
+ * @param {number} cx   - X-Position
+ * @param {number} cy   - Y-Position
+ * @param {Array} radii  - Array[36] mit Radien pro Richtung
+ * @param {number} jit  - Jitter
+ * @returns {string} SVG path d-Attribut
+ */
+function crownTopN(sp, cx, cy, radii, jit) {
+  const N = radii.length;
+  const type = SP[sp].crown;
+  let pts = [];
+
+  for (let i = 0; i < N; i++) {
+    const a = 2 * Math.PI * i / N;
+    let r = radii[i];
+    let mod = 1;
+
+    // Artspezifische Formmodulation
+    switch (type) {
+      case 'dome':
+        mod = .94 + .06 * Math.sin(a * 3 + jit) + .03 * Math.sin(a * 6 + jit * 1.5);
+        break;
+      case 'layered':
+        mod = .92 + .08 * Math.pow(Math.cos(a * 2 + jit), 2);
+        break;
+      case 'spire':
+        mod = .88 + .04 * Math.sin(a * 5 + jit);
+        break;
+      case 'spreading':
+        mod = .92 + .08 * Math.sin(a * 2 + jit) + .05 * Math.sin(a * 5 + jit * 2);
+        break;
+      case 'round':
+        mod = .96 + .04 * Math.sin(a * 3 + jit);
+        break;
+      case 'umbrella':
+        mod = .9 + .1 * Math.abs(Math.cos(a + jit * .3));
+        break;
+      case 'lightcone':
+        mod = .92 + .08 * Math.sin(a * 3 + jit);
+        break;
+      case 'vase':
+        mod = .92 + .08 * Math.cos(a * 2 + jit);
+        break;
+    }
+
+    r *= mod;
+    pts.push([cx + Math.cos(a) * r, cy + Math.sin(a) * r]);
+  }
+
+  // Catmull-Rom Spline für glatte Kurve
+  let d = '';
+  for (let i = 0; i < N; i++) {
+    const p0 = pts[(i - 1 + N) % N];
+    const p1 = pts[i];
+    const p2 = pts[(i + 1) % N];
+    const p3 = pts[(i + 2) % N];
+
+    if (i === 0) d = `M ${p1[0]} ${p1[1]} `;
+    d += `C ${p1[0] + (p2[0] - p0[0]) * .18} ${p1[1] + (p2[1] - p0[1]) * .18},` +
+         `${p2[0] - (p3[0] - p1[0]) * .18} ${p2[1] - (p3[1] - p1[1]) * .18},` +
+         `${p2[0]} ${p2[1]} `;
+  }
+  return d + 'Z';
+}
+
+// === renderFront.js ===
+/**
+ * renderFront.js — SVG-Rendering Frontansicht
+ *
+ * Extrahiert aus v5_baseline.html
+ *
+ * Enthält:
+ *   - renderFront() — Rendert die komplette Frontansicht als SVG
+ *
+ * Abhängigkeiten:
+ *   - config.js (PLOT, MH)
+ *   - species.js (SP)
+ *   - generator.js (W)
+ *   - crownFront.js (crownPts, p2p)
+ *   - generator.js (W)
+ *   - controls.js (S)
+ */
+
+/**
+ * Rendert die Frontansicht (Bestandesprofil) als SVG.
+ * Zeigt einen 10m-Transekt mit Vordergrund- und Hintergrund-Bäumen.
+ */
+function renderFront() {
+  const el = document.getElementById('fw');
+  const dW = Math.min(window.innerWidth - 380, 800);
+  const dH = dW * (MH / PLOT);
+
+  const tY = S.transectY;
+  const half = CONFIG.TRANSECT_WIDTH / 2;        // 5m (10m Transekt)
+  const bgDepth = CONFIG.BG_DEPTH;               // 5m Hintergrund
+  const inT = S.trees.filter(t => t.y >= tY - half && t.y <= tY + half);
+  const nearT = S.trees.filter(t => t.y >= tY - half - bgDepth && t.y < tY - half);
+  const allT = [
+    ...nearT.map(t => ({ ...t, layer: 'bg' })),
+    ...inT.map(t => ({ ...t, layer: 'fg' }))
+  ];
+  allT.sort((a, b) => a.y - b.y);
+
+  let svg = `<svg xmlns="http://www.w3.org/2000/svg" width="${dW}" height="${dH}" viewBox="0 0 ${PLOT} ${MH}">`;
+
+  // Himmel-Gradient
+  svg += `<defs><linearGradient id="sky" x1="0" y1="0" x2="0" y2="1">` +
+         `<stop offset="0%" stop-color="#e8ecf2"/><stop offset="100%" stop-color="#f6f6f2"/>` +
+         `</linearGradient></defs>`;
+  svg += `<rect width="${PLOT}" height="${MH}" fill="url(#sky)"/>`;
+
+  // Raster vertikal
+  for (let x = 0; x <= PLOT; x += 10) {
+    svg += `<line x1="${x}" y1="0" x2="${x}" y2="${MH}" stroke="#e4e1d8" stroke-width=".07"/>`;
+    if (x > 0 && x < PLOT) {
+      svg += `<text x="${x}" y="${MH - .25}" font-size="1.3" fill="#ccc" text-anchor="middle" font-family="sans-serif">${x}</text>`;
+    }
+  }
+
+  // Raster horizontal (Höhenlinien)
+  for (let h = 0; h <= MH; h += 5) {
+    const y = MH - h;
+    svg += `<line x1="0" y1="${y}" x2="${PLOT}" y2="${y}" stroke="${h % 10 === 0 ? '#dad7ce' : '#edeae3'}" stroke-width="${h % 10 === 0 ? '.09' : '.04'}"/>`;
+    if (h > 0 && h <= 45) {
+      svg += `<text x=".7" y="${y + .35}" font-size="1.1" fill="#ccc" font-family="sans-serif">${h}m</text>`;
+    }
+  }
+
+  // Bodenlinie
+  svg += `<rect x="0" y="${MH - .4}" width="${PLOT}" height=".4" fill="#c9bb95" opacity=".3"/>`;
+  svg += `<line x1="0" y1="${MH}" x2="${PLOT}" y2="${MH}" stroke="#8B7355" stroke-width=".15"/>`;
+
+  const gY = MH;
+
+  // === Bäume rendern ===
+  for (const t of allT) {
+    const def = SP[t.sp];
+    const isBg = t.layer === 'bg';
+    const op = isBg ? .4 : .92;
+    const hw = t.cw / 2;
+    const top = gY - t.h;
+    const base = gY - t.ka;
+    const cH = t.kl;
+    const tw = Math.max(t.bhd / 100 * 1, .1);
+    const twT = tw * .55;
+
+    const isDecid = ['dome', 'spreading', 'round', 'vase'].includes(def.crown);
+
+    // Stamm (nur Vordergrund)
+    if (!isBg) {
+      svg += `<path d="M ${t.x - tw / 2} ${gY} L ${t.x - twT / 2} ${base} L ${t.x + twT / 2} ${base} L ${t.x + tw / 2} ${gY} Z" fill="#5a4020" opacity="${op * .8}"/>`;
+      svg += `<path d="M ${t.x} ${gY} L ${t.x + tw * .08} ${base} L ${t.x + tw * .2} ${gY} Z" fill="#7a6038" opacity=".2"/>`;
+    }
+
+    const pts = crownPts(def.crown, t.x, top, base, hw, cH, t.jit);
+    const path = p2p(pts);
+
+    if (isBg) {
+      // === Hintergrund-Bäume: gedämpfte Darstellung ===
+      // Einfache Füllung ohne Blobs
+      svg += `<path d="${path}" fill="${def.c}" fill-opacity="${op * (isDecid ? .5 : .7)}" stroke="none"/>`;
+      if (isDecid) {
+        svg += `<path d="${path}" fill="none" stroke="${def.cs}" stroke-width=".08" stroke-opacity="${op * .2}"/>`;
+      }
+    } else {
+      if (isDecid) {
+        // === LAUBBÄUME: Gradient-basiertes Kronen-Rendering ===
+        // Kein Blob-Kreise mehr — saubere Gradient-Füllung mit Lichtrichtung
+
+        const uid = `cr${Math.round(t.x * 10)}${Math.round(t.y * 10)}${Math.round(t.jit * 100)}`;
+        const clipId = uid;
+        const gradId = `gd${uid}`;
+        const gradHlId = `gh${uid}`;
+
+        // ClipPath für Schatten- und Licht-Ellipsen
+        svg += `<defs><clipPath id="${clipId}"><path d="${path}"/></clipPath></defs>`;
+
+        // RadialGradient: Licht von oben-links, Schatten unten-rechts
+        svg += `<defs><radialGradient id="${gradId}" cx="35%" cy="30%" r="65%" fx="30%" fy="25%">`;
+        svg += `<stop offset="0%" stop-color="${def.c}" stop-opacity=".85"/>`;
+        svg += `<stop offset="50%" stop-color="${def.cd}" stop-opacity=".70"/>`;
+        svg += `<stop offset="100%" stop-color="${def.cs}" stop-opacity=".55"/>`;
+        svg += `</radialGradient></defs>`;
+
+        // 1. Basis-Schatten (Bodenschatten)
+        svg += `<path d="${path}" fill="#000" fill-opacity=".02" transform="translate(.15,.15)"/>`;
+
+        // 2. Hauptfüllung mit Gradient
+        svg += `<path d="${path}" fill="url(#${gradId})"/>`;
+
+        // 3. Licht-/Schatten-Modulation innerhalb ClipPath
+        svg += `<g clip-path="url(#${clipId})">`;
+
+        // Lichtreflex oben-links (diffuses Highlight)
+        const hlCx = t.x - hw * 0.2;
+        const hlCy = top + cH * 0.35;
+        const hlRx = hw * 0.55;
+        const hlRy = cH * 0.30;
+        svg += `<ellipse cx="${hlCx}" cy="${hlCy}" rx="${hlRx}" ry="${hlRy}" fill="#fff" fill-opacity=".10"/>`;
+
+        // Schatten unten-rechts (Kronenunterseite)
+        const shCx = t.x + hw * 0.15;
+        const shCy = base - cH * 0.12;
+        const shRx = hw * 0.7;
+        const shRy = cH * 0.20;
+        svg += `<ellipse cx="${shCx}" cy="${shCy}" rx="${shRx}" ry="${shRy}" fill="${def.cs}" fill-opacity=".12"/>`;
+
+        svg += `</g>`;
+
+        // 4. Umriss-Strich
+        svg += `<path d="${path}" fill="none" stroke="${def.cs}" stroke-width=".13" stroke-opacity=".35"/>`;
+
+        // Äste vorerst deaktiviert (Feedback: schweben in der Luft)
+      } else {
+        // === NADELBÄUME: Detailliertes Umriss-Rendering ===
+
+        // Schatten
+        svg += `<path d="${path}" fill="#000" fill-opacity=".03" transform="translate(.12,.12)"/>`;
+
+        // Hauptfüllung mit Umriss
+        svg += `<path d="${path}" fill="${def.c}" fill-opacity="${op}" stroke="${def.cs}" stroke-width=".13"/>`;
+
+        // Innere Schattenform (kein weisser Lichtreflex bei Nadelbäumen)
+        if (def.crown === 'umbrella') {
+          // Waldföhre: Ellipse statt crownPts (vermeidet Pfad-Kreuzung)
+          const sCx = t.x + hw * 0.10;
+          const sCy = top + cH * 0.55;
+          svg += `<ellipse cx="${sCx}" cy="${sCy}" rx="${hw * 0.45}" ry="${cH * 0.25}" fill="${def.cd}" fill-opacity=".10"/>`;
+        } else {
+          const ip = crownPts(def.crown, t.x + hw * .06, top + cH * .15, base - cH * .05, hw * .55, cH * .6, t.jit + 3);
+          svg += `<path d="${p2p(ip)}" fill="${def.cd}" fill-opacity=".1" stroke="none"/>`;
+        }
+
+        // Astlinien deaktiviert (Artefakte, User-Feedback 06.03.2026)
+      }
+
+      // === Totäste und Klebäste (Frontansicht) ===
+      svg += drawBranchStubs(t, gY, tw);
+
+      // === Z-Baum Markierung (Frontansicht) ===
+      // Orangener Ring am Stammfuss + kleines "Z" Label
+      if (t.isZBaum && S.showZBaum) {
+        const zbR = Math.max(tw * 2.5, 0.6);
+        svg += `<circle cx="${t.x}" cy="${gY - 0.2}" r="${zbR}" fill="none" stroke="#e67300" stroke-width=".18" stroke-dasharray=".3,.15"/>`;
+        svg += `<text x="${t.x}" y="${gY + 1.2}" font-size="1.1" fill="#e67300" text-anchor="middle" font-weight="700" font-family="sans-serif">Z</text>`;
+      }
+    }
+  }
+
+  svg += `</svg>`;
+  el.innerHTML = svg;
+}
+
+// === renderBird.js ===
+/**
+ * renderBird.js — SVG-Rendering Vogelperspektive
+ *
+ * Extrahiert aus v5_baseline.html
+ *
+ * Enthält:
+ *   - renderBird() — Rendert die komplette Vogelperspektive als SVG
+ *
+ * Abhängigkeiten:
+ *   - config.js (PLOT)
+ *   - species.js (SP)
+ *   - crownBird.js (computeBR, crownTopN)
+ *   - controls.js (S)
+ */
+
+/**
+ * Rendert die Vogelperspektive (Kronenprojektionsplan) als SVG.
+ * Zeigt 100×100m Plot mit Kronen, Transekt-Markierung und Achsenbeschriftung.
+ */
+function renderBird() {
+  const el = document.getElementById('bw');
+  const dW = Math.min(window.innerWidth - 380, 800);
+
+  let svg = `<svg xmlns="http://www.w3.org/2000/svg" width="${dW}" height="${dW}" viewBox="-3 -3 ${PLOT + 6} ${PLOT + 6}">`;
+
+  // Hintergrund
+  svg += `<rect x="0" y="0" width="${PLOT}" height="${PLOT}" fill="#f9f8f3"/>`;
+
+  // 10m-Raster
+  for (let i = 0; i <= PLOT; i += 10) {
+    svg += `<line x1="${i}" y1="0" x2="${i}" y2="${PLOT}" stroke="#ece9e0" stroke-width=".08"/>`;
+    svg += `<line x1="0" y1="${i}" x2="${PLOT}" y2="${i}" stroke="#ece9e0" stroke-width=".08"/>`;
+    if (i > 0 && i < PLOT) {
+      svg += `<text x="${i}" y="${PLOT + 1.8}" font-size="1.4" fill="#c0bdb5" text-anchor="middle" font-family="sans-serif">${i}</text>`;
+      svg += `<text x="-1" y="${i + .5}" font-size="1.4" fill="#c0bdb5" text-anchor="end" font-family="sans-serif">${i}</text>`;
+    }
+  }
+
+  // Defs für Transekt-Schraffur (muss in <defs> vor Verwendung)
+  const tY = S.transectY;
+  const half = CONFIG.TRANSECT_WIDTH / 2;  // 5m bei 10m Transekt
+  svg += `<defs><pattern id="th" patternUnits="userSpaceOnUse" width="1.2" height="1.2" patternTransform="rotate(45)">` +
+         `<line x1="0" y1="0" x2="0" y2="1.2" stroke="#d4960a" stroke-width=".2" opacity=".45"/></pattern></defs>`;
+
+  // === 1. Kronen rendern (grösste zuerst) ===
+  const bd = computeBR(S.trees);
+  const order = [...bd].sort((a, b) => S.trees[b.idx].cw - S.trees[a.idx].cw);
+
+  for (const { idx, radii } of order) {
+    const t = S.trees[idx];
+    const def = SP[t.sp];
+
+    // Schatten
+    svg += `<circle cx="${t.x + .12}" cy="${t.y + .12}" r="${t.cw / 2 * .8}" fill="#000" opacity=".025"/>`;
+
+    // Kronenpfad
+    const path = crownTopN(t.sp, t.x, t.y, radii, t.jit);
+    svg += `<path d="${path}" fill="${def.ct}" fill-opacity=".78" stroke="${def.cts}" stroke-width=".12"/>`;
+
+    // Lichtreflex
+    svg += `<circle cx="${t.x - t.cw / 8}" cy="${t.y - t.cw / 8}" r="${t.cw / 4}" fill="#fff" opacity=".05"/>`;
+
+    // Stammpunkt
+    svg += `<circle cx="${t.x}" cy="${t.y}" r="${Math.max(t.bhd / 200 * .7, .12)}" fill="#5a4018" opacity=".4"/>`;
+  }
+
+  // === 2. Transekt-Markierung ÜBER den Kronen (halbtransparent) ===
+  svg += `<rect x="0" y="${tY - half}" width="${PLOT}" height="${CONFIG.TRANSECT_WIDTH}" fill="url(#th)"/>`;
+  svg += `<rect x="0" y="${tY - half}" width="${PLOT}" height="${CONFIG.TRANSECT_WIDTH}" fill="rgba(255,200,50,.15)"/>`;
+  svg += `<line x1="0" y1="${tY - half}" x2="${PLOT}" y2="${tY - half}" stroke="#c88600" stroke-width=".3"/>`;
+  svg += `<line x1="0" y1="${tY + half}" x2="${PLOT}" y2="${tY + half}" stroke="#c88600" stroke-width=".3"/>`;
+  svg += `<rect x="${PLOT + .4}" y="${tY - half}" width="2.2" height="${CONFIG.TRANSECT_WIDTH}" fill="#c88600" rx=".3"/>`;
+  svg += `<text x="${PLOT + 1.5}" y="${tY + .4}" font-size="1" fill="#fff" text-anchor="middle" font-weight="700" font-family="sans-serif">T</text>`;
+
+  // === 3. Z-Baum-Ringe GANZ OBEN (über Kronen und Transekt) ===
+  if (S.showZBaum) {
+    for (const { idx } of order) {
+      const t = S.trees[idx];
+      if (t.isZBaum) {
+        svg += `<circle cx="${t.x}" cy="${t.y}" r="${t.cw / 2 + 0.4}" fill="none" stroke="#e67300" stroke-width=".35" stroke-dasharray=".6,.3" opacity=".9"/>`;
+      }
+    }
+  }
+
+  // Rahmen
+  svg += `<rect x="0" y="0" width="${PLOT}" height="${PLOT}" fill="none" stroke="#aaa" stroke-width=".2"/>`;
+
+  // Achsenbeschriftung
+  svg += `<text x="${PLOT / 2}" y="${PLOT + 3.5}" font-size="1.6" fill="#999" text-anchor="middle" font-family="sans-serif">X (m)</text>`;
+  svg += `<text x="-3.5" y="${PLOT / 2}" font-size="1.6" fill="#999" text-anchor="middle" font-family="sans-serif" transform="rotate(-90,-3.5,${PLOT / 2})">Y (m)</text>`;
+
+  svg += `</svg>`;
+  el.innerHTML = svg;
+}
+
+// === stats.js ===
+/**
+ * stats.js — Statistik-Berechnung
+ *
+ * Extrahiert aus v5_baseline.html
+ *
+ * Enthält:
+ *   - calcSt() — Berechnet und zeigt Baumanzahl, Deckungsgrad, Grundfläche,
+ *                Derbholzvorrat (Tariffunktion), Vertikaler Deckungsgrad
+ *
+ * Abhängigkeiten: config.js (PLOT), controls.js (S)
+ * Wird benötigt von: controls.js (render)
+ *
+ * Deckungsgrad wird per 0.5m-Raster berechnet (echte Bodenbedeckung,
+ * nicht aufsummierte Kronenfläche). [Designentscheidung D003]
+ */
+
+/**
+ * Berechnet Statistiken und aktualisiert die Anzeige:
+ * - Baumanzahl
+ * - Deckungsgrad % (Raster-basiert)
+ * - Grundfläche m²/ha
+ */
+function calcSt() {
+  const n = S.trees.length;
+
+  // Grundfläche (Kreisfläche auf Brusthöhe)
+  let gf = 0;
+  for (const t of S.trees) {
+    gf += Math.PI * (t.bhd / 200) ** 2;
+  }
+
+  // Raster-basierter Deckungsgrad: 0.5m Zellen = 200×200 Grid
+  const res = 0.5;
+  const gSize = Math.round(PLOT / res);
+  const grid = new Uint8Array(gSize * gSize);
+
+  for (const t of S.trees) {
+    const r = t.cw / 2;
+    const r2 = r * r;
+    const xMin = Math.max(0, Math.floor((t.x - r) / res));
+    const xMax = Math.min(gSize - 1, Math.ceil((t.x + r) / res));
+    const yMin = Math.max(0, Math.floor((t.y - r) / res));
+    const yMax = Math.min(gSize - 1, Math.ceil((t.y + r) / res));
+
+    for (let gy = yMin; gy <= yMax; gy++) {
+      for (let gx = xMin; gx <= xMax; gx++) {
+        const dx = (gx * res + res / 2) - t.x;
+        const dy = (gy * res + res / 2) - t.y;
+        if (dx * dx + dy * dy <= r2) grid[gy * gSize + gx] = 1;
+      }
+    }
+  }
+
+  let covered = 0;
+  for (let i = 0; i < grid.length; i++) if (grid[i]) covered++;
+  const dg = covered / (gSize * gSize) * 100;
+
+  // Z-Baum Zählung
+  let nZB = 0;
+  for (const t of S.trees) {
+    if (t.isZBaum) nZB++;
+  }
+
+  // === Vorrat (m³/ha) — Derbholzvolumen nach Tariffunktionen ===
+  //
+  // Wissenschaftliche Grundlage:
+  //   Pretzsch H (2019) Grundlagen der Waldwachstumsforschung.
+  //     Springer, 2. Aufl. — Kap. 2.4, Box 2.9 (S. 90)
+  //   Franz F, Bachler J, Deckelmann E (1973) Derbholz-Formzahlfunktionen.
+  //   Kennel R (1965b, 1969) Schaftholz-Formzahlfunktionen.
+  //   Grundner F, Schwappach A (1952) Massentafeln.
+  //
+  // Methode: Einzelbaum-Derbholz-Tariffunktion
+  //   v_derb = exp(b0 + b1 × ln(d) + b2 × ln(h))
+  //
+  //   wobei d = BHD in cm, h = Baumhöhe in m, v = Derbholzvolumen in m³
+  //   Koeffizienten artspezifisch nach publizierten Regressionen,
+  //   kalibriert auf mitteleuropäische Ertragstafel-Bedingungen.
+  //
+  // Die Formzahl f₁.₃ = f(d, h) ist NICHT konstant (vgl. Pretzsch Abb. B,
+  // Box 2.9): sie sinkt mit zunehmendem BHD und steigt mit h/d-Wert.
+  // Die Tariffunktion bildet diese Abhängigkeit implizit ab.
+  //
+  // Raumdichten nach Pretzsch Tab. 2.4 (S. 100), Knigge & Schulz (1966).
+
+  // Artspezifische Tariff-Koeffizienten: v = exp(b0 + b1*ln(d) + b2*ln(h))
+  // Quellen: BWI-Volumenfunktionen (Thünen-Institut), Franz et al. 1973,
+  //          Pollanschütz 1974, Grundner & Schwappach 1952
+  //          Kalibriert für Derbholz (≥7cm Durchmesser)
+  const TARIF = {
+    // Nadelholz — nach Franz et al. (1973), Pollanschütz (1974)
+    Fi:  { b0: -9.9284, b1: 1.8350, b2: 1.0860 },  // Picea abies
+    Ta:  { b0: -9.8800, b1: 1.8400, b2: 1.0500 },  // Abies alba
+    WFoe:{ b0: -9.8920, b1: 1.8500, b2: 1.0320 },  // Pinus sylvestris
+    Lae: { b0: -9.9100, b1: 1.8460, b2: 1.0580 },  // Larix decidua
+    Dou: { b0: -9.9000, b1: 1.8300, b2: 1.0700 },  // Pseudotsuga menziesii
+    // Laubholz — nach Grundner & Schwappach (1952), Kennel (1969)
+    Bu:  { b0: -9.7190, b1: 1.8080, b2: 0.9830 },  // Fagus sylvatica
+    Ei:  { b0: -9.7800, b1: 1.8300, b2: 0.9700 },  // Quercus ssp.
+    BAh: { b0: -9.7400, b1: 1.8150, b2: 0.9900 },  // Acer ssp.
+    Es:  { b0: -9.7600, b1: 1.8200, b2: 0.9800 },  // Fraxinus excelsior
+  };
+  // Default für unbekannte Arten (Mittelwert Laub/Nadel)
+  const TARIF_DEFAULT = { b0: -9.830, b1: 1.825, b2: 1.020 };
+
+  let volHa = 0;
+  for (const t of S.trees) {
+    if (t.bhd > 0 && t.h > 1.3) {
+      const tf = TARIF[t.sp] || TARIF_DEFAULT;
+      // v_derb = exp(b0 + b1 × ln(d_cm) + b2 × ln(h_m))
+      const lnD = Math.log(t.bhd);
+      const lnH = Math.log(t.h);
+      const vDerb = Math.exp(tf.b0 + tf.b1 * lnD + tf.b2 * lnH);
+      volHa += Math.max(0, vDerb);
+    }
+  }
+  const plotA = (typeof PLOT !== 'undefined' ? PLOT : 100);
+  volHa = volHa * 10000 / (plotA * plotA);
+  const volEl = document.getElementById('svol');
+  if (volEl) { volEl.textContent = volHa > 0 ? Math.round(volHa) : '—'; }
+
+  // === Vertikaler Deckungsgrad ===
+  let nU = 0, nM = 0, nO = 0;
+  for (const t of S.trees) {
+    if (t.h <= 10) nU++; else if (t.h <= 25) nM++; else nO++;
+  }
+  const layers = (nU > 0 ? 1 : 0) + (nM > 0 ? 1 : 0) + (nO > 0 ? 1 : 0);
+  const vdgEl = document.getElementById('svdg');
+  if (vdgEl) {
+    vdgEl.textContent = Math.round(layers / 3 * 100) + '%';
+    vdgEl.title = 'U(<10m):' + nU + ' M(10-25m):' + nM + ' O(>25m):' + nO;
+  }
+
+  // Anzeige aktualisieren
+  document.getElementById('sn').textContent = n;
+  document.getElementById('sd').textContent = dg.toFixed(1);
+  document.getElementById('sg').textContent = gf.toFixed(1);
+
+  // Z-Baum Statistik (optional anzeigen)
+  const zbEl = document.getElementById('szb');
+  if (zbEl) {
+    zbEl.textContent = S.showZBaum && nZB > 0 ? nZB : '—';
+  }
+}
+
+// === controls.js ===
+/**
+ * controls.js — UI-Controls, State-Management, Event-Handler
+ *
+ * Extrahiert aus v5_baseline.html
+ *
+ * Enthält:
+ *   - S          — Globaler State (mode, density, transectY, seed, sp, trees)
+ *   - buildC()   — Baut die Controls-UI auf
+ *   - tS(k, on)  — Toggle Species ein/aus
+ *   - sP(k, v)   — Set Percent für Baumart
+ *   - sPr(k,p,v) — Set Parameter (h, cw, kl, ka, bhd)
+ *   - uP()       — Update Percent-Summe
+ *   - setMode(m) — Modus wechseln (gleich/ungleich)
+ *   - uC(id, v)  — Update Control (density, transectY)
+ *   - rS()       — Random Seed
+ *   - regen()    — Neu generieren mit aktuellem Seed
+ *   - render()   — Komplett-Rendering (genTrees + alle Views)
+ *   - renderLeg()— Legende aktualisieren
+ *   - uTitles()  — Titel aktualisieren
+ *
+ * Abhängigkeiten: species.js (SP, iP), generator.js (genTrees),
+ *   renderFront.js, renderBird.js, stats.js
+ */
+
+// === Globaler State ===
+let S = {
+  mode: 'gleich',
+  density: 220,
+  transectY: 50,
+  seed: 42,
+  age: 0,         // 0 = manuell, >0 = altersbasiert (Zeitschiene)
+  timelineOn: false,
+  showVerjuengung: true,  // Naturverjüngung anzeigen (ab Zielphase)
+  mixPattern: 'einzel',   // Mischungsform: einzel, trupp, gruppe, horst
+  showZBaum: false,       // Z-Bäume hervorheben
+  sp: {},
+  trees: []
+};
+
+// State initialisieren aus Species-Definitionen
+for (const [k, v] of Object.entries(SP)) {
+  S.sp[k] = {
+    on: k in iP,
+    pct: iP[k] || 0,
+    h: v.d.h,
+    cw: v.d.cw,
+    kl: v.d.kl,
+    ka: v.d.ka,
+    bhd: v.d.bhd
+  };
+}
+
+/**
+ * Baut die Controls-UI für alle Baumarten auf
+ */
+function buildC() {
+  const el = document.getElementById('sc');
+  let h = '';
+  for (const [k, d] of Object.entries(SP)) {
+    const s = S.sp[k];
+    h += `<div class="spb ${s.on ? '' : 'off'}" id="spb-${k}">` +
+      `<div class="sph">` +
+        `<input type="checkbox" ${s.on ? 'checked' : ''} onchange="tS('${k}',this.checked)">` +
+        `<div class="spi" style="background:${d.c}"><span style="color:#fff;font-size:7px;font-weight:700">${k.length > 2 ? k.substring(0, 2) : k}</span></div>` +
+        `<span class="spn">${d.name}</span>` +
+        `<span class="spl">${d.lat}</span>` +
+      `</div>` +
+      `<div class="pb">` +
+        `<input type="range" min="0" max="100" step="5" value="${s.pct}" ${s.on ? '' : 'disabled'} oninput="sP('${k}',this.value)" id="pct-${k}">` +
+        `<span class="pv" id="pv-${k}">${s.pct}%</span>` +
+      `</div>` +
+      `<div class="spp" id="spp-${k}">` +
+        `<label>Höhe m<input type="number" value="${s.h}" min="5" max="55" step="1" onchange="sPr('${k}','h',this.value)"></label>` +
+        `<label>Kronenbreite m<input type="number" value="${s.cw}" min="2" max="20" step=".5" onchange="sPr('${k}','cw',this.value)"></label>` +
+        `<label>Kronenlänge m<input type="number" value="${s.kl}" min="2" max="40" step="1" onchange="sPr('${k}','kl',this.value)"></label>` +
+        `<label>Kronenansatz m<input type="number" value="${s.ka}" min="1" max="30" step="1" onchange="sPr('${k}','ka',this.value)"></label>` +
+        `<label>BHD cm<input type="number" value="${s.bhd}" min="10" max="120" step="5" onchange="sPr('${k}','bhd',this.value)"></label>` +
+      `</div>` +
+    `</div>`;
+  }
+  el.innerHTML = h;
+  uP();
+}
+
+/** Toggle Species ein/aus */
+function tS(k, on) {
+  S.sp[k].on = on;
+  if (!on) S.sp[k].pct = 0;
+  document.getElementById(`pct-${k}`).disabled = !on;
+  document.getElementById(`pct-${k}`).value = S.sp[k].pct;
+  document.getElementById(`pv-${k}`).textContent = S.sp[k].pct + '%';
+  document.getElementById(`spb-${k}`).className = 'spb ' + (on ? '' : 'off');
+  uP();
+  render();
+}
+
+/** Set Percent für Baumart */
+function sP(k, v) {
+  S.sp[k].pct = +v;
+  document.getElementById(`pv-${k}`).textContent = v + '%';
+  uP();
+  render();
+}
+
+/** Set Parameter (h, cw, kl, ka, bhd) mit KL↔KA Synchronisation */
+function sPr(k, p, v) {
+  S.sp[k][p] = +v;
+  // KL ↔ KA automatische Synchronisation [D005]
+  if (p === 'kl') S.sp[k].ka = Math.max(S.sp[k].h - S.sp[k].kl, 1);
+  if (p === 'ka') S.sp[k].kl = Math.max(S.sp[k].h - S.sp[k].ka, 1);
+  if (p === 'h') S.sp[k].ka = Math.max(S.sp[k].h - S.sp[k].kl, 1);
+
+  // Inputs aktualisieren
+  const bl = document.getElementById(`spp-${k}`);
+  if (bl) {
+    const ins = bl.querySelectorAll('input[type=number]');
+    ins[0].value = S.sp[k].h;
+    ins[1].value = S.sp[k].cw;
+    ins[2].value = S.sp[k].kl;
+    ins[3].value = S.sp[k].ka;
+    ins[4].value = S.sp[k].bhd;
+  }
+  render();
+}
+
+/** Update Percent-Summe Anzeige */
+function uP() {
+  const tot = Object.values(S.sp).reduce((a, s) => a + (s.on ? s.pct : 0), 0);
+  const el = document.getElementById('pt');
+  el.textContent = `Summe: ${tot}%`;
+  el.className = 'pt ' + (tot === 100 ? 'ok' : 'warn');
+}
+
+/** Modus wechseln */
+function setMode(m) {
+  console.log('[DEBUG] setMode(' + m + ') aufgerufen');
+  try {
+    S.mode = m;
+    document.getElementById('bg').className = m === 'gleich' ? 'active' : '';
+    document.getElementById('bu').className = m === 'ungleich' ? 'active' : '';
+    render();
+    console.log('[DEBUG] setMode(' + m + ') erfolgreich, trees=' + S.trees.length);
+  } catch(e) {
+    console.error('[DEBUG] setMode FEHLER:', e);
+    var d = document.getElementById('dbg-err');
+    if (d) { d.style.display = 'block'; d.textContent += 'setMode FEHLER: ' + e.message + '\n'; }
+  }
+}
+
+/** Naturverjüngung ein/ausschalten */
+function toggleVerjuengung() {
+  S.showVerjuengung = !S.showVerjuengung;
+  const btn = document.getElementById('btn-vj');
+  if (btn) btn.className = S.showVerjuengung ? 'active' : '';
+  render();
+}
+
+/** Mischungsform setzen */
+function setMixPattern(p) {
+  console.log('[DEBUG] setMixPattern(' + p + ') aufgerufen');
+  try {
+    S.mixPattern = p;
+    const opts = ['einzel', 'untergeordnet', 'trupp', 'gruppe', 'horst'];
+    opts.forEach(o => {
+      const el = document.getElementById('mix-' + o);
+      if (el) el.className = o === p ? 'active' : '';
+    });
+    const desc = {
+      einzel: 'Einzeln: Zufällige Verteilung der Baumarten.',
+      untergeordnet: 'Untergeordnet: Hauptbaumart in Oberschicht, Nebenbaumarten in Unterschicht.',
+      trupp: 'Trupp: Kleine Gruppen ≤5 Aren (3-5 Bäume gleicher Art).',
+      gruppe: 'Gruppe: 5-10 Aren (10-20 Bäume gleicher Art).',
+      horst: 'Horst: Grosse Flächen 10-50 Aren (>20 Bäume gleicher Art).',
+    };
+    const el = document.getElementById('mi-mix');
+    if (el) el.textContent = desc[p] || '';
+    _masterKey = ''; // Force regeneration
+    render();
+    console.log('[DEBUG] setMixPattern(' + p + ') erfolgreich, trees=' + S.trees.length);
+  } catch(e) {
+    console.error('[DEBUG] setMixPattern FEHLER:', e);
+    var d = document.getElementById('dbg-err');
+    if (d) { d.style.display = 'block'; d.textContent += 'setMixPattern FEHLER: ' + e.message + '\n'; }
+  }
+}
+
+/** Z-Baum-Anzeige ein/ausschalten */
+function toggleZBaum() {
+  S.showZBaum = !S.showZBaum;
+  const btn = document.getElementById('btn-zb');
+  if (btn) btn.className = S.showZBaum ? 'active' : '';
+  render();
+}
+
+/** Update Control (density, transectY) */
+function uC(id, v) {
+  S[id] = +v;
+  document.getElementById(id === 'density' ? 'vd' : 'vt').textContent = v + (id === 'transectY' ? ' m' : '');
+  render();
+}
+
+/** Random Seed */
+function rS() {
+  S.seed = Math.floor(Math.random() * 9999) + 1;
+  document.getElementById('seed').value = S.seed;
+  _masterKey = ''; // Cache invalidieren für neue Masterpopulation
+  render();
+}
+
+/** Neu generieren mit aktuellem Seed */
+function regen() {
+  S.seed = +document.getElementById('seed').value;
+  _masterKey = ''; // Cache invalidieren für neue Masterpopulation
+  render();
+}
+
+/** Legende aktualisieren */
+function renderLeg() {
+  const el = document.getElementById('legend');
+  let h = '';
+  for (const [k, d] of Object.entries(SP)) {
+    if (!S.sp[k].on || S.sp[k].pct <= 0) continue;
+    h += `<div class="li"><div class="ls" style="background:${d.c}"></div>` +
+         `<b>${d.name}</b> <span style="color:#aaa;font-size:10px">${S.sp[k].pct}%</span></div>`;
+  }
+  // Z-Baum Legende
+  if (S.showZBaum && S.timelineOn) {
+    const nZB = S.trees.filter(t => t.isZBaum).length;
+    if (nZB > 0) {
+      h += `<div class="li li-zb"><div class="ls" style="background:none;border:2px dashed #e67300;"></div>` +
+           `<b style="color:#e67300;">Z-Baum</b> <span style="color:#aaa;font-size:10px">${nZB} Stk.</span></div>`;
+    }
+  }
+  el.innerHTML = h;
+}
+
+// === Timeline-Funktionen ===
+
+/**
+ * Timeline-Modus ein/ausschalten
+ * @param {boolean} on — true = Zeitschiene aktiv
+ */
+function setTimeline(on) {
+  S.timelineOn = on;
+  document.getElementById('tl-on').className = on ? 'active' : '';
+  document.getElementById('tl-off').className = on ? '' : 'active';
+  document.getElementById('tl-content').className = 'tl-content ' + (on ? 'visible' : 'hidden');
+
+  // Nur Stämme/ha deaktivieren (wird im Timeline-Modus von FBB gesteuert)
+  // Transekt Y und Seed bleiben immer interaktiv
+  const densityRow = document.getElementById('density-row');
+  if (densityRow) {
+    densityRow.style.opacity = on ? '0.4' : '1';
+    densityRow.style.pointerEvents = on ? 'none' : 'auto';
+  }
+
+  if (on) {
+    const age = S.age || 80; // Default: 80 Jahre (Dimensionierung/Ziel-Übergang)
+    setAge(age);
+  } else {
+    S.age = 0;
+    // Manuelle Werte zurücksetzen auf Defaults
+    for (const [k, v] of Object.entries(SP)) {
+      if (!S.sp[k].on) continue;
+      S.sp[k].h = v.d.h;
+      S.sp[k].cw = v.d.cw;
+      S.sp[k].kl = v.d.kl;
+      S.sp[k].ka = v.d.ka;
+      S.sp[k].bhd = v.d.bhd;
+    }
+    S.density = +document.getElementById('density').value;
+    render();
+  }
+}
+
+/**
+ * Alter setzen und alles aktualisieren
+ * @param {number} age — Bestandesalter in Jahren (0-120)
+ */
+function setAge(age) {
+  const maxA = typeof getMaxAge === 'function' ? getMaxAge() : 120;
+  age = Math.max(1, Math.min(maxA, Math.round(age)));
+  S.age = age;
+
+  // Slider-Maximum dynamisch anpassen + Wert setzen
+  const slider = document.getElementById('tl-age');
+  if (slider) {
+    if (+slider.max !== maxA) slider.max = maxA;
+    slider.value = age;
+  }
+  const val = document.getElementById('tl-age-val');
+  if (val) val.textContent = age + ' Jahre';
+
+  // Wachstumsdaten anwenden
+  if (typeof applyAge === 'function') {
+    applyAge(age);
+  }
+
+  // Density-Slider synchronisieren
+  const ds = document.getElementById('density');
+  if (ds) { ds.value = S.density; }
+  const vd = document.getElementById('vd');
+  if (vd) vd.textContent = S.density;
+
+  // Phase-Indikator aktualisieren
+  updatePhaseIndicator(age);
+
+  // Species-Parameter in UI aktualisieren
+  updateSpeciesUI();
+
+  render();
+}
+
+/**
+ * Phase-Indikator und Phase-Bar aktualisieren
+ */
+function updatePhaseIndicator(age) {
+  if (typeof getPhase !== 'function') return;
+  const phase = getPhase(age);
+
+  const phEl = document.getElementById('tl-phase-info');
+  if (phEl) {
+    phEl.style.background = phase.color + '22';
+    phEl.innerHTML =
+      `<div class="tl-phase-dot" style="background:${phase.color}"></div>` +
+      `<div><span class="tl-phase-name">${phase.name}</span><br>` +
+      `<span class="tl-phase-desc">${phase.desc}</span></div>`;
+  }
+
+  // Phase-Bar Segmente highlighten
+  if (typeof PHASES !== 'undefined') {
+    PHASES.forEach((p, i) => {
+      const seg = document.getElementById('tl-seg-' + i);
+      if (seg) {
+        seg.className = 'tl-phase-seg' + (p.id === phase.id ? ' active' : '');
+        seg.style.opacity = p.id === phase.id ? '1' : '0.5';
+      }
+    });
+  }
+
+  // Stammzahl-Stats + Hiebreife-Info
+  const stEl = document.getElementById('tl-stats');
+  if (stEl && typeof nHa === 'function' && typeof hdom === 'function') {
+    const n = nHa(age);
+    // Dominante Höhe der Hauptbaumart
+    let mainSp = 'Bu', mainPct = 0;
+    for (const [k, s] of Object.entries(S.sp)) {
+      if (s.on && s.pct > mainPct) { mainSp = k; mainPct = s.pct; }
+    }
+    const hMain = hdom(mainSp, age);
+    // Hiebreife-Warnung
+    let hrInfo = '';
+    if (typeof HIEBREIFE !== 'undefined') {
+      for (const [k, s] of Object.entries(S.sp)) {
+        if (!s.on || s.pct <= 0) continue;
+        const hr = HIEBREIFE[k];
+        if (hr && age >= hr.harvestAge) {
+          hrInfo += ` <span style="color:#c44;font-weight:bold;">⚠ ${k} hiebsreif</span>`;
+        }
+      }
+    }
+    stEl.innerHTML = `N/ha: <span>${n}</span> · hdom ${mainSp}: <span>${hMain.toFixed(1)}m</span>${hrInfo}`;
+  }
+
+  // === FBB Durchforstungs-Overlay ===
+  // Zeigt aktuelle Massnahme und nächsten Eingriff aus FBB-Tabellen
+  const dfEl = document.getElementById('tl-df-info');
+  if (dfEl && typeof getIntervention === 'function' && typeof hdom === 'function') {
+    let mainSp2 = 'Bu', mainPct2 = 0;
+    for (const [k, s] of Object.entries(S.sp)) {
+      if (s.on && s.pct > mainPct2) { mainSp2 = k; mainPct2 = s.pct; }
+    }
+    const hMain2 = hdom(mainSp2, age);
+    const iv = getIntervention(mainSp2, hMain2);
+
+    if (iv && iv.current) {
+      const c = iv.current;
+      let html = `<div style="font-size:10px;color:#555;">`;
+      html += `<b style="color:#8b5e2a;">${c.massnahme}</b>`;
+      if (c.entnahmeN) html += ` · Entnahme: <span style="color:#c44;">${c.entnahmeN} N/ha</span>`;
+      if (c.konZB) html += ` · KON/ZB: ${c.konZB}`;
+      if (c.bhdZB) html += ` · BHD<sub>ZB</sub>: ${c.bhdZB}cm`;
+      if (iv.next) {
+        html += `<br><span style="color:#999;">Nächst: ${iv.next.massnahme} bei hdom ${iv.next.hdom}m</span>`;
+      }
+      html += `</div>`;
+      dfEl.innerHTML = html;
+      dfEl.style.display = 'block';
+    } else if (iv && iv.next) {
+      dfEl.innerHTML = `<div style="font-size:10px;color:#999;">Erster Eingriff: ${iv.next.massnahme} bei hdom ${iv.next.hdom}m</div>`;
+      dfEl.style.display = 'block';
+    } else {
+      dfEl.style.display = 'none';
+    }
+  }
+}
+
+/**
+ * Species-Parameter-Inputs in der UI aktualisieren
+ */
+function updateSpeciesUI() {
+  for (const [k, s] of Object.entries(S.sp)) {
+    const bl = document.getElementById(`spp-${k}`);
+    if (!bl) continue;
+    const ins = bl.querySelectorAll('input[type=number]');
+    if (ins.length >= 5) {
+      ins[0].value = s.h;
+      ins[1].value = s.cw;
+      ins[2].value = s.kl;
+      ins[3].value = s.ka;
+      ins[4].value = s.bhd;
+    }
+  }
+}
+
+/**
+ * Snap zu einem bestimmten Alter (Klick auf Snap-Punkt)
+ */
+function snapAge(age) {
+  setAge(age);
+}
+
+/**
+ * Baut die Timeline-UI auf (wird in buildC aufgerufen)
+ */
+function buildTimeline() {
+  const el = document.getElementById('tl-container');
+  if (!el) return;
+
+  let h = '';
+
+  // Toggle: Manuell / Zeitschiene
+  h += '<div class="tl-toggle">';
+  h += '<button id="tl-off" class="active" onclick="setTimeline(false)">Manuell</button>';
+  h += '<button id="tl-on" onclick="setTimeline(true)">Zeitschiene</button>';
+  h += '</div>';
+
+  // Timeline-Inhalt (initial verborgen)
+  h += '<div id="tl-content" class="tl-content hidden">';
+
+  // maxA vorab berechnen (vor Verwendung in Phase-Bar)
+  const maxA = typeof getMaxAge === 'function' ? getMaxAge() : 120;
+
+  // Phase-Bar
+  h += '<div class="tl-phase-bar">';
+  if (typeof PHASES !== 'undefined') {
+    PHASES.forEach((p, i) => {
+      const w = (Math.min(p.ageEnd, maxA) - p.ageStart) / maxA * 100;
+      if (w <= 0) return;
+      h += `<div id="tl-seg-${i}" class="tl-phase-seg" style="width:${w}%;background:${p.color};opacity:.5"></div>`;
+    });
+  }
+  h += '</div>';
+
+  // Alters-Anzeige
+  h += '<div class="tl-age-val" id="tl-age-val">80 Jahre</div>';
+
+  // Slider
+  h += '<div class="tl-slider-wrap">';
+  h += '<input type="range" id="tl-age" min="1" max="' + maxA + '" step="1" value="80" oninput="setAge(+this.value)">';
+  h += '</div>';
+
+  // Snap-Punkte
+  h += '<div class="tl-snaps">';
+  if (typeof PHASE_SNAPS !== 'undefined') {
+    PHASE_SNAPS.forEach(s => {
+      h += `<div class="tl-snap" onclick="snapAge(${s.age || 1})">${s.age || 1}</div>`;
+    });
+  }
+  h += '</div>';
+
+  // Phase-Indikator
+  h += '<div class="tl-phase" id="tl-phase-info"></div>';
+
+  // Stats
+  h += '<div class="tl-stats" id="tl-stats"></div>';
+
+  // FBB Durchforstungs-Info
+  h += '<div id="tl-df-info" style="margin-top:3px;padding:4px 6px;background:#fdf6ec;border-radius:4px;display:none;"></div>';
+
+  h += '</div>'; // tl-content
+
+  el.innerHTML = h;
+}
+
+/** Titel aktualisieren */
+function uTitles() {
+  const l = S.mode === 'gleich' ? 'Gleichförmiger Hochwald' : 'Ungleichförmiger Hochwald';
+  const ageStr = S.timelineOn && S.age > 0 ? ` · ${S.age} Jahre` : '';
+  const phaseStr = S.timelineOn && S.age > 0 && typeof getPhase === 'function'
+    ? ` · ${getPhase(S.age).name}` : '';
+  const mixStr = S.mixPattern !== 'einzel' ? ` · ${S.mixPattern.charAt(0).toUpperCase() + S.mixPattern.slice(1)}mischung` : '';
+  document.getElementById('ft').textContent = `Frontansicht — Transekt ${CONFIG.TRANSECT_WIDTH} m · ${l}${ageStr}${phaseStr}${mixStr}`;
+  document.getElementById('bt').textContent = `Vogelperspektive — 100 × 100 m · ${l}${ageStr}${mixStr}`;
+  document.getElementById('mi').textContent = S.timelineOn
+    ? (S.mode === 'gleich'
+      ? `Zeitschiene ${S.age}J: Gleichförmig — alle Bäume ähnlich alt.`
+      : `Zeitschiene ${S.age}J: Plenterwald — permanente Verjüngung, alle Altersklassen.`)
+    : S.mode === 'gleich'
+      ? 'Gleichförmig: Bäume ähnlicher Dimension, geringe Höhenstreuung.'
+      : 'Ungleichförmig (Plenterwald): Inverse-J Verteilung, alle Entwicklungsstufen.';
+}
+
+/** Komplett-Rendering: Bäume generieren + alle Ansichten + Statistik */
+function render() {
+  genTrees();
+  // Z-Bäume markieren (nach genTrees, vor Rendering)
+  if (typeof markZBaeume === 'function') {
+    markZBaeume(S.trees);
+  }
+  renderFront();
+  renderBird();
+  renderLeg();
+  calcSt();
+  uTitles();
+}
+
+// === export.js ===
+/**
+ * export.js — PNG-Export (300 DPI, Panelgrössen)
+ *
+ * Extrahiert aus v5_baseline.html
+ *
+ * Enthält:
+ *   - xp(type)         — Export Front/Vogel/Paar als PNG
+ *   - s2c(svgEl,w,h,cb)— SVG zu Canvas konvertieren
+ *   - xpP()            — Paar-Export (Front + Vogel übereinander)
+ *   - xpTimeline()     — Zeitreihen-Export (3 Zeitpunkte nebeneinander)
+ *   - dl(canvas, name) — Canvas als PNG herunterladen
+ *
+ * Abhängigkeiten: config.js (PW, PH, DPI), controls.js (S),
+ *   timeline.js (applyAge, getPhase — optional für Zeitreihen-Export)
+ */
+
+/**
+ * Exportiert Front, Vogel oder Paar als PNG (300 DPI, 135×70mm)
+ * @param {string} type - 'front', 'bird', oder 'pair'
+ */
+function xp(type) {
+  if (type === 'pair') { xpP(); return; }
+  if (type === 'timeline') { xpTimeline(); return; }
+  const svgEl = document.querySelector(type === 'front' ? '#fw svg' : '#bw svg');
+  const ageStr = S.timelineOn && S.age > 0 ? `_${S.age}J` : '';
+  s2c(svgEl, PW, PH, c => { dl(c, `${type}_${S.mode}${ageStr}.png`); });
+}
+
+/**
+ * Konvertiert ein SVG-Element in ein eigenständiges Canvas mit gegebener Auflösung.
+ * Jeder Aufruf erstellt ein NEUES Canvas (wichtig für Paar-/Zeitreihen-Export,
+ * da sonst das gleiche Canvas mehrfach überschrieben wird).
+ *
+ * @param {SVGElement} svgEl - SVG Element
+ * @param {number} w - Zielbreite in Pixel
+ * @param {number} h - Zielhöhe in Pixel
+ * @param {function} cb - Callback mit eigenständigem Canvas
+ */
+function s2c(svgEl, w, h, cb) {
+  const cl = svgEl.cloneNode(true);
+  cl.setAttribute('width', w);
+  cl.setAttribute('height', h);
+  const str = new XMLSerializer().serializeToString(cl);
+  const blob = new Blob([str], { type: 'image/svg+xml;charset=utf-8' });
+  const url = URL.createObjectURL(blob);
+  const img = new Image();
+  img.onload = () => {
+    // Neues Canvas pro Aufruf — verhindert Überschreibung bei Multi-Panel-Exports
+    const c = document.createElement('canvas');
+    c.width = w;
+    c.height = h;
+    const ctx = c.getContext('2d');
+    ctx.fillStyle = '#fff';
+    ctx.fillRect(0, 0, w, h);
+    ctx.drawImage(img, 0, 0, w, h);
+    URL.revokeObjectURL(url);
+    cb(c);
+  };
+  img.src = url;
+}
+
+/**
+ * Paar-Export: Front + Vogel übereinander mit 3mm Gap
+ */
+function xpP() {
+  const gap = Math.round(3 / 25.4 * DPI);
+  s2c(document.querySelector('#fw svg'), PW, PH, fc => {
+    s2c(document.querySelector('#bw svg'), PW, PH, bc => {
+      const c = document.createElement('canvas');
+      c.width = PW;
+      c.height = PH * 2 + gap;
+      const ctx = c.getContext('2d');
+      ctx.fillStyle = '#fff';
+      ctx.fillRect(0, 0, c.width, c.height);
+      ctx.drawImage(fc, 0, 0);
+      ctx.drawImage(bc, 0, PH + gap);
+      const ageStr = S.timelineOn && S.age > 0 ? `_${S.age}J` : '';
+      dl(c, `paar_${S.mode}${ageStr}.png`);
+    });
+  });
+}
+
+/**
+ * Zeitreihen-Export: 3 Phasen-Repräsentanten nebeneinander
+ * Rendert Frontansicht bei 20J, 60J und 100J als ein breites Bild.
+ *
+ * Layout: [20J | 60J | 100J] mit 3mm Gap, jeweils 135×70mm @ 300 DPI
+ * Gesamtbreite: 3 × PW + 2 × Gap
+ *
+ * Phase-Label wird als Text oben in jedes Panel geschrieben.
+ */
+function xpTimeline() {
+  if (typeof applyAge !== 'function' || typeof getPhase !== 'function') {
+    alert('Zeitschiene nicht verfügbar.');
+    return;
+  }
+
+  const ages = [20, 60, 100];
+  const gap = Math.round(3 / 25.4 * DPI); // 3mm Gap
+  const totalW = PW * ages.length + gap * (ages.length - 1);
+  const labelH = Math.round(8 / 25.4 * DPI); // 8mm für Label
+  const birdH = PW; // Vogelperspektive ist quadratisch (gleiche Breite)
+  const viewGap = Math.round(2 / 25.4 * DPI); // 2mm zwischen Front und Bird
+  const totalH = labelH + PH + viewGap + birdH;
+
+  // Speichere aktuellen State
+  const savedAge = S.age;
+  const savedDensity = S.density;
+  const savedSp = {};
+  for (const [k, s] of Object.entries(S.sp)) {
+    savedSp[k] = { h: s.h, cw: s.cw, kl: s.kl, ka: s.ka, bhd: s.bhd };
+  }
+
+  const panels = [];
+
+  function renderAge(idx) {
+    if (idx >= ages.length) {
+      // Alle Panels gerendert — zusammensetzen
+      composeTimeline(panels, ages, totalW, totalH, labelH, viewGap, birdH, gap);
+      // State wiederherstellen
+      if (savedAge > 0) {
+        applyAge(savedAge);
+      } else {
+        S.age = 0;
+        S.density = savedDensity;
+        for (const [k, s] of Object.entries(savedSp)) {
+          Object.assign(S.sp[k], s);
+        }
+      }
+      render();
+      return;
+    }
+
+    const age = ages[idx];
+    S.age = age;
+    applyAge(age);
+    genTrees();
+    renderFront();
+    renderBird();
+
+    // Front-SVG capturen
+    const frontSvg = document.querySelector('#fw svg');
+    s2c(frontSvg, PW, PH, frontCanvas => {
+      // Bird-SVG capturen (quadratisch)
+      const birdSvg = document.querySelector('#bw svg');
+      s2c(birdSvg, PW, PW, birdCanvas => {
+        panels.push({ frontCanvas, birdCanvas, age });
+        renderAge(idx + 1);
+      });
+    });
+  }
+
+  renderAge(0);
+}
+
+/**
+ * Setzt die Timeline-Panels zusammen und lädt das Ergebnis herunter.
+ * Layout pro Spalte: Label → Frontansicht → Vogelperspektive
+ */
+function composeTimeline(panels, ages, totalW, totalH, labelH, viewGap, birdH, gap) {
+  const c = document.createElement('canvas');
+  c.width = totalW;
+  c.height = totalH;
+  const ctx = c.getContext('2d');
+
+  // Hintergrund
+  ctx.fillStyle = '#fff';
+  ctx.fillRect(0, 0, totalW, totalH);
+
+  panels.forEach((p, i) => {
+    const x = i * (PW + gap);
+    const phase = getPhase(p.age);
+
+    // Label-Bereich mit Phase-Farbe
+    ctx.fillStyle = phase.color + '33';
+    ctx.fillRect(x, 0, PW, labelH);
+
+    // Label-Text
+    ctx.fillStyle = '#333';
+    ctx.font = `bold ${Math.round(labelH * 0.5)}px sans-serif`;
+    ctx.textAlign = 'center';
+    ctx.textBaseline = 'middle';
+    ctx.fillText(`${p.age} Jahre — ${phase.name}`, x + PW / 2, labelH * 0.35);
+
+    // Zusatzinfo
+    ctx.fillStyle = '#888';
+    ctx.font = `${Math.round(labelH * 0.3)}px sans-serif`;
+    ctx.fillText(`N=${nHa(p.age)}/ha · hdom=${hdom('Bu', p.age).toFixed(1)}m`, x + PW / 2, labelH * 0.75);
+
+    // Frontansicht
+    ctx.drawImage(p.frontCanvas, x, labelH);
+
+    // Vogelperspektive (unter der Frontansicht)
+    ctx.drawImage(p.birdCanvas, x, labelH + PH + viewGap);
+
+    // Trennlinie
+    if (i < panels.length - 1) {
+      ctx.strokeStyle = '#ddd';
+      ctx.lineWidth = 1;
+      ctx.beginPath();
+      ctx.moveTo(x + PW + gap / 2, 0);
+      ctx.lineTo(x + PW + gap / 2, totalH);
+      ctx.stroke();
+    }
+  });
+
+  dl(c, `zeitreihe_${S.mode}_${ages.join('-')}J.png`);
+}
+
+/**
+ * Canvas als PNG herunterladen
+ * @param {HTMLCanvasElement} canvas
+ * @param {string} name - Dateiname
+ */
+function dl(canvas, name) {
+  const a = document.createElement('a');
+  a.download = name;
+  a.href = canvas.toDataURL('image/png');
+  a.click();
+}
+
+// Init
+try {
+  console.log('[INIT] buildC...');
+  buildC();
+  console.log('[INIT] buildTimeline...');
+  buildTimeline();
+  console.log('[INIT] render...');
+  render();
+  console.log('[INIT] ✓ Alle Funktionen geladen. Buttons sollten funktionieren.');
+  window.addEventListener('resize', () => { renderFront(); renderBird(); });
+} catch(e) {
+  console.error('[INIT] FEHLER:', e);
+  var d = document.getElementById('dbg-err');
+  if (d) { d.style.display = 'block'; d.textContent += 'INIT FEHLER: ' + e.message + ' (Zeile ca. ' + (e.stack||'').match(/:(\d+):/)?.[1] + ')\n'; }
+}
+</script>
+</body>
+</html>

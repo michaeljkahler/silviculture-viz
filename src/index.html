@@ -1,0 +1,103 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Waldbau Zielmischungstyp — BLFw426</title>
+<link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+<!-- Debug-Anzeige: zeigt JS-Fehler sichtbar an -->
+<div id="dbg-err" style="display:none;position:fixed;top:0;left:0;right:0;background:#ff0000;color:#fff;font-size:14px;font-weight:bold;padding:10px;z-index:99999;white-space:pre-wrap;"></div>
+<script>
+window.onerror = function(msg, url, line, col, err) {
+  var d = document.getElementById('dbg-err');
+  if (d) { d.style.display = 'block'; d.textContent += 'FEHLER Zeile ' + line + ': ' + msg + '\n'; }
+  return false;
+};
+</script>
+<div id="controls">
+  <h2>Waldbau Zielmischungstyp</h2>
+  <p style="font-size:10px;color:#aaa;">BLFw426 — v8 Vollständiges Audit</p>
+  <h3>Zeitschiene</h3>
+  <div id="tl-container"></div>
+  <h3>Waldtyp</h3>
+  <div class="mt" style="display:flex!important;min-height:36px!important;overflow:visible!important;">
+    <button id="bg" class="active" onclick="setMode('gleich')" style="flex:1;padding:7px 4px;min-height:32px;font-size:12px;font-weight:600;border:none;cursor:pointer;">Gleichf. Hochwald</button>
+    <button id="bu" onclick="setMode('ungleich')" style="flex:1;padding:7px 4px;min-height:32px;font-size:12px;font-weight:600;border:none;cursor:pointer;">Ungleichf. Hochwald</button>
+  </div>
+  <div class="mi" id="mi">Gleichförmig: Bäume ähnlicher Dimension.</div>
+  <h3>Mischungsform</h3>
+  <div class="mt" style="display:flex!important;flex-wrap:wrap;min-height:36px!important;overflow:visible!important;">
+    <button id="mix-einzel" class="active" onclick="setMixPattern('einzel')" style="flex:1;padding:7px 4px;min-height:32px;font-size:12px;font-weight:600;border:none;cursor:pointer;">Einzelmischung</button>
+    <button id="mix-trupp" onclick="setMixPattern('trupp')" style="flex:1;padding:7px 4px;min-height:32px;font-size:12px;font-weight:600;border:none;cursor:pointer;">Trupp</button>
+    <button id="mix-gruppe" onclick="setMixPattern('gruppe')" style="flex:1;padding:7px 4px;min-height:32px;font-size:12px;font-weight:600;border:none;cursor:pointer;">Gruppe</button>
+    <button id="mix-horst" onclick="setMixPattern('horst')" style="flex:1;padding:7px 4px;min-height:32px;font-size:12px;font-weight:600;border:none;cursor:pointer;">Horst</button>
+    <button id="mix-untergeordnet" onclick="setMixPattern('untergeordnet')" style="flex:1;padding:7px 4px;min-height:32px;font-size:12px;font-weight:600;border:none;cursor:pointer;">Unterg.</button>
+  </div>
+  <div class="mi" id="mi-mix" style="font-size:10px;color:#999;">Einzeln: zufällige Verteilung</div>
+  <h3>Optionen</h3>
+  <div class="mt" style="display:flex!important;min-height:36px!important;overflow:visible!important;">
+    <button id="btn-vj" class="active" onclick="toggleVerjuengung()" style="flex:1;padding:7px 4px;min-height:32px;font-size:12px;font-weight:600;border:none;cursor:pointer;">Naturverjüngung</button>
+    <button id="btn-zb" onclick="toggleZBaum()" style="flex:1;padding:7px 4px;min-height:32px;font-size:12px;font-weight:600;border:none;cursor:pointer;">Z-Bäume</button>
+  </div>
+  <h3>Bestand</h3>
+  <div id="manual-ctrls">
+  <div class="cr" id="density-row"><label>Stämme/ha</label><input type="range" id="density" min="60" max="600" step="10" value="220" oninput="uC('density',this.value)"><span class="v" id="vd">220</span></div>
+  <div class="cr"><label>Transekt Y</label><input type="range" id="transectY" min="5" max="95" value="50" oninput="uC('transectY',this.value)"><span class="v" id="vt">50 m</span></div>
+  <div class="cr"><label>Seed</label><input type="number" id="seed" value="42" min="1" max="9999" style="width:60px" onchange="regen()"><button class="btn" onclick="rS()" style="padding:3px 8px;font-size:11px;">Zufall</button></div>
+  </div>
+  <h3>Statistik</h3>
+  <div class="sb"><div class="st"><div class="n" id="sn">—</div><div class="l">Bäume</div></div><div class="st"><div class="n" id="sd">—</div><div class="l">Deckung %</div></div><div class="st"><div class="n" id="sg">—</div><div class="l">GF m²/ha</div></div><div class="st"><div class="n" id="szb">—</div><div class="l">Z-Bäume</div></div><div class="st"><div class="n" id="svol">—</div><div class="l">V m³/ha</div></div><div class="st"><div class="n" id="svdg">—</div><div class="l">Vert. DG</div></div></div>
+  <h3>Baumarten &amp; Mischung</h3>
+  <div id="pt" class="pt ok">Summe: 100%</div>
+  <div id="sc"></div>
+  <h3>Export</h3>
+  <div style="display:flex;flex-direction:column;gap:4px;">
+    <button class="btn p" onclick="regen()">Neu generieren</button>
+    <div class="eb"><button class="btn" onclick="xp('front')">Front PNG</button><button class="btn" onclick="xp('bird')">Vogel PNG</button><button class="btn" onclick="xp('pair')">Paar PNG</button><button class="btn" onclick="xp('timeline')" id="btn-tl-export" title="Frontansicht bei 20J, 60J und 100J als Vergleichsbild">Zeitreihe PNG</button></div>
+    <p style="font-size:9px;color:#bbb;">300 DPI · Panel 135×70mm</p>
+  </div>
+</div>
+<div id="viz">
+  <div id="legend"></div>
+  <h3 id="ft">Frontansicht</h3>
+  <div class="sw" id="fw"></div>
+  <h3 id="bt">Vogelperspektive</h3>
+  <div class="sw" id="bw"></div>
+</div>
+<canvas id="xc" style="display:none"></canvas>
+
+<!-- Module laden (Reihenfolge wichtig: Abhängigkeiten zuerst) -->
+<script src="js/config.js"></script>
+<script src="js/species.js"></script>
+<script src="js/timeline.js"></script>
+<script src="js/ztree.js"></script>
+<script src="js/generator.js"></script>
+<script src="js/crownFront.js"></script>
+<script src="js/crownBird.js"></script>
+<script src="js/renderFront.js"></script>
+<script src="js/renderBird.js"></script>
+<script src="js/stats.js"></script>
+<script src="js/controls.js"></script>
+<script src="js/export.js"></script>
+
+<!-- Init -->
+<script>
+try {
+  console.log('[INIT] buildC...');
+  buildC();
+  console.log('[INIT] buildTimeline...');
+  buildTimeline();
+  console.log('[INIT] render...');
+  render();
+  console.log('[INIT] ✓ Alle Funktionen geladen. Buttons sollten funktionieren.');
+  window.addEventListener('resize', () => { renderFront(); renderBird(); });
+} catch(e) {
+  console.error('[INIT] FEHLER:', e);
+  var d = document.getElementById('dbg-err');
+  if (d) { d.style.display = 'block'; d.textContent += 'INIT FEHLER: ' + e.message + ' (Zeile ca. ' + (e.stack||'').match(/:(\d+):/)?.[1] + ')\n'; }
+}
+</script>
+</body>
+</html>
