@@ -1,5 +1,30 @@
 # Changelog
 
+## [2.1.0] — 2026-03-12
+
+### Minor: Plenterwald-Rendering & Ernte-Ring Logik
+
+#### ZD-Ernte-Ring Logik (FIX — kritisch)
+- **hVar-Korrektur:** Ring-Projektion berücksichtigt jetzt die Höhenvarianz aus `genTrees()` — vorher stimmte die Vorhersage nicht mit der tatsächlichen Ernte überein
+- **Alle-Schritte-Scan:** Statt nur den nächsten Schritt zu prüfen, werden alle zukünftigen Stepper-Schritte pro Baum durchsucht → erster Ernteschritt wird zuverlässig gefunden
+- Ring erscheint genau einen Schritt vor der Ernte (verifiziert: 1–4 Ringe/Schritt bei 100 Bäumen)
+
+#### Kraft'sche Schichtung — Visuelle Tiefenwirkung (NEU)
+- Unterschicht (Schicht 1–3): Abdunkelungs-Overlay (`#1a2a10`, 18→6%) simuliert Beschattung, reduzierte Opazität und dünnere Strokes
+- Oberschicht (Schicht 4–5): Grössere/dunklere Schatten (5–7%), stärkerer Lichtreflex (8–12%), kräftigere Konturen
+- Visuelle Tiefenwirkung: Oberschicht dominiert, Unterschicht scheint gedämpft durch
+
+#### Natürliche Kronenformen — Plenter-Modus (NEU)
+- Hash-basiertes Pseudo-Noise statt sin-Wellen → Laubkronen "wolkig" statt sternförmig
+- Schichtabhängige Differenzierung: unterdrückt = asymmetrisch/zerrissen, vorherrschend = voll/rund
+- Nadelbäume: kompakter, schichtabhängige Verengung der Schattenkrone
+- Weichere Catmull-Rom Tension (0.25 vs. 0.18) für rundere Kurven
+- **Nur Plenter-Modus** — gleichförmiger Modus komplett unverändert
+
+### Keine Breaking Changes
+- Gleichförmiger Modus: identisch mit v2.0.0
+- `crownTopN()` ohne 6. Parameter: verhält sich wie bisher
+
 ## [2.0.0] — 2026-03-12
 
 ### Major: Voronoi-basierte Z-Baum Architektur
