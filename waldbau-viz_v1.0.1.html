@@ -134,47 +134,6 @@ body {
   border: 1px solid #ddd; border-radius: 2px; font-size: 11px;
 }
 
-/* Per-species mixing icons */
-.mix-icons { display:flex; gap:2px; margin:2px 0 3px 0; }
-.mix-icons button {
-  width:24px; height:22px; padding:0; border:1px solid #ddd; border-radius:3px;
-  background:#fff; cursor:pointer; font-size:12px; line-height:22px; text-align:center;
-  color:#888; transition: all .15s;
-}
-.mix-icons button:hover { background:#f0efe8; color:#555; }
-.mix-icons button.mx-act { background:var(--accent); color:#fff; border-color:var(--accent); font-weight:700; }
-.mix-icons button:disabled { opacity:.3; cursor:default; }
-.mix-icons button:disabled:hover { background:#fff; color:#888; }
-
-/* Info button & overlay */
-.info-btn {
-  display:inline-flex; align-items:center; justify-content:center;
-  width:16px; height:16px; border-radius:50%; border:1.5px solid #aaa;
-  background:transparent; color:#888; font-size:10px; font-weight:700;
-  cursor:pointer; vertical-align:middle; margin-left:5px; line-height:1;
-  font-family:serif; font-style:italic; transition:all .15s;
-}
-.info-btn:hover { background:var(--accent); color:#fff; border-color:var(--accent); }
-.info-overlay {
-  display:none; position:fixed; top:0; left:0; right:0; bottom:0;
-  background:rgba(0,0,0,.45); z-index:9999;
-  align-items:center; justify-content:center;
-}
-.info-overlay.show { display:flex; }
-.info-box {
-  background:#fff; border-radius:10px; padding:20px 24px; max-width:380px;
-  box-shadow:0 8px 32px rgba(0,0,0,.25); position:relative; font-size:13px; line-height:1.6;
-}
-.info-box h4 { margin:0 0 10px 0; font-size:14px; }
-.info-box table { width:100%; border-collapse:collapse; margin:8px 0; }
-.info-box td { padding:4px 8px; vertical-align:top; }
-.info-box td:first-child { font-size:16px; text-align:center; width:30px; }
-.info-box .info-close {
-  position:absolute; top:8px; right:12px; background:none; border:none;
-  font-size:18px; cursor:pointer; color:#999; line-height:1;
-}
-.info-box .info-close:hover { color:#333; }
-
 /* Percent Total */
 .pt {
   font-size: 12px; padding: 4px 8px; border-radius: 4px;
@@ -323,15 +282,15 @@ window.onerror = function(msg, url, line, col, err) {
     <button id="bu" onclick="setMode('ungleich')" style="flex:1;padding:7px 4px;min-height:32px;font-size:12px;font-weight:600;border:none;cursor:pointer;">Ungleichf. Hochwald</button>
   </div>
   <div class="mi" id="mi">Gleichförmig: Bäume ähnlicher Dimension.</div>
-  <h3>Mischungsform <span style="font-weight:400;font-size:10px;color:#999;">(alle setzen)</span></h3>
+  <h3>Mischungsform</h3>
   <div class="mt" style="display:flex!important;flex-wrap:wrap;min-height:36px!important;overflow:visible!important;">
-    <button id="mix-einzel" class="active" onclick="setMixPattern('einzel')" title="Alle Arten: Einzelmischung" style="flex:1;padding:7px 4px;min-height:32px;font-size:12px;font-weight:600;border:none;cursor:pointer;">Einzelm.</button>
-    <button id="mix-trupp" onclick="setMixPattern('trupp')" title="Alle Arten: Trupp (~12m)" style="flex:1;padding:7px 4px;min-height:32px;font-size:12px;font-weight:600;border:none;cursor:pointer;">Trupp</button>
-    <button id="mix-gruppe" onclick="setMixPattern('gruppe')" title="Alle Arten: Gruppe (~18m)" style="flex:1;padding:7px 4px;min-height:32px;font-size:12px;font-weight:600;border:none;cursor:pointer;">Gruppe</button>
-    <button id="mix-horst" onclick="setMixPattern('horst')" title="Alle Arten: Horst (~30m)" style="flex:1;padding:7px 4px;min-height:32px;font-size:12px;font-weight:600;border:none;cursor:pointer;">Horst</button>
-    <button id="mix-untergeordnet" onclick="setMixPattern('untergeordnet')" title="Alle Arten: Untergeordnet" style="flex:1;padding:7px 4px;min-height:32px;font-size:12px;font-weight:600;border:none;cursor:pointer;">Unterg.</button>
+    <button id="mix-einzel" class="active" onclick="setMixPattern('einzel')" style="flex:1;padding:7px 4px;min-height:32px;font-size:12px;font-weight:600;border:none;cursor:pointer;">Einzelmischung</button>
+    <button id="mix-trupp" onclick="setMixPattern('trupp')" style="flex:1;padding:7px 4px;min-height:32px;font-size:12px;font-weight:600;border:none;cursor:pointer;">Trupp</button>
+    <button id="mix-gruppe" onclick="setMixPattern('gruppe')" style="flex:1;padding:7px 4px;min-height:32px;font-size:12px;font-weight:600;border:none;cursor:pointer;">Gruppe</button>
+    <button id="mix-horst" onclick="setMixPattern('horst')" style="flex:1;padding:7px 4px;min-height:32px;font-size:12px;font-weight:600;border:none;cursor:pointer;">Horst</button>
+    <button id="mix-untergeordnet" onclick="setMixPattern('untergeordnet')" style="flex:1;padding:7px 4px;min-height:32px;font-size:12px;font-weight:600;border:none;cursor:pointer;">Unterg.</button>
   </div>
-  <div class="mi" id="mi-mix" style="font-size:10px;color:#999;">Alle Arten: Einzelmischung. Pro Art änderbar ↓</div>
+  <div class="mi" id="mi-mix" style="font-size:10px;color:#999;">Einzeln: zufällige Verteilung</div>
   <h3>Optionen</h3>
   <div class="mt" style="display:flex!important;min-height:36px!important;overflow:visible!important;">
     <button id="btn-vj" class="active" onclick="toggleVerjuengung()" style="flex:1;padding:7px 4px;min-height:32px;font-size:12px;font-weight:600;border:none;cursor:pointer;">Naturverjüngung</button>
@@ -345,24 +304,8 @@ window.onerror = function(msg, url, line, col, err) {
   </div>
   <h3>Statistik</h3>
   <div class="sb"><div class="st"><div class="n" id="sn">—</div><div class="l">Bäume</div></div><div class="st"><div class="n" id="sd">—</div><div class="l">Deckung %</div></div><div class="st"><div class="n" id="sg">—</div><div class="l">GF m²/ha</div></div><div class="st"><div class="n" id="szb">—</div><div class="l">Z-Bäume</div></div><div class="st"><div class="n" id="svol">—</div><div class="l">V m³/ha</div></div><div class="st"><div class="n" id="svdg">—</div><div class="l">Vert. DG</div></div></div>
-  <h3>Baumarten &amp; Mischung <button class="info-btn" onclick="document.getElementById('mix-info-overlay').classList.add('show')" title="Info zu Mischungsformen">i</button></h3>
-  <div class="info-overlay" id="mix-info-overlay" onclick="if(event.target===this)this.classList.remove('show')">
-    <div class="info-box">
-      <button class="info-close" onclick="document.getElementById('mix-info-overlay').classList.remove('show')">&times;</button>
-      <h4>Mischungsform pro Baumart</h4>
-      <p style="margin:0 0 8px;font-size:12px;color:#666;">Jede Baumart kann eine eigene räumliche Mischungsform haben. Wähle pro Art mit den Icons:</p>
-      <table>
-        <tr><td><b>·</b></td><td><b>Einzelmischung</b><br><span style="color:#888;font-size:11px;">Zufällige Verteilung über die gesamte Fläche.</span></td></tr>
-        <tr><td><b>⁘</b></td><td><b>Trupp</b> (~12 m Radius)<br><span style="color:#888;font-size:11px;">Kleine Gruppen von 3–5 Bäumen gleicher Art, ≤5 Aren.</span></td></tr>
-        <tr><td><b>◎</b></td><td><b>Gruppe</b> (~18 m Radius)<br><span style="color:#888;font-size:11px;">Mittlere Gruppen von 10–20 Bäumen, 5–10 Aren.</span></td></tr>
-        <tr><td><b>◉</b></td><td><b>Horst</b> (~30 m Radius)<br><span style="color:#888;font-size:11px;">Grosse Flächen mit >20 Bäumen gleicher Art, 10–50 Aren.</span></td></tr>
-        <tr><td><b>↓</b></td><td><b>Untergeordnet</b><br><span style="color:#888;font-size:11px;">Art wächst in der Unterschicht (jünger/kleiner), räumlich zufällig verteilt.</span></td></tr>
-      </table>
-      <p style="margin:8px 0 0;font-size:11px;color:#999;">Die globalen Buttons oben (Mischungsform) setzen alle Arten gleichzeitig. Die Icons pro Baumart überschreiben individuell.</p>
-    </div>
-  </div>
+  <h3>Baumarten &amp; Mischung</h3>
   <div id="pt" class="pt ok">Summe: 100%</div>
-  <div id="cluster-warn" style="display:none;background:#fff3cd;color:#856404;border:1px solid #ffc107;border-radius:5px;padding:6px 9px;margin:4px 0;font-size:11px;line-height:1.4;"></div>
   <div id="sc"></div>
   <h3>Export</h3>
   <div style="display:flex;flex-direction:column;gap:4px;">
@@ -542,15 +485,6 @@ const SPECIES = {
     deciduous: false,
     d: { h: 42, cw: 7, kl: 14, ka: 28, bhd: 55 }
   },
-  Li: {
-    name: 'Linde',
-    lat: 'Tilia ssp.',
-    c: '#9aad5b', cs: '#7e9445', cd: '#687a35',
-    ct: '#b0c472', cts: '#94a85a',
-    crown: 'linden',
-    deciduous: true,
-    d: { h: 32, cw: 11, kl: 18, ka: 14, bhd: 50 }
-  },
 };
 
 // Default active species and percentages (8a Schutzwald)
@@ -614,7 +548,6 @@ const SIWAWA_KURVEN = {
   Lae:  [4.5, 12.0, 20.0, 25.5, 28.0, 32.0, 35.5, 38.0, 41.5, 43.5, 45.0],  // La_28 (FBB: B28) — unverändert
   Es:   [5.0, 11.0, 17.5, 23.5, 28.0, 32.0, 35.0, 37.0, 40.0, 42.0, 43.5],  // Es_28 (FBB: B28) — unverändert
   Dou:  [4.5, 12.0, 20.5, 28.0, 34.0, 38.5, 42.0, 44.5, 47.5, 49.5, 51.0],  // Dou_34 (FBB: B34)
-  Li:   [3.0,  8.5, 14.0, 18.5, 22.0, 25.0, 27.5, 29.5, 32.5, 34.5, 36.0],  // Li_22 (LWF/Böckmann, abgeleitet)
 };
 
 // === LEGACY: Chapman-Richards Parameter (Fallback für unbekannte Arten) ===
@@ -629,7 +562,6 @@ const GROWTH_PARAMS = {
   Lae: { a: 45, si: 28, label: 'Lärche B28 (FBB/SiWaWa)' },
   Es:  { a: 44, si: 28, label: 'Esche B28 (FBB/SiWaWa)' },
   Dou: { a: 51, si: 34, label: 'Douglasie B34 (FBB/SiWaWa)' },
-  Li:  { a: 36, si: 22, label: 'Linde B22 (LWF/Böckmann)' },
 };
 
 // === Hiebreife / Umtriebszeit ===
@@ -652,18 +584,17 @@ const HIEBREIFE = {
   Lae:  { harvestAge: 120, maxAge: 160, zd_cm: 80,  zbHa: 100, label: 'Lärche B28: Umtrieb 120J, ZD 80cm' },
   Es:   { harvestAge:  80, maxAge: 120, zd_cm: 60,  zbHa:  80, label: 'Esche B28: Umtrieb 80J, ZD 60cm' },
   Dou:  { harvestAge:  80, maxAge: 120, zd_cm: 70,  zbHa: 150, label: 'Douglasie B34: Umtrieb 80J, ZD 70cm' },
-  Li:   { harvestAge: 110, maxAge: 150, zd_cm: 60,  zbHa: 100, label: 'Linde B22: Umtrieb 110J, ZD 60cm' },
 };
 
 /**
  * Berechnet das gewichtete maximale Bestandesalter (Slider-Maximum)
  * basierend auf den aktiven Baumarten und ihren Anteilen.
- * Maximal 140 Jahre (ein Erntezyklus mit VJ-Darstellung).
+ * Die früheste Hiebreife der Hauptbaumart bestimmt das Limit.
  *
  * @returns {number} Maximalalter in Jahren
  */
 function getMaxAge() {
-  if (typeof S === 'undefined' || !S || !S.sp) return 140;
+  if (typeof S === 'undefined' || !S || !S.sp) return 120;
   let weightedMax = 0, totalPct = 0;
   for (const [k, s] of Object.entries(S.sp)) {
     if (!s.on || s.pct <= 0) continue;
@@ -673,9 +604,8 @@ function getMaxAge() {
       totalPct += s.pct;
     }
   }
-  if (totalPct <= 0) return 140;
-  // Gewichtetes maxAge, maximal 140 Jahre
-  return Math.min(140, Math.round(weightedMax / totalPct));
+  if (totalPct <= 0) return 120;
+  return Math.round(weightedMax / totalPct);
 }
 
 // === Waldbauliche Phasen ===
@@ -803,7 +733,6 @@ function bhdFromH(sp, h) {
     Lae: { hRef: 41.5, bhdRef: 80 },   // La_28 hdom(100)=41.5, FBB ZD=80cm
     Es:  { hRef: 40.0, bhdRef: 60 },   // Es_28 hdom(100)=40, FBB ZD=60cm
     Dou: { hRef: 47.5, bhdRef: 70 },   // Dou_34 hdom(100)=47.5, FBB ZD=70cm
-    Li:  { hRef: 32.5, bhdRef: 60 },   // Li_22 hdom(100)=32.5, LWF ZD=60cm
   };
 
   const t = targets[sp] || { hRef: 30, bhdRef: 40 };
@@ -854,7 +783,6 @@ function crownFromBHD(sp, bhd, h) {
     Lae: 0.55, // → cw ≈ 7.0  bei BHD 40
     Es:  0.71, // → cw ≈ 9.5  bei BHD 45
     Dou: 0.50,
-    Li:  0.78, // → cw ≈ 11.0 bei BHD 50 (breite Krone, ähnlich BAh)
   };
   const k_cr = crCoeffs[sp] || 0.70;
   const cw = 2.0 * k_cr * Math.pow(bhd, 0.5);
@@ -874,7 +802,6 @@ function crownFromBHD(sp, bhd, h) {
     Lae: 0.33, // Lärche: ca. 1/3 — lichtbedürftig, kurze Krone
     Es:  0.45, // Esche: ca. 45%
     Dou: 0.33, // Douglasie: ca. 1/3 — ähnlich Fi im Bestand
-    Li:  0.55, // Linde: ca. 55% — breite Krone, hoch angesetzter Kronenansatz (LWF)
   };
 
   const baseRatio = crRatioBase[sp] || 0.55;
@@ -1001,7 +928,7 @@ function getPhase(age) {
  * Berechnet für jede aktive Art: H, BHD, CW, KL, KA aus Wachstumskurven.
  * Passt auch die Stammzahl (density) an.
  *
- * @param {number} age — Bestandesalter in Jahren (0-260)
+ * @param {number} age — Bestandesalter in Jahren (0-120)
  */
 function applyAge(age) {
   if (typeof S === 'undefined' || !S || !S.sp) return;
@@ -1067,7 +994,6 @@ const FBB_ZB = {
   WFoe: 100,  // Föhre: 100, Endabstand 11m
   Lae:  100,  // Lärche: 100, Endabstand 11m
   Dou:  150,  // Douglasie: 150 Z-Bäume/ha, Endabstand 9m (FBB 2022)
-  Li:   100,  // Linde: 100 Z-Bäume/ha, Endabstand 12m (LWF/Böckmann, abgeleitet)
 };
 
 // === FBB Eingriffstabellen ===
@@ -1158,17 +1084,6 @@ const FBB_EINGRIFFE = {
     { hdom:34, bhdZB:45, totalN:300,  konZB:1,   entnahmeN:150,  massnahme:'Letzte Durchforstung' },
     { hdom:42, bhdZB:70, totalN:150,                               massnahme:'Verjüngung einleiten' },
   ],
-  Li: [
-    // Linde: abgeleitet von Bu/BAh, LWF Wissen 78, Böckmann 1990
-    // 100 Z-Bäume/ha, Umtrieb 110J, ZD 60cm, Endabstand 12m
-    { hdom:14, bhdZB:14, totalN:1800, konZB:2,   entnahmeN:1500, massnahme:'FE einlegen' },
-    { hdom:18, bhdZB:20, totalN:1400, konZB:2.2, entnahmeN:1100, massnahme:'Z-Bäume bestimmen und fördern' },
-    { hdom:22, bhdZB:26, totalN:1000, konZB:2.3, entnahmeN:700,  massnahme:'Z-Bäume fördern' },
-    { hdom:25, bhdZB:32, totalN:700,  konZB:2,   entnahmeN:450,  massnahme:'Z-Bäume fördern' },
-    { hdom:28, bhdZB:40, totalN:350,  konZB:1,   entnahmeN:200,  massnahme:'Z-Bäume fördern' },
-    { hdom:32, bhdZB:50, totalN:200,  konZB:1,   entnahmeN:100,  massnahme:'Letzte Durchforstung' },
-    { hdom:35,           totalN:100,                               massnahme:'Verjüngungshiebe' },
-  ],
 };
 
 /**
@@ -1220,354 +1135,44 @@ function markZBaeume(trees) {
     return trees;
   }
 
-  // === Z-Baum-Bestimmung: einmalig, Endabstand, proportional nach Art-% ===
-  // Artübergreifend: Abstand(A,B) = Endabstand_A/2 + Endabstand_B/2
+  // isZBaum kommt bereits aus genTrees() via Master.
+  // Prüfe ob genug Z-Bäume vorhanden, sonst Nachfolger bestimmen
   const ZB_ENDABSTAND = {
-    Fi: 8, Ta: 8, Bu: 11, Ei: 15, Es: 12, BAh: 12, WFoe: 11, Lae: 11, Dou: 9, Li: 12
+    Fi: 8, Ta: 8, Bu: 11, Ei: 15, Es: 12, BAh: 12, WFoe: 11, Lae: 11, Dou: 9
   };
-  function zbMinDist(spA, spB) {
-    return ((ZB_ENDABSTAND[spA]||10)/2 + (ZB_ENDABSTAND[spB]||10)/2);
-  }
+  const ac = Object.entries(S.sp).filter(([_, s]) => s.on && s.pct > 0);
+  const tP = ac.reduce((a, [_, s]) => a + s.pct, 0);
 
-  const ac = Object.entries(S.sp).filter(([_,s]) => s.on && s.pct > 0);
-  const tP = ac.reduce((a,[_,s]) => a + s.pct, 0);
-  const plotArea = (typeof PLOT !== 'undefined' ? PLOT * PLOT : 10000);
+  for (const [k, s] of ac) {
+    if (!s.on || s.pct <= 0) continue;
+    const zbTotal = FBB_ZB[k] || 100;
+    const plotArea = (typeof PLOT !== 'undefined' ? PLOT * PLOT : 10000);
+    const zbOnPlot = Math.round(zbTotal * (plotArea / 10000) * s.pct / tP);
+    const minDist = ZB_ENDABSTAND[k] || 10;
 
-  // Budget pro Art: proportional nach %-Anteil
-  const zbBudget = {};
-  for (const [k,s] of ac) {
-    zbBudget[k] = Math.round((FBB_ZB[k]||100) * (plotArea/10000) * s.pct / tP);
-  }
+    const currentZB = trees.filter(t => t.sp === k && t.isZBaum);
+    if (currentZB.length >= zbOnPlot) continue;
 
-  // 1. Abstandsprüfung bestehender Z-Bäume (artübergreifend)
-  let changed = true;
-  while (changed) {
-    changed = false;
-    const zbAll = trees.filter(t => t.isZBaum);
-    for (let i = 0; i < zbAll.length; i++) {
-      for (let j = i+1; j < zbAll.length; j++) {
-        if (Math.hypot(zbAll[i].x-zbAll[j].x, zbAll[i].y-zbAll[j].y) < zbMinDist(zbAll[i].sp, zbAll[j].sp)) {
-          if (zbAll[i].bhd >= zbAll[j].bhd) zbAll[j].isZBaum = false;
-          else zbAll[i].isZBaum = false;
-          changed = true; break;
-        }
-      }
-      if (changed) break;
-    }
-  }
+    // Brauche Nachfolger
+    const needed = zbOnPlot - currentZB.length;
+    const candidates = trees
+      .filter(t => t.sp === k && !t.isZBaum && !t.isVerjuengung && t.bhd > 0)
+      .sort((a, b) => b.bhd - a.bhd);
 
-  // 2. Budget-Prüfung pro Art
-  for (const [k] of ac) {
-    const cur = trees.filter(t => t.sp === k && t.isZBaum);
-    if (cur.length > (zbBudget[k]||0)) {
-      const sorted = [...cur].sort((a,b) => b.bhd - a.bhd);
-      for (let i = zbBudget[k]; i < sorted.length; i++) sorted[i].isZBaum = false;
-    }
-  }
-
-  // 3. Z-Bäume springen NICHT: Bestandesbäume werden nicht als Nachfolger bestimmt.
-  //    Nur VJ-Bäume (2. Generation) können neue Z-Bäume werden,
-  //    wenn sie gross genug sind (indAge >= 20, h >= 10).
-  for (const [k] of ac) {
-    const cur = trees.filter(t => t.sp === k && t.isZBaum);
-    const budget = zbBudget[k]||0;
-    if (cur.length >= budget) continue;
-    // Nur VJ-Bäume als Nachfolger (2. Generation Z-Bäume)
-    const vjCandidates = trees
-      .filter(t => t.sp === k && !t.isZBaum && t.isFromVJ && !t.isVerjuengung
-        && t.indAge >= 20 && t.h >= 10 && t.bhd > 0)
-      .sort((a,b) => b.bhd - a.bhd);
     let added = 0;
-    for (const cand of vjCandidates) {
-      if (added >= (budget - cur.length)) break;
+    for (const cand of candidates) {
+      if (added >= needed) break;
       let tooClose = false;
       for (const zb of trees.filter(t => t.isZBaum)) {
-        if (Math.hypot(cand.x-zb.x, cand.y-zb.y) < zbMinDist(k, zb.sp)) { tooClose = true; break; }
+        if (Math.hypot(cand.x - zb.x, cand.y - zb.y) < minDist) { tooClose = true; break; }
       }
-      if (!tooClose) { cand.isZBaum = true; added++; }
+      if (!tooClose) {
+        cand.isZBaum = true;
+        added++;
+      }
     }
   }
   return trees;
-}
-
-/**
- * removeZBaumKonkurrenten — Voronoi-basierte Konkurrentenentnahme nach FBB-Eingriffstabellen.
- *
- * Logik:
- * 1. Voronoi-Zuordnung: Jeder Bestandesbaum (gleiche Generation) wird dem
- *    nächstgelegenen Z-Baum zugeordnet → das sind dessen Konkurrenten.
- * 2. FBB-Interpolation: konZB (erlaubte Konkurrenten) pro Art und hdom-Stufe.
- * 3. Entnahme von INNEN nach AUSSEN: Der nächste Konkurrent zum Z-Baum wird
- *    zuerst entfernt, damit der Z-Baum sofort Platz für Kronenwachstum bekommt.
- * 4. Progressiver Kronenschluss: Z-Baum-Kronen wachsen bis Hiebreife zusammen.
- */
-function removeZBaumKonkurrenten(trees) {
-  if (!trees || trees.length === 0) return trees;
-  if (!S.timelineOn || S.age < 15 || !S.showZBaum) return trees;
-
-  const zbTrees = trees.filter(t => t.isZBaum);
-  if (zbTrees.length === 0) return trees;
-
-  const ac = Object.entries(S.sp).filter(([_,s]) => s.on && s.pct > 0);
-
-  // === FBB-Interpolation ===
-  function interpolateFBB(sp, curHdom) {
-    const table = FBB_EINGRIFFE[sp];
-    if (!table || table.length === 0) return null;
-    if (curHdom < table[0].hdom) return null;
-    if (curHdom >= table[table.length-1].hdom) {
-      const last = table[table.length-1];
-      return { totalN: last.totalN, konZB: last.konZB || 0 };
-    }
-    for (let i = 0; i < table.length-1; i++) {
-      if (curHdom >= table[i].hdom && curHdom < table[i+1].hdom) {
-        const t0 = table[i], t1 = table[i+1];
-        const frac = (curHdom - t0.hdom) / (t1.hdom - t0.hdom);
-        const totalN = Math.round(t0.totalN + frac * (t1.totalN - t0.totalN));
-        const k0 = t0.konZB || 0, k1 = t1.konZB || 0;
-        const konZB = k0 + frac * (k1 - k0);
-        return { totalN, konZB };
-      }
-    }
-    return null;
-  }
-
-  // hdom pro Art berechnen
-  const artInfo = {};
-  for (const [k] of ac) {
-    const artTrees = trees.filter(t => t.sp === k && !t.isVerjuengung && !t.isFromVJ && t.h > 0);
-    if (artTrees.length === 0) continue;
-    const sortedH = artTrees.map(t => t.h).sort((a,b) => b-a);
-    const topCount = Math.max(1, Math.ceil(sortedH.length * 0.2));
-    const curHdom = sortedH.slice(0, topCount).reduce((a,b) => a+b, 0) / topCount;
-    const fbb = interpolateFBB(k, curHdom);
-    if (fbb) artInfo[k] = { hdom: curHdom, ...fbb };
-  }
-
-  const ZB_EA = {Fi:8, Ta:8, Bu:11, Ei:15, Es:12, BAh:12, WFoe:11, Lae:11, Dou:9, Li:12};
-  const toRemove = new Set();
-  const zbKonkCount = new Map();
-
-  // === Generische Voronoi+Durchforstung für eine Generation ===
-  // Wird für 1. Gen und 2. Gen identisch aufgerufen
-  function processGeneration(zbFilter, konFilter, genArtInfo) {
-    // Z-Bäume dieser Generation sammeln
-    const genZBIndices = [];
-    for (let i = 0; i < trees.length; i++) {
-      if (toRemove.has(i)) continue;
-      if (trees[i].isZBaum && zbFilter(trees[i])) genZBIndices.push(i);
-    }
-    if (genZBIndices.length === 0) return;
-
-    // Voronoi: Jeden Konkurrenten dem nächsten Z-Baum zuordnen
-    const voronoi = new Map();
-    for (const zi of genZBIndices) voronoi.set(zi, []);
-
-    for (let i = 0; i < trees.length; i++) {
-      if (toRemove.has(i)) continue;
-      const t = trees[i];
-      if (t.isZBaum) continue;
-      if (!konFilter(t)) continue;
-      if (t.h < 3) continue;
-
-      let nearestZB = -1, nearestDist = Infinity;
-      for (const zi of genZBIndices) {
-        const zb = trees[zi];
-        const dist = Math.hypot(t.x - zb.x, t.y - zb.y);
-        if (dist < nearestDist) { nearestDist = dist; nearestZB = zi; }
-      }
-      if (nearestZB >= 0) {
-        voronoi.get(nearestZB).push({ idx: i, dist: nearestDist });
-      }
-    }
-
-    // Durchforstung: von innen nach aussen
-    for (const zi of genZBIndices) {
-      const zb = trees[zi];
-      const info = genArtInfo[zb.sp];
-      if (!info) {
-        zbKonkCount.set(zi, voronoi.get(zi).length);
-        continue;
-      }
-      const allowedKon = Math.round(info.konZB);
-      const konkurrenten = voronoi.get(zi);
-      konkurrenten.sort((a, b) => a.dist - b.dist);
-      const echteKon = konkurrenten.filter(k => !toRemove.has(k.idx) && trees[k.idx].h >= zb.h * 0.5);
-
-      if (echteKon.length > allowedKon) {
-        const cnt = echteKon.length - allowedKon;
-        for (let r = 0; r < cnt; r++) toRemove.add(echteKon[r].idx);
-      }
-      zbKonkCount.set(zi, Math.min(echteKon.length, allowedKon));
-    }
-
-    // Progressiver Kronenschluss
-    for (const zi of genZBIndices) {
-      const zb = trees[zi];
-      const info = genArtInfo[zb.sp];
-      if (!info) continue;
-      const actualKon = zbKonkCount.get(zi) || 0;
-      const freedFraction = Math.max(0, 1 - actualKon / 3.0);
-      const hr = HIEBREIFE[zb.sp];
-      const harvestAge = hr ? hr.harvestAge : 80;
-      const indAge = zb.indAge || S.age || 0;
-      const ageFactor = Math.max(0, Math.min(1, (indAge - 25) / (harvestAge - 25)));
-      zb.cw *= (1 + freedFraction * 0.90 * ageFactor);
-      const maxCw = ZB_EA[zb.sp] || 10;
-      if (zb.cw > maxCw) zb.cw = maxCw;
-    }
-  }
-
-  // === 1. GENERATION: Bestandesbäume ===
-  // hdom aus 1. Gen Bäumen
-  const artInfo1 = {};
-  for (const [k] of ac) {
-    const artTrees = trees.filter(t => t.sp === k && !t.isVerjuengung && !t.isFromVJ && t.h > 0);
-    if (artTrees.length === 0) continue;
-    const sortedH = artTrees.map(t => t.h).sort((a,b) => b-a);
-    const topCount = Math.max(1, Math.ceil(sortedH.length * 0.2));
-    const curHdom = sortedH.slice(0, topCount).reduce((a,b) => a+b, 0) / topCount;
-    const fbb = interpolateFBB(k, curHdom);
-    if (fbb) artInfo1[k] = { hdom: curHdom, ...fbb };
-  }
-  processGeneration(
-    t => !t.isFromVJ,                          // Z-Bäume 1. Gen
-    t => !t.isFromVJ && !t.isVerjuengung,      // Konkurrenten 1. Gen
-    artInfo1
-  );
-
-  // === 2. GENERATION: VJ-Bäume ===
-  // hdom aus 2. Gen Bäumen (VJ die gross genug sind)
-  const artInfo2 = {};
-  for (const [k] of ac) {
-    const artTrees = trees.filter(t => t.sp === k && t.isFromVJ && !t.isVerjuengung && t.h > 0);
-    if (artTrees.length === 0) continue;
-    const sortedH = artTrees.map(t => t.h).sort((a,b) => b-a);
-    const topCount = Math.max(1, Math.ceil(sortedH.length * 0.2));
-    const curHdom = sortedH.slice(0, topCount).reduce((a,b) => a+b, 0) / topCount;
-    const fbb = interpolateFBB(k, curHdom);
-    if (fbb) artInfo2[k] = { hdom: curHdom, ...fbb };
-  }
-  processGeneration(
-    t => t.isFromVJ,                            // Z-Bäume 2. Gen
-    t => t.isFromVJ && !t.underCanopy,          // Konkurrenten 2. Gen (nicht Unter-Schirm)
-    artInfo2
-  );
-
-  // Konkurrenten entfernen (Indizes von hinten nach vorne)
-  const removeArr = [...toRemove].sort((a,b) => b-a);
-  for (const idx of removeArr) {
-    trees.splice(idx, 1);
-  }
-
-  return trees;
-}
-
-/**
- * applyZBaumBoost — Z-Baum Kronen- und Höhenboost NACH Markierung anwenden.
- * Grundboost für herrschende Stellung.
- */
-function applyZBaumBoost(trees) {
-  if (!trees || trees.length === 0) return;
-  for (const t of trees) {
-    if (t.isZBaum) {
-      t.h *= 1.12;       // 12% höher → klar herrschend
-      t.cw *= 1.3;       // 30% grössere Krone → ausladend
-      t.kl *= 1.1;       // Kronenlänge leicht grösser
-      if (t.bhd) t.bhd *= 1.1;  // BHD leicht grösser
-    }
-  }
-}
-
-/**
- * applyZBaumCompetition — Z-Baum-spezifische Konkurrenz NACH markZBaeume().
- *
- * Wird nur im Z-Baum-Modus angewendet. Differenzierte Reaktionen:
- *   Z-Baum → Z-Baum:       90% (Kronenschluss)
- *   Z-Baum → Konkurrent:   25%
- *   Z-Baum → VJ:            0% (ignoriert)
- *   Konkurrent → alles:   100% (aber 0% auf VJ)
- *
- * WICHTIG: genTrees() berechnet einheitliche Konkurrenz für alle Bäume.
- * Diese Funktion korrigiert die Kronenbreiten für Z-Baum-Interaktionen.
- */
-function applyZBaumCompetition(trees) {
-  if (!trees || trees.length === 0) return;
-  if (!S.showZBaum) return; // Nur im Z-Baum-Modus
-
-  const COMP = {Bu:2.0, Ta:1.5, Fi:1.0, BAh:1.5, Ei:1.8, WFoe:0.8, Lae:0.7, Es:1.3, Dou:1.2, Li:1.6};
-  const ZB_ENDABSTAND = {
-    Fi: 8, Ta: 8, Bu: 11, Ei: 15, Es: 12, BAh: 12, WFoe: 11, Lae: 11, Dou: 9, Li: 12
-  };
-  const cellSz = 15, nC = Math.ceil((typeof PLOT!=='undefined'?PLOT:100)/cellSz);
-  const grid = {};
-  for (let i = 0; i < trees.length; i++) {
-    const cx = Math.min(nC-1, Math.floor(trees[i].x/cellSz));
-    const cy = Math.min(nC-1, Math.floor(trees[i].y/cellSz));
-    const key = cx+'_'+cy;
-    if (!grid[key]) grid[key] = [];
-    grid[key].push(i);
-  }
-  for (let i = 0; i < trees.length; i++) {
-    const t = trees[i];
-    if (t.h < 5) continue;
-    const cx = Math.min(nC-1, Math.floor(t.x/cellSz));
-    const cy = Math.min(nC-1, Math.floor(t.y/cellSz));
-    let zbPressure = 0, konPressure = 0, pressure = 0, nn = 0;
-    const tIsVJ = t.isFromVJ || t.isVerjuengung;
-    const tIsKon = !t.isZBaum && !tIsVJ;
-    for (let dx = -1; dx <= 1; dx++) for (let dy = -1; dy <= 1; dy++) {
-      const nbs = grid[(cx+dx)+'_'+(cy+dy)];
-      if (!nbs) continue;
-      for (const j of nbs) {
-        if (i === j) continue;
-        const n = trees[j];
-        const nIsVJ = n.isFromVJ || n.isVerjuengung;
-        // Z-Bäume ignorieren VJ (0%)
-        if (t.isZBaum && nIsVJ) continue;
-        // Konkurrenten ignorieren VJ (0%)
-        if (tIsKon && nIsVJ) continue;
-        const dist = Math.hypot(t.x-n.x, t.y-n.y);
-        const reach = (t.cw+n.cw)/2;
-        if (dist < reach*1.5 && n.h >= t.h*0.7) {
-          const basePressure = (COMP[n.sp]||1.0) * (1 - dist/(reach*1.5));
-          if (t.isZBaum) {
-            if (n.isZBaum) zbPressure += basePressure;
-            else konPressure += basePressure;
-          } else {
-            pressure += basePressure;
-          }
-          nn++;
-        }
-      }
-    }
-    if (nn > 0) {
-      if (t.isZBaum) {
-        // Z-Bäume: 90% auf Z-Bäume, 25% auf Konkurrenten
-        // Differenz zur Basis (100%): Z-Bäume bekommen WENIGER Reduktion zurück
-        const zbComp = Math.min(0.12, zbPressure * 0.027);      // 90%
-        const konComp = Math.min(0.04, konPressure * 0.0075);    // 25%
-        // genTrees hat bereits 100% Konkurrenz angewendet → Korrektur
-        // Rückgängig: volle Reduktion aufheben, dann Z-Baum-spezifisch anwenden
-        const fullPressure = zbPressure + konPressure;
-        const fullReduction = Math.min(0.15, fullPressure * 0.03);
-        const zbReduction = zbComp + konComp;
-        // Krone erweitern um Differenz (Z-Bäume werden weniger reduziert)
-        if (fullReduction > zbReduction) {
-          t.cw *= (1 + (fullReduction - zbReduction));
-        }
-        // Kronenwachstum begrenzen auf Endabstand
-        const maxCw = ZB_ENDABSTAND[t.sp] || 10;
-        if (t.cw > maxCw) t.cw = maxCw;
-      } else if (tIsKon) {
-        // Konkurrenten: 100% auf alles, 0% auf VJ
-        // VJ-Druck wurde in genTrees() mitgezählt → korrigieren
-        // Konkurrenten bekommen volle 100%, VJ-Anteil rausnehmen
-        // (kein Korrektur nötig, genTrees hat einheitlich berechnet)
-      }
-      // VJ-Bäume: keine Korrektur (einheitliche Konkurrenz passt)
-    }
-  }
 }
 
 // === generator.js ===
@@ -1616,9 +1221,7 @@ const W = (j, f, a) => Math.sin(j * f) * a;
 // Bäume mit niedrigem survivalRank überleben am längsten.
 let _masterKey = '';
 let _masterTrees = [];
-let _masterVJ = [];            // Persistente VJ-Kohorten [{sp, x, y, birthAge, jit, inGap}]
 let _untergeordnetMinor = null; // Set of minor species in 'untergeordnet' mode
-let _clusterWarnings = [];     // Warnungen wenn Cluster-Budget zu klein
 
 /**
  * Generiert eine Master-Population für den Zeitschienen-Modus.
@@ -1712,13 +1315,12 @@ function genTimelineMaster() {
     }
   }
 
-  // --- Baumarten zuweisen (per-species Mischungsform) ---
-  // Jede Baumart hat ihre eigene Mischungsform (S.mixPatterns):
-  //   einzel: Zufällige Einzelmischung
-  //   trupp:  Kleine Cluster ~12m Radius
-  //   gruppe: Mittlere Cluster ~18m Radius
-  //   horst:  Grosse Cluster ~30m Radius
-  //   untergeordnet: Räumlich zufällig, aber jünger/kleiner (Unterschicht)
+  // --- Baumarten zuweisen ---
+  // Mischungsform bestimmt räumliche Verteilung der Arten:
+  //   einzel: Zufällige Einzelmischung (Fisher-Yates Shuffle)
+  //   trupp:  Kleine Cluster ≤5 Aren (~12m Radius, 3-5 Bäume)
+  //   gruppe: Mittlere Cluster 5-10 Aren (~18m Radius, 10-20 Bäume)
+  //   horst:  Grosse Cluster 10-50 Aren (~30m Radius, >20 Bäume)
   // Ref: BLFw426 2025, Schütz (2003): Mischungsformen
   const cn = [];
   let u = 0;
@@ -1728,153 +1330,85 @@ function genTimelineMaster() {
     u += n;
   });
 
-  // Per-species Patterns lesen
-  const spPatterns = {};
-  for (const [k] of ac) {
-    spPatterns[k] = (S.mixPatterns && S.mixPatterns[k]) || 'einzel';
-  }
+  let spArr;
+  const mixP = (typeof S !== 'undefined' && S.mixPattern) ? S.mixPattern : 'einzel';
 
-  // Budget pro Art
-  const budget_tl = {};
-  for (const { k, n } of cn) budget_tl[k] = n;
-
-  // Cluster-Arten (trupp/gruppe/horst) und Einzel-Arten (einzel/untergeordnet) trennen
-  const clusterSpecs = []; // [{sp, pattern, clusterR}]
-  const einzelArten = [];  // [{sp}]
-  const untergeordnetArten = new Set();
-
-  for (const [k] of ac) {
-    const p = spPatterns[k];
-    if (p === 'trupp' || p === 'gruppe' || p === 'horst') {
-      const clR = p === 'trupp' ? 12 : p === 'gruppe' ? 18 : 30;
-      clusterSpecs.push({ sp: k, pattern: p, clusterR: clR });
-    } else if (p === 'untergeordnet') {
-      einzelArten.push(k);
-      untergeordnetArten.add(k);
-    } else {
-      einzelArten.push(k);
+  _untergeordnetMinor = null; // Reset bei jedem Modus
+  if (mixP === 'einzel') {
+    // Einzelmischung: Zufällige Verteilung
+    spArr = [];
+    for (const { k, n } of cn) {
+      for (let i = 0; i < n; i++) spArr.push(k);
     }
-  }
+    for (let i = spArr.length - 1; i > 0; i--) {
+      const j = Math.floor(masterRng() * (i + 1));
+      const tmp = spArr[i]; spArr[i] = spArr[j]; spArr[j] = tmp;
+    }
+  } else if (mixP === 'untergeordnet') {
+    // Untergeordnete Mischung: Hauptbaumart in Oberschicht, Nebenbaumarten in Unterschicht
+    // Räumlich zufällig verteilt (wie Einzelmischung), aber Nebenbaumarten werden
+    // über hVar in die Unterschicht gedrückt (in genTrees via _isMinorSpecies Flag).
+    // Ref: Schütz (2003) — Nebenbaumarten im Zwischenstand/Unterstand
+    const sorted = [...ac].sort((a, b) => b[1].pct - a[1].pct);
+    const dominantSp = sorted[0][0];
+    const minorSet = new Set(sorted.slice(1).map(s => s[0]));
 
-  _untergeordnetMinor = untergeordnetArten.size > 0 ? untergeordnetArten : null;
+    // Alle Arten nach Prozent verteilen, räumlich zufällig (Fisher-Yates Shuffle)
+    spArr = [];
+    for (const { k, n } of cn) {
+      for (let i = 0; i < n; i++) spArr.push(k);
+    }
+    for (let i = spArr.length - 1; i > 0; i--) {
+      const j = Math.floor(masterRng() * (i + 1));
+      const tmp = spArr[i]; spArr[i] = spArr[j]; spArr[j] = tmp;
+    }
 
-  // Schritt 1: Cluster-Zentren generieren + sequenziell füllen mit Deckungsgrad-Cap
-  // Cluster werden einzeln gefüllt bis der Ziel-Deckungsgrad erreicht ist,
-  // erst dann wird der nächste Cluster begonnen. So bleiben Cluster dicht.
-  // Deckungsgrad-Ziel: Nadelholz 90-95%, Laubholz 80-85%
-  const allClusters = [];
-  for (const cs of clusterSpecs) {
-    // Genug Cluster generieren (mehr als nötig — überzählige bleiben leer)
-    const artBudget = budget_tl[cs.sp] || 0;
-    const artFraction = artBudget / totalN;
-    const artArea = PLOT * PLOT * artFraction;
-    const clArea = Math.PI * cs.clusterR * cs.clusterR;
-    const nClusters = Math.max(3, Math.ceil(artArea / clArea * 1.5));
+    // Merke welche Arten untergeordnet sind (wird im tree-Objekt gespeichert)
+    // _untergeordnetMinor Set wird unten beim tree-push verwendet
+    _untergeordnetMinor = minorSet;
+  } else {
+    // Clustered: Trupp/Gruppe/Horst
+    // Generiere Cluster-Zentren und weise Bäume nach Nähe zu
+    const clusterR = mixP === 'trupp' ? 12 : mixP === 'gruppe' ? 18 : 30;
+    const nClusters = Math.max(ac.length, Math.round(PLOT * PLOT / (Math.PI * clusterR * clusterR)));
+
+    // Erzeuge Cluster-Zentren mit zugewiesener Baumart
+    const clusters = [];
     for (let ci = 0; ci < nClusters; ci++) {
-      allClusters.push({
-        x: masterRng() * (PLOT - 4) + 2,
-        y: masterRng() * (PLOT - 4) + 2,
-        sp: cs.sp,
-        r: cs.clusterR
-      });
-    }
-  }
-
-  // Schritt 2: Artenzuordnung — Cluster-Arten sequenziell füllen
-  const spArr = new Array(totalN).fill(null);
-  const used = {};
-  for (const k of Object.keys(budget_tl)) used[k] = 0;
-
-  // Cluster-Kapazität berechnen: wie viele Bäume passen in einen Cluster bei Ziel-DG?
-  // DG-Ziel: Nadelholz (!deciduous) = 0.92, Laubholz (deciduous) = 0.82
-  // Kapazität ≈ Clusterfläche × DG-Ziel / mittlere Kronenfläche
-  function clusterCapacity(sp, clusterR) {
-    const spDef = SP[sp];
-    const isNadel = spDef && !spDef.deciduous;
-    const targetDG = isNadel ? 0.92 : 0.82;
-    const avgCw = spDef ? spDef.d.cw : 8;
-    const crownArea = Math.PI * (avgCw / 2) * (avgCw / 2);
-    const clArea = Math.PI * clusterR * clusterR;
-    return Math.max(1, Math.floor(clArea * targetDG / crownArea));
-  }
-
-  if (allClusters.length > 0) {
-    const claimed = new Set();
-    // Reihenfolge: grösste Cluster-Radien zuerst
-    const sortedSpecs = [...clusterSpecs].sort((a, b) => b.clusterR - a.clusterR);
-
-    for (const cs of sortedSpecs) {
-      const target = budget_tl[cs.sp] || 0;
-      const cap = clusterCapacity(cs.sp, cs.clusterR);
-      // Cluster dieser Art, nach Zufall geordnet (masterRng schon verbraucht)
-      const myClusters = allClusters.filter(cl => cl.sp === cs.sp);
-
-      // Für jeden Cluster: sammle Positionen nach Distanz, fülle bis Kapazität
-      for (const cl of myClusters) {
-        if (used[cs.sp] >= target) break;
-        // Kandidaten: alle nicht-vergebenen Positionen, sortiert nach Distanz zu diesem Cluster
-        const cands = [];
-        for (let i = 0; i < totalN; i++) {
-          if (claimed.has(i)) continue;
-          const d = Math.hypot(gridPoints[i].x - cl.x, gridPoints[i].y - cl.y);
-          cands.push({ idx: i, dist: d });
-        }
-        cands.sort((a, b) => a.dist - b.dist);
-
-        let filled = 0;
-        for (const c of cands) {
-          if (filled >= cap || used[cs.sp] >= target) break;
-          spArr[c.idx] = cs.sp;
-          used[cs.sp]++;
-          claimed.add(c.idx);
-          filled++;
-        }
+      const cx = masterRng() * (PLOT - 4) + 2;
+      const cy = masterRng() * (PLOT - 4) + 2;
+      // Art proportional zu Flächenanteil wählen
+      let rVal = masterRng() * tP;
+      let chosenSp = ac[0][0];
+      for (const [k, s] of ac) {
+        rVal -= s.pct;
+        if (rVal <= 0) { chosenSp = k; break; }
       }
+      clusters.push({ x: cx, y: cy, sp: chosenSp });
     }
-  }
 
-  // Warnung: Cluster-Art hat zu wenig Budget für mind. 1 vollen Cluster
-  _clusterWarnings = []; // Global für UI-Anzeige
-  for (const cs of clusterSpecs) {
-    const cap = clusterCapacity(cs.sp, cs.clusterR);
-    const artBudget = budget_tl[cs.sp] || 0;
-    if (artBudget < cap) {
-      const patLabel = {trupp:'Trupp',gruppe:'Gruppe',horst:'Horst'}[cs.pattern] || cs.pattern;
-      _clusterWarnings.push(
-        `${SP[cs.sp]?.name || cs.sp}: ${artBudget} Bäume reichen nicht für 1 ${patLabel} (benötigt ~${cap}). Anteil erhöhen!`
-      );
+    // Jeder Baum wird dem nächsten Cluster zugewiesen
+    spArr = new Array(totalN);
+    for (let i = 0; i < totalN; i++) {
+      const px = gridPoints[i].x;
+      const py = gridPoints[i].y;
+      let bestDist = Infinity;
+      let bestSp = ac[0][0];
+      for (const cl of clusters) {
+        const d = Math.hypot(cl.x - px, cl.y - py);
+        if (d < bestDist) { bestDist = d; bestSp = cl.sp; }
+      }
+      spArr[i] = bestSp;
     }
-  }
-
-  // 2b: Einzel-/Untergeordnet-Arten: verbleibende Positionen zufällig füllen
-  // NUR Nicht-Cluster-Arten kommen in den Restpool!
-  const remainingPositions = [];
-  for (let i = 0; i < totalN; i++) {
-    if (spArr[i] === null) remainingPositions.push(i);
-  }
-
-  const remainPool = [];
-  for (const { k } of cn) {
-    // Nur Nicht-Cluster-Arten in den Pool (Cluster-Arten sind schon vergeben)
-    const p = spPatterns[k];
-    if (p === 'trupp' || p === 'gruppe' || p === 'horst') continue;
-    const remaining = (budget_tl[k] || 0) - (used[k] || 0);
-    for (let j = 0; j < remaining; j++) remainPool.push(k);
-  }
-  // Fisher-Yates Shuffle
-  for (let i = remainPool.length - 1; i > 0; i--) {
-    const j = Math.floor(masterRng() * (i + 1));
-    const tmp = remainPool[i]; remainPool[i] = remainPool[j]; remainPool[j] = tmp;
-  }
-  for (let i = 0; i < remainingPositions.length && i < remainPool.length; i++) {
-    spArr[remainingPositions[i]] = remainPool[i];
   }
 
   const trees = [];
   for (let i = 0; i < totalN; i++) {
     const sp = spArr[i] || ac[0][0];
-    // Untergeordnete Mischung: Arten mit Pattern 'untergeordnet' bekommen jüngeres indAge
-    const isMinor = untergeordnetArten.has(sp);
+    // Untergeordnete Mischung: Nebenbaumarten bekommen jüngeres indAge
+    // (über ageOffset), sodass sie natürlich in der Unterschicht wachsen.
+    // Dominant: normaler ageOffset (±15%), Minor: -40% bis -70% jünger
+    const isMinor = _untergeordnetMinor && _untergeordnetMinor.has(sp);
     const ageOff = isMinor
       ? -(0.40 + masterRng() * 0.30)  // -40% bis -70% → deutlich jünger/kleiner
       : masterRng() * 0.30 - 0.15;    // ±15% normal
@@ -1895,50 +1429,43 @@ function genTimelineMaster() {
   trees.sort((a, b) => a.survivalRank - b.survivalRank);
 
   // === Z-Bäume auf Master-Population markieren (persistent über Altersstufen) ===
-  // Phasenweise Durchforstung: Dickung → 1/4-Endabstand → 1/2-Endabstand → Endabstand
-  // In der Master-Population markieren wir mit Viertelendabstand (Maximum an Z-Bäumen),
-  // die Reduktion auf Halb-/Endabstand erfolgt in markZBaeume() je nach Bestandesalter.
-  //
-  // Artübergreifende Abstandsberechnung:
-  //   Abstand(A,B) = Endabstand(A)/2 + Endabstand(B)/2
-  //   z.B. Bu–Fi = 11/2 + 8/2 = 9.5m
-  // === Z-Bäume mit vollem Endabstand markieren, proportional nach Art-% ===
+  // Endabstände pro Art (aus FBB_ZB Kommentaren)
   const ZB_ENDABSTAND = {
-    Fi: 8, Ta: 8, Bu: 11, Ei: 15, Es: 12, BAh: 12, WFoe: 11, Lae: 11, Dou: 9, Li: 12
+    Fi: 8, Ta: 8, Bu: 11, Ei: 15, Es: 12, BAh: 12, WFoe: 11, Lae: 11, Dou: 9
   };
-  function zbMinDist(spA, spB) {
-    return ((ZB_ENDABSTAND[spA]||10)/2 + (ZB_ENDABSTAND[spB]||10)/2);
-  }
-
+  // Z-Bäume pro Art bestimmen: nach survivalRank (niedrigster = bester/grösster)
   const acZB = Object.entries(S.sp).filter(([_, s]) => s.on && s.pct > 0);
   const tPzb = acZB.reduce((a, [_, s]) => a + s.pct, 0);
   trees.forEach(t => { t.isZBaum = false; });
 
-  const plotArea = (typeof PLOT !== 'undefined' ? PLOT * PLOT : 10000);
-  const allCandidates = trees
-    .map((t, i) => ({ t, i }))
-    .filter(({ t }) => acZB.some(([k]) => k === t.sp));
-
-  // Budget pro Art: FBB_ZB × Fläche × Art-%-Anteil (Endabstand, keine Multiplikation)
-  const zbBudget = {};
   for (const [k, s] of acZB) {
-    zbBudget[k] = Math.round((FBB_ZB[k]||100) * (plotArea/10000) * s.pct / tPzb);
-  }
-  const zbMarked = {};
+    if (!s.on || s.pct <= 0) continue;
+    const zbTotal = FBB_ZB[k] || 100;
+    // Proportional auf Plot-Fläche (1ha = 10000m², Plot = PLOT²)
+    const plotArea = (typeof PLOT !== 'undefined' ? PLOT * PLOT : 10000);
+    const zbOnPlot = Math.round(zbTotal * (plotArea / 10000) * s.pct / tPzb);
+    const minDist = ZB_ENDABSTAND[k] || 10;
 
-  for (const { t: cand, i: ci } of allCandidates) {
-    const k = cand.sp;
-    if ((zbMarked[k]||0) >= (zbBudget[k]||0)) continue;
-    let tooClose = false;
-    for (let j = 0; j < trees.length; j++) {
-      if (!trees[j].isZBaum) continue;
-      if (Math.hypot(cand.x - trees[j].x, cand.y - trees[j].y) < zbMinDist(k, trees[j].sp)) {
-        tooClose = true; break;
+    // Kandidaten: Bäume dieser Art, nach survivalRank (niedrigster = stärkster)
+    const candidates = trees
+      .map((t, i) => ({ t, i }))
+      .filter(({ t }) => t.sp === k);
+    // survivalRank ist bereits sortiert (trees sind sortiert)
+
+    let marked = 0;
+    for (const { t: cand, i: ci } of candidates) {
+      if (marked >= zbOnPlot) break;
+      // Abstandscheck: kein anderer Z-Baum innerhalb minDist
+      let tooClose = false;
+      for (let j = 0; j < trees.length; j++) {
+        if (!trees[j].isZBaum) continue;
+        const d = Math.hypot(cand.x - trees[j].x, cand.y - trees[j].y);
+        if (d < minDist) { tooClose = true; break; }
       }
-    }
-    if (!tooClose) {
-      trees[ci].isZBaum = true;
-      zbMarked[k] = (zbMarked[k]||0) + 1;
+      if (!tooClose) {
+        trees[ci].isZBaum = true;
+        marked++;
+      }
     }
   }
 
@@ -1962,9 +1489,8 @@ function genTrees() {
   if (useTimeline) {
     // --- Zeitschienen-Modus: Master-Population verwenden ---
 
-    // Cache-Key: Seed + aktive Arten + Prozente + Modus + per-species Mischungsform
-    const mixSer = Object.entries(S.mixPatterns).map(([k,v]) => k+':'+v).join('|');
-    const key = S.seed + '_' + S.mode + '_' + mixSer + '_' + Object.entries(S.sp)
+    // Cache-Key: Seed + aktive Arten + Prozente + Modus
+    const key = S.seed + '_' + S.mode + '_' + Object.entries(S.sp)
       .filter(([_, s]) => s.on && s.pct > 0)
       .map(([k, s]) => k + s.pct)
       .join(',');
@@ -1974,10 +1500,8 @@ function genTrees() {
       _masterKey = key;
     }
 
-    // ALLE Master-Bäume existieren ab Jahr 1.
-    // Stammzahlreduktion erfolgt NUR durch Hiebreife-Ernte und Z-Baum-Durchforstung.
-    // S.density beeinflusst die Zeitschiene NICHT (nur manuelle Mode).
-    const nSurvive = _masterTrees.length;
+    // Wie viele Bäume überleben bei diesem Alter?
+    const nSurvive = Math.min(Math.round(S.density), _masterTrees.length);
 
     // === Plenterwald (ungleich): breite Altersverteilung ===
     // Im Plenterwald gibt es alle Entwicklungsstufen gleichzeitig.
@@ -1986,7 +1510,6 @@ function genTrees() {
     const isPlenter = S.mode === 'ungleich';
 
     const trees = [];
-    const harvestedTrees = [];  // Geerntete Bäume für VJ-Generierung (Position + Erntejahr)
     for (let i = 0; i < nSurvive; i++) {
       const mt = _masterTrees[i];
 
@@ -2035,12 +1558,9 @@ function genTrees() {
         }
       }
 
-      // === Hiebreife-Check: Baum wird geerntet wenn indAge > harvestAge + Delay ===
-      // Z-Bäume: Ernte zwischen Hiebreife und Hiebreife + 10 Jahre (zwingend)
-      // Normale Bäume: Ernte ab Hiebreife + 8 Jahre
+      // === Hiebreife-Check: Baum wird geerntet wenn indAge > harvestAge + 8 ===
       const hr5 = HIEBREIFE[mt.sp];
-      const harvestDelay = mt.isZBaum ? 10 : 8;
-      if (hr5 && indAge > hr5.harvestAge + harvestDelay) {
+      if (hr5 && indAge > hr5.harvestAge + 8) {
         if (isPlenter) {
           // Plenterwald (Dauerwald): Alten Baum durch jungen ersetzen (Verjüngung)
           const youngAge = 1 + Math.random() * 10;
@@ -2048,25 +1568,11 @@ function genTrees() {
           trees.push({
             sp: mt.sp, x: mt.x, y: mt.y,
             h: youngH, cw: Math.max(youngH * 0.4, 0.3), kl: Math.max(youngH * 0.8, 0.3),
-            ka: Math.max(youngH * 0.2, 0.1), bhd: youngH > 1.3 ? bhdFromH(mt.sp, youngAge) : 0,
+            ka: Math.max(youngH * 0.2, 0.1), bhd: youngH > 1.3 ? bhdFromH(mt.sp, youngH) : 0,
             jit: mt.jit, indAge: Math.round(youngAge), isVerjuengung: true
           });
-        } else {
-          // Gleichförmig: Geernteten Baum für VJ-Generierung tracken
-          // Erntejahr berechnen: wann hat indAge erstmals harvestAge+delay überschritten?
-          const harvestYear = Math.ceil((hr5.harvestAge + harvestDelay) / Math.max(0.5, 1 + mt.ageOffset));
-          // Kronengrösse bei Ernte berechnen
-          const hHarvest = Math.max(hdom(mt.sp, hr5.harvestAge + harvestDelay) * mt.hVar, 2);
-          const bhdHarvest = bhdFromH(mt.sp, hHarvest);
-          const crownHarvest = crownFromBHD(mt.sp, bhdHarvest, hHarvest);
-          harvestedTrees.push({
-            x: mt.x, y: mt.y, sp: mt.sp,
-            cwAtHarvest: crownHarvest.cw * mt.cwVar,
-            harvestYear: harvestYear,
-            jit: mt.jit
-          });
         }
-        continue; // Baum gefällt
+        continue; // Gleichförmig: Baum gefällt, nicht ersetzen
       }
 
       trees.push({
@@ -2074,185 +1580,62 @@ function genTrees() {
         h, cw, kl, ka, bhd,
         jit: mt.jit,
         indAge: Math.round(indAge),
-        isZBaum: mt.isZBaum || false
+        isZBaum: mt.isZBaum || false  // Persistent vom Master übernehmen
       });
     }
-    // === Naturverjüngung basierend auf GEERNTETEN BÄUMEN ===
-    // Neue Architektur: VJ wächst genau dort wo Bäume geerntet wurden.
-    // VJ-Alter = Zeit seit Ernte → Bäume wachsen realistisch von klein.
-    // Positionen sind deterministisch (seeded RNG pro geernteter Baum).
-    // Unter Schirm: 25% DG für Schattenbaumarten (Bu,Ta,Fi,Li,BAh).
-    // Ref: BLFw426 2026, Schütz (2002)
-    const SHADE_TOLERANT_VJ = new Set(['Bu', 'Ta', 'Fi', 'Li', 'BAh']);
+    // === Naturverjüngung (ab Zielphase, fakultativ) ===
+    // Artspezifischer Verjüngungsbeginn: min(harvestAge) - 20 der aktiven Arten
+    // Im Plenterwald: permanente Verjüngung ab ~40J
+    // Ref: BLFw426 2026 Slide 2, Schütz (2002)
+    const acVj6 = Object.entries(S.sp).filter(([_, s]) => s.on && s.pct > 0);
+    let minHarvest = 100;
+    for (const [k6] of acVj6) {
+      if (HIEBREIFE[k6]) minHarvest = Math.min(minHarvest, HIEBREIFE[k6].harvestAge);
+    }
+    const vjStart = isPlenter ? 40 : Math.max(20, minHarvest - 20);
+    if (S.showVerjuengung && S.age >= vjStart) {
+      const vjRng = mR(S.seed + 7777);
+      // Verjüngungsintensität steigt mit Alter — stärker in Zielphase
+      const vjIntensity = Math.min(1.0, (S.age - vjStart) / 30); // 0→1 über 30 Jahre
+      const maxVJ = Math.round(vjIntensity * (isPlenter ? 200 : 350));
 
-    if (S.showVerjuengung && harvestedTrees.length > 0) {
-      // VJ-Artpool (gewichtet nach Baumart-Anteil)
-      const acVjTL = Object.entries(S.sp).filter(([_, s]) => s.on && s.pct > 0);
-      const vjPoolTL = [];
-      for (const [kv, sv] of acVjTL) {
-        for (let i = 0; i < Math.round(sv.pct / 10); i++) vjPoolTL.push(kv);
+      const vjSpecies = [];
+      for (const [k6, s6] of acVj6) {
+        for (let i = 0; i < Math.round(s6.pct / 10); i++) vjSpecies.push(k6);
       }
-      if (vjPoolTL.length === 0) vjPoolTL.push('Bu');
+      if (vjSpecies.length === 0) vjSpecies.push('Bu');
 
-      // Spatial Hash der aktuellen BESTANDESBÄUME (für Unter-Schirm-Prüfung)
-      const vjCellSz = 10;
-      const vjNC = Math.ceil(PLOT / vjCellSz);
-      const vjGrid = {};
-      for (const t of trees) {
-        if (t.isVerjuengung) continue;
-        const cx = Math.min(vjNC - 1, Math.floor(t.x / vjCellSz));
-        const cy = Math.min(vjNC - 1, Math.floor(t.y / vjCellSz));
-        const gk = cx + '_' + cy;
-        if (!vjGrid[gk]) vjGrid[gk] = [];
-        vjGrid[gk].push(t);
-      }
+      for (let i = 0; i < maxVJ; i++) {
+        const x = vjRng() * 88 + 6;
+        const y = vjRng() * 88 + 6;
 
-      function isUnderCanopyVJ(px, py) {
-        const cx = Math.min(vjNC - 1, Math.floor(px / vjCellSz));
-        const cy = Math.min(vjNC - 1, Math.floor(py / vjCellSz));
-        for (let dx = -1; dx <= 1; dx++) {
-          for (let dy = -1; dy <= 1; dy++) {
-            const gk = (cx + dx) + '_' + (cy + dy);
-            if (!vjGrid[gk]) continue;
-            for (const t of vjGrid[gk]) {
-              const dist = Math.hypot(t.x - px, t.y - py);
-              if (dist < t.cw * 0.5) return true;
-            }
-          }
+        // Lückenprüfung gelockert: cw * 0.5 statt 0.3
+        let inGap = true;
+        for (const t of trees) {
+          if (t.isVerjuengung) continue;
+          const dist = Math.hypot(t.x - x, t.y - y);
+          if (dist < t.cw * 0.5) { inGap = false; break; }
         }
-        return false;
-      }
 
-      // --- A) LÜCKEN-VJ: An jeder Ernte-Position VJ generieren ---
-      // Pro geernteten Baum: VJ in dessen ehemaliger Kronenprojektion
-      // Anzahl VJ pro Lücke = Kronenfläche / ~2.5m² (→ 100% DG Ziel)
-      for (const ht of harvestedTrees) {
-        const gapAge = S.age - ht.harvestYear;
-        if (gapAge < 1) continue; // Lücke noch nicht offen
-
-        // Deterministischer RNG basierend auf Position des geernteten Baums
-        const gapRng = mR(S.seed + 9999 + Math.round(ht.x * 137) + Math.round(ht.y * 100) * 997);
-
-        const gapRadius = Math.max(ht.cwAtHarvest / 2, 2);
-        const gapArea = Math.PI * gapRadius * gapRadius;
-        const vjCount = Math.max(2, Math.round(gapArea / 2.5));
-
-        for (let vi = 0; vi < vjCount; vi++) {
-          // Position innerhalb der ehemaligen Kronenprojektion (gleichmässig im Kreis)
-          const angle = gapRng() * Math.PI * 2;
-          const dist = Math.sqrt(gapRng()) * gapRadius * 0.95;
-          const x = ht.x + Math.cos(angle) * dist;
-          const y = ht.y + Math.sin(angle) * dist;
-          if (x < 1 || x > PLOT - 1 || y < 1 || y > PLOT - 1) continue;
-
-          const sp = vjPoolTL[Math.floor(gapRng() * vjPoolTL.length)];
-          const jit = gapRng() * 6.28;
-          const hVar = 0.85 + gapRng() * 0.30;
-
-          // Höhe basierend auf LÜCKEN-ALTER (= Zeit seit Ernte)
-          let h;
-          if (gapAge < 1) {
-            h = 0.2 + gapRng() * 0.5;
-          } else {
-            h = Math.max(hdom(sp, gapAge) * 0.85 * hVar, 0.2);
-          }
-
-          let cw, kl, ka, bhd;
-          if (h < 1.3) {
-            bhd = 0;
-            cw = Math.max(h * 0.4, 0.2);
-            kl = Math.max(h * 0.85, 0.2);
-            ka = Math.max(h - kl, 0.05);
-          } else {
-            bhd = bhdFromH(sp, h);
-            const crown = crownFromBHD(sp, bhd, h);
-            cw = crown.cw * 0.85;
-            kl = crown.kl * 0.90;
-            ka = Math.max(h - kl, 0.5);
-          }
-
+        if (inGap) {
+          const sp = vjSpecies[Math.floor(vjRng() * vjSpecies.length)];
+          const h = 0.3 + vjRng() * 5.7; // 0.3-6.0m (erweitert von 4.8m)
+          const cw = Math.max(h * 0.35, 0.2);
+          const kl = Math.max(h * 0.85, 0.2);
           trees.push({
-            sp, x, y, h, cw, kl, ka, bhd, jit,
-            indAge: Math.max(1, Math.round(gapAge)),
-            isVerjuengung: h < 8,
-            isFromVJ: true,  // Permanentes Flag: stammt aus Naturverjüngung
-            underCanopy: false
+            sp, x, y,
+            h, cw, kl,
+            ka: Math.max(h - kl, 0.05),
+            bhd: h > 1.3 ? h * 1.5 : 0,
+            jit: vjRng() * 6.28,
+            isVerjuengung: true
           });
-        }
-      }
-
-      // --- B) UNTER-SCHIRM-VJ: Schattenbaumarten unter Kronendach ---
-      // Feste Anzahl pro Plot, deterministisch, nur wo Schirm existiert.
-      // 25% DG Ziel → ca. 80-120 VJ-Pflanzen pro 1ha unter Schirm.
-      const shadePool = vjPoolTL.filter(s => SHADE_TOLERANT_VJ.has(s));
-      if (shadePool.length > 0) {
-        // vjStartTL: ab wann Unter-Schirm-VJ erscheint
-        let minHarvestVJ = 100;
-        for (const [kv] of acVjTL) {
-          if (HIEBREIFE[kv]) minHarvestVJ = Math.min(minHarvestVJ, HIEBREIFE[kv].harvestAge);
-        }
-        const vjStartTL = isPlenter ? 40 : Math.max(20, minHarvestVJ - 20);
-        const canopyVjAge = Math.max(0, S.age - vjStartTL);
-
-        if (canopyVjAge > 0) {
-          // Feste Anzahl Unter-Schirm-VJ (deterministisch, stabil über Slider-Positionen)
-          const canopyVjRng = mR(S.seed + 5555);
-          const canopyVjTarget = Math.round(100 * 0.25); // ~25 pro 1ha Plotfläche
-          const canopyVjAttempts = canopyVjTarget * 5;
-
-          let placedCanopy = 0;
-          for (let vi = 0; vi < canopyVjAttempts && placedCanopy < canopyVjTarget; vi++) {
-            const x = canopyVjRng() * 88 + 6;
-            const y = canopyVjRng() * 88 + 6;
-            const sp = shadePool[Math.floor(canopyVjRng() * shadePool.length)];
-            const jit = canopyVjRng() * 6.28;
-            const hVar = 0.75 + canopyVjRng() * 0.25;
-
-            // NUR unter Schirm platzieren
-            if (!isUnderCanopyVJ(x, y)) continue;
-
-            // Wachstum unter Schirm (stark reduziert: Faktor 0.60)
-            let h;
-            if (canopyVjAge < 1) {
-              h = 0.15 + canopyVjRng() * 0.3;
-            } else {
-              h = Math.max(hdom(sp, canopyVjAge) * 0.60 * hVar, 0.15);
-            }
-
-            let cw, kl, ka, bhd;
-            if (h < 1.3) {
-              bhd = 0;
-              cw = Math.max(h * 0.35, 0.15);
-              kl = Math.max(h * 0.85, 0.15);
-              ka = Math.max(h - kl, 0.05);
-            } else {
-              bhd = bhdFromH(sp, h);
-              const crown = crownFromBHD(sp, bhd, h);
-              cw = crown.cw * 0.70;
-              kl = crown.kl * 0.90;
-              ka = Math.max(h - kl, 0.5);
-            }
-
-            trees.push({
-              sp, x, y, h, cw, kl, ka, bhd, jit,
-              indAge: Math.max(1, Math.round(canopyVjAge)),
-              isVerjuengung: h < 8,
-              isFromVJ: true,  // Permanentes Flag: stammt aus Naturverjüngung
-              underCanopy: true
-            });
-            placedCanopy++;
-          }
         }
       }
     }
 
     // === Konkurrenz-Interaktion (spatial hash optimiert) ===
-    // WICHTIG: In genTrees() wird die Grundkonkurrenz EINHEITLICH berechnet,
-    // unabhängig von Z-Baum-Status. So bleibt die Vogelansicht konsistent
-    // ob Z-Baum-Modus an oder aus ist.
-    // Die Z-Baum-spezifische Konkurrenz (90%/25%/0%) wird NACH genTrees()
-    // in der render()-Pipeline angewendet (applyZBaumCompetition).
-    const COMP = {Bu:2.0, Ta:1.5, Fi:1.0, BAh:1.5, Ei:1.8, WFoe:0.8, Lae:0.7, Es:1.3, Dou:1.2, Li:1.6};
+    const COMP = {Bu:2.0, Ta:1.5, Fi:1.0, BAh:1.5, Ei:1.8, WFoe:0.8, Lae:0.7, Es:1.3, Dou:1.2};
     const cellSz = 15, nC = Math.ceil((typeof PLOT!=='undefined'?PLOT:100)/cellSz);
     const grid = {};
     for (let i = 0; i < trees.length; i++) {
@@ -2282,10 +1665,7 @@ function genTrees() {
           }
         }
       }
-      if (nn > 0) {
-        // Einheitliche Konkurrenz für alle Bäume (Basis-Population)
-        t.cw *= (1 - Math.min(0.15, pressure * 0.03));
-      }
+      if (nn > 0) t.cw *= (1 - Math.min(0.15, pressure * 0.03));
     }
 
     S.trees = trees;
@@ -2329,121 +1709,72 @@ function genTrees() {
       tmpCw.push(cwEst);
     }
 
-    // Schritt 2: Baumarten zuweisen je nach per-species S.mixPatterns
-    // Cluster-Arten NUR in Clustern (nearest-cluster), Einzel-Arten im Restpool
-    const spPatternsM = {};
-    for (const [k] of ac) {
-      spPatternsM[k] = (S.mixPatterns && S.mixPatterns[k]) || 'einzel';
-    }
-    const plotSz = typeof PLOT !== 'undefined' ? PLOT : 100;
+    // Schritt 2: Baumarten zuweisen je nach S.mixPattern
+    const mixP = S.mixPattern || 'einzel';
+    let spAssign; // Array of species keys, length = nT
 
-    const budgetM = {};
-    for (const { k, n } of cn) budgetM[k] = n;
-    const usedM = {};
-    for (const { k } of cn) usedM[k] = 0;
-
-    // Cluster-Specs sammeln
-    const clusterSpecsM = [];
-    for (const [k] of ac) {
-      const p = spPatternsM[k];
-      if (p === 'trupp' || p === 'gruppe' || p === 'horst') {
-        const clR = p === 'trupp' ? 12 : p === 'gruppe' ? 18 : 30;
-        clusterSpecsM.push({ sp: k, pattern: p, clusterR: clR });
+    if (mixP === 'einzel') {
+      // Einzelmischung: Zufällige Verteilung
+      spAssign = [];
+      for (const { k, n } of cn) { for (let i = 0; i < n; i++) spAssign.push(k); }
+      // Fisher-Yates Shuffle
+      for (let i = spAssign.length - 1; i > 0; i--) {
+        const j = Math.floor(rng() * (i + 1));
+        const tmp = spAssign[i]; spAssign[i] = spAssign[j]; spAssign[j] = tmp;
       }
-    }
-
-    // Cluster-Zentren: genug für ~150% Flächenabdeckung (überzählige bleiben leer)
-    const allClustersM = [];
-    for (const cs of clusterSpecsM) {
-      const artFraction = (budgetM[cs.sp] || 0) / nT;
-      const artArea = plotSz * plotSz * artFraction;
-      const clArea = Math.PI * cs.clusterR * cs.clusterR;
-      const nCl = Math.max(3, Math.ceil(artArea / clArea * 1.5));
-      for (let ci = 0; ci < nCl; ci++) {
-        allClustersM.push({
-          x: rng() * (plotSz - 4) + 2,
-          y: rng() * (plotSz - 4) + 2,
-          sp: cs.sp, r: cs.clusterR
-        });
-      }
-    }
-
-    // Cluster-Kapazität (gleiche Funktion wie in Timeline, hier lokal)
-    function clusterCapM(sp, clusterR) {
-      const spDef = SP[sp];
-      const isNadel = spDef && !spDef.deciduous;
-      const targetDG = isNadel ? 0.92 : 0.82;
-      const avgCw = spDef ? spDef.d.cw : 8;
-      const crownArea = Math.PI * (avgCw / 2) * (avgCw / 2);
-      const clAreaC = Math.PI * clusterR * clusterR;
-      return Math.max(1, Math.floor(clAreaC * targetDG / crownArea));
-    }
-
-    const spAssign = new Array(nT).fill(null);
-
-    // 2a: Cluster-Arten: sequenzielles Füllen mit Deckungsgrad-Cap
-    if (allClustersM.length > 0) {
-      const claimedM = new Set();
-      const sortedSpecsM = [...clusterSpecsM].sort((a, b) => b.clusterR - a.clusterR);
-
-      for (const cs of sortedSpecsM) {
-        const target = budgetM[cs.sp] || 0;
-        const cap = clusterCapM(cs.sp, cs.clusterR);
-        const myClusters = allClustersM.filter(cl => cl.sp === cs.sp);
-
-        for (const cl of myClusters) {
-          if (usedM[cs.sp] >= target) break;
-          const cands = [];
-          for (let i = 0; i < nT; i++) {
-            if (claimedM.has(i)) continue;
-            const d = Math.hypot(positions[i].x - cl.x, positions[i].y - cl.y);
-            cands.push({ idx: i, dist: d });
+    } else if (mixP === 'untergeordnet') {
+      // Untergeordnete Mischung: Hauptbaumart dominiert, Nebenbaumarten verstreut
+      spAssign = new Array(nT);
+      const sorted = [...ac].sort((a, b) => b[1].pct - a[1].pct);
+      const dominant = sorted[0][0];
+      const minor = sorted.slice(1);
+      const splitIdx = Math.round(nT * 0.6);
+      for (let i = 0; i < nT; i++) {
+        if (i < splitIdx) {
+          spAssign[i] = dominant;
+        } else {
+          const minorTotal = minor.reduce((s, e) => s + e[1].pct, 0);
+          let rVal = rng() * minorTotal;
+          spAssign[i] = minor.length ? minor[0][0] : dominant;
+          for (const [k, s] of minor) {
+            rVal -= s.pct;
+            if (rVal <= 0) { spAssign[i] = k; break; }
           }
-          cands.sort((a, b) => a.dist - b.dist);
-
-          let filled = 0;
-          for (const c of cands) {
-            if (filled >= cap || usedM[cs.sp] >= target) break;
-            spAssign[c.idx] = cs.sp;
-            usedM[cs.sp]++;
-            claimedM.add(c.idx);
-            filled++;
-          }
-        }
-      }
-
-      // Warnungen für manuellen Modus
-      _clusterWarnings = [];
-      for (const cs of clusterSpecsM) {
-        const cap = clusterCapM(cs.sp, cs.clusterR);
-        const artBudget = budgetM[cs.sp] || 0;
-        if (artBudget < cap) {
-          const patLabel = {trupp:'Trupp',gruppe:'Gruppe',horst:'Horst'}[cs.pattern] || cs.pattern;
-          _clusterWarnings.push(
-            `${SP[cs.sp]?.name || cs.sp}: ${artBudget} Bäume reichen nicht für 1 ${patLabel} (benötigt ~${cap}). Anteil erhöhen!`
-          );
         }
       }
     } else {
-      _clusterWarnings = [];
-    }
+      // Clustered: Trupp (~12m), Gruppe (~18m), Horst (~30m)
+      const clusterR = mixP === 'trupp' ? 12 : mixP === 'gruppe' ? 18 : 30;
+      const plotSz = typeof PLOT !== 'undefined' ? PLOT : 100;
+      const nClusters = Math.max(ac.length, Math.round(plotSz * plotSz / (Math.PI * clusterR * clusterR)));
 
-    // 2b: Nur Nicht-Cluster-Arten im Restpool
-    const remainPosM = [];
-    for (let i = 0; i < nT; i++) { if (spAssign[i] === null) remainPosM.push(i); }
-    const remainPoolM = [];
-    for (const { k } of cn) {
-      const p = spPatternsM[k];
-      if (p === 'trupp' || p === 'gruppe' || p === 'horst') continue;
-      const rem = (budgetM[k] || 0) - (usedM[k] || 0);
-      for (let j = 0; j < rem; j++) remainPoolM.push(k);
-    }
-    for (let i = remainPoolM.length - 1; i > 0; i--) {
-      const j = Math.floor(rng() * (i + 1));
-      const tmp = remainPoolM[i]; remainPoolM[i] = remainPoolM[j]; remainPoolM[j] = tmp;
-    }
-    for (let i = 0; i < remainPosM.length && i < remainPoolM.length; i++) {
-      spAssign[remainPosM[i]] = remainPoolM[i];
+      // Cluster-Zentren mit zugewiesener Baumart
+      const clusters = [];
+      for (let ci = 0; ci < nClusters; ci++) {
+        const cx = rng() * (plotSz - 4) + 2;
+        const cy = rng() * (plotSz - 4) + 2;
+        let rVal = rng() * tP;
+        let chosenSp = ac[0][0];
+        for (const [k, s] of ac) {
+          rVal -= s.pct;
+          if (rVal <= 0) { chosenSp = k; break; }
+        }
+        clusters.push({ x: cx, y: cy, sp: chosenSp });
+      }
+
+      // Jeder Baum wird dem nächsten Cluster zugewiesen
+      spAssign = new Array(nT);
+      for (let i = 0; i < nT; i++) {
+        const px = positions[i].x;
+        const py = positions[i].y;
+        let bestDist = Infinity;
+        let bestSp = ac[0][0];
+        for (const cl of clusters) {
+          const d = Math.hypot(cl.x - px, cl.y - py);
+          if (d < bestDist) { bestDist = d; bestSp = cl.sp; }
+        }
+        spAssign[i] = bestSp;
+      }
     }
 
     // Schritt 3: Bäume mit zugewiesener Art und Position erzeugen
@@ -2453,8 +1784,6 @@ function genTrees() {
       const s = S.sp[k];
       if (!s) continue;
 
-      // Untergeordnete Art? → kleiner (Unterschicht)
-      const isMinorM = (S.mixPatterns && S.mixPatterns[k] === 'untergeordnet');
       let sf = 1;
       if (S.mode === 'ungleich') {
         const r = rng();
@@ -2466,7 +1795,6 @@ function genTrees() {
       } else {
         sf = .82 + rng() * .18;
       }
-      if (isMinorM) sf *= 0.35 + rng() * 0.25; // 35-60% Reduktion → Unterschicht
 
       const h = s.h * sf;
       let cw, kl, ka, bhd;
@@ -2530,12 +1858,7 @@ function genTrees() {
     }
 
     // === Konkurrenz-Interaktion (spatial hash optimiert) ===
-    // WICHTIG: In genTrees() wird die Grundkonkurrenz EINHEITLICH berechnet,
-    // unabhängig von Z-Baum-Status. So bleibt die Vogelansicht konsistent
-    // ob Z-Baum-Modus an oder aus ist.
-    // Die Z-Baum-spezifische Konkurrenz (90%/25%/0%) wird NACH genTrees()
-    // in der render()-Pipeline angewendet (applyZBaumCompetition).
-    const COMP = {Bu:2.0, Ta:1.5, Fi:1.0, BAh:1.5, Ei:1.8, WFoe:0.8, Lae:0.7, Es:1.3, Dou:1.2, Li:1.6};
+    const COMP = {Bu:2.0, Ta:1.5, Fi:1.0, BAh:1.5, Ei:1.8, WFoe:0.8, Lae:0.7, Es:1.3, Dou:1.2};
     const cellSz = 15, nC = Math.ceil((typeof PLOT!=='undefined'?PLOT:100)/cellSz);
     const grid = {};
     for (let i = 0; i < trees.length; i++) {
@@ -2565,10 +1888,7 @@ function genTrees() {
           }
         }
       }
-      if (nn > 0) {
-        // Einheitliche Konkurrenz für alle Bäume (Basis-Population)
-        t.cw *= (1 - Math.min(0.15, pressure * 0.03));
-      }
+      if (nn > 0) t.cw *= (1 - Math.min(0.15, pressure * 0.03));
     }
 
     S.trees = trees;
@@ -2855,81 +2175,6 @@ function crownPts(type, cx, top, base, hw, cH, jit) {
       pts.push([cx + hw * 0.32, base - cH * 0.02]);
       pts.push([cx + taperWR * 1.4, base]);
       pts.push([cx + taperWR, base + cH * 0.04]);
-      break;
-    }
-
-    case 'linden': {
-      // Linde (Tilia ssp.) — Herzförmig-breite Krone
-      // Charakteristisch: breiter als hoch, unten weit ausladend (herzförmig),
-      // oben gleichmässig gerundet. Mehr Loben als Bergahorn (5-7 kräftige
-      // Astpartien durch Stockausschlag-Tendenz). Breiteste Stelle im unteren
-      // Drittel der Krone (≠ Buche: Mitte, ≠ Eiche: oben).
-      // Ref: LWF Wissen 78 (Falk et al.), Dendrologie ETH (Rudow 2024)
-      const rngLi = mR(Math.round(jit * 1000 + 50));
-
-      // 5-7 kräftige Loben (mehr als BAh, breiter als Buche)
-      const nLobesLi = 5 + Math.floor(rngLi() * 3);
-      const lobesLi = [];
-      for (let l = 0; l < nLobesLi; l++) {
-        lobesLi.push({
-          a: (l + 0.2 + rngLi() * 0.5) / nLobesLi * Math.PI,
-          s: 0.05 + rngLi() * 0.10, // stärker als BAh, weniger als Eiche
-          w: 0.08 + rngLi() * 0.10
-        });
-      }
-
-      // Breitere konische Basis als BAh (herzförmiger Ansatz)
-      const taperWLi = hw * 0.18;
-      pts.push([cx - taperWLi, base + cH * 0.03]);
-      pts.push([cx - taperWLi * 1.5, base]);
-      pts.push([cx - hw * 0.45, base - cH * 0.01]); // breiter Ansatz
-
-      const NLi = 50;
-      for (let i = 2; i <= NLi - 2; i++) {
-        const t = i / NLi;
-        const a = Math.PI * t;
-
-        // Herzförmig: breiteste Stelle im unteren Drittel (pow 0.72)
-        // Flacher als Buche (0.82), aber höher als Eiche (0.55)
-        let r = Math.pow(Math.sin(a), 0.72);
-
-        // Extra-Ausbuchtung unten (herzförmige Schultern)
-        // Gauss-Bump bei a ≈ 0.6 und a ≈ 2.5 (links/rechts unten)
-        const heartL = 0.08 * Math.exp(-Math.pow(a - 0.65, 2) / 0.08);
-        const heartR = 0.08 * Math.exp(-Math.pow(a - 2.49, 2) / 0.08);
-        r += heartL + heartR;
-
-        // Loben-Modulation (Gauss-Bumps)
-        for (const lb of lobesLi) {
-          const da = a - lb.a;
-          r += lb.s * Math.exp(-da * da / (2 * lb.w * lb.w));
-        }
-
-        // Mittlere Buckel (Astgruppen — etwas gröber als BAh)
-        r *= 1 + 0.05 * Math.sin(a * 5.3 + jit * 1.2)
-               + 0.04 * Math.sin(a * 8.1 + jit * 2.0)
-               + 0.02 * Math.sin(a * 3.7 + jit * 0.9);
-
-        // Feine Rauhigkeit (Blattwerk — dichter als BAh)
-        r *= 1 + 0.018 * Math.sin(a * 15.3 + jit * 2.6)
-               + 0.012 * Math.sin(a * 22.1 + jit * 3.3);
-
-        // Leichte Asymmetrie
-        r *= 1 + 0.025 * Math.sin(a * 1.1 + jit * 0.4);
-
-        // Kronenhöhe: 0.78 × cH (zwischen BAh 0.82 und Eiche 0.72)
-        const ryLi = cH * (0.78 + 0.012 * Math.sin(a * 2.3 + jit * 0.6));
-
-        pts.push([
-          cx - hw + t * hw * 2,
-          Math.max(top, base - r * ryLi)
-        ]);
-      }
-
-      // Breiter Taper rechts (passend zum herzförmigen Ansatz)
-      pts.push([cx + hw * 0.45, base - cH * 0.01]);
-      pts.push([cx + taperWLi * 1.5, base]);
-      pts.push([cx + taperWLi, base + cH * 0.03]);
       break;
     }
 
@@ -3482,7 +2727,7 @@ function p2p(pts) {
 function genFoliageBlobs(cx, top, base, hw, cH, jit, type) {
   const blobs = [];
   const rng2 = mR(Math.round(jit * 1000));
-  const isDecid = ['dome', 'spreading', 'round', 'vase', 'linden'].includes(type);
+  const isDecid = ['dome', 'spreading', 'round', 'vase'].includes(type);
   if (!isDecid) return blobs;
 
   // Anzahl Blobs proportional zur Kronengrösse
@@ -3592,20 +2837,10 @@ function computeBR(trees) {
     const t = trees[i];
     const nR = t.cw / 2;
     const radii = new Array(NA).fill(nR);
-    const tIsVJ = t.isFromVJ || t.isVerjuengung;
 
     for (let j = 0; j < trees.length; j++) {
       if (i === j) continue;
       const o = trees[j];
-      const oIsVJ = o.isFromVJ || o.isVerjuengung;
-
-      // Z-Bäume: Kronenform wird NICHT durch VJ beeinflusst
-      // Z-Bäume reagieren nur auf Z-Bäume und Konkurrenten 1. Gen
-      if (t.isZBaum && oIsVJ) continue;
-
-      // Konkurrenten 1. Gen: reagieren nicht auf VJ
-      if (!t.isZBaum && !tIsVJ && oIsVJ) continue;
-
       const dx = o.x - t.x, dy = o.y - t.y;
       const dist = Math.hypot(dx, dy);
       const oR = o.cw / 2;
@@ -3613,21 +2848,10 @@ function computeBR(trees) {
       // Keine Überlappung → kein Clipping nötig
       if (dist >= nR + oR) continue;
 
-      // Z-Bäume dominieren über Konkurrenten: geringere Eindrückung (25%)
-      let myS;
-      if (t.isZBaum && !o.isZBaum) {
-        // Z-Baum vs Konkurrent: Z-Baum bekommt mehr Platz (75% vs 25%)
-        myS = 0.75;
-      } else if (!t.isZBaum && o.isZBaum) {
-        // Konkurrent vs Z-Baum: Konkurrent wird stark eingedrückt
-        myS = 0.25;
-      } else {
-        // Gleiche Kategorie: proportional nach Kronengrösse
-        myS = nR / (nR + oR);
-      }
+      const na = Math.atan2(dy, dx);
+      const myS = nR / (nR + oR);
       const maxR = dist * myS - .08;
 
-      const na = Math.atan2(dy, dx);
       for (let a = 0; a < NA; a++) {
         const ang = 2 * Math.PI * a / NA;
         let diff = Math.abs(ang - na);
@@ -3691,10 +2915,6 @@ function crownTopN(sp, cx, cy, radii, jit) {
         break;
       case 'vase':
         mod = .92 + .08 * Math.cos(a * 2 + jit);
-        break;
-      case 'linden':
-        // Herzförmig von oben: leicht asymmetrisch, breitere Modulation als BAh
-        mod = .93 + .07 * Math.sin(a * 2.5 + jit) + .04 * Math.sin(a * 5 + jit * 1.8);
         break;
     }
 
@@ -3799,7 +3019,7 @@ function renderFront() {
     const tw = Math.max(t.bhd / 100 * 1, .1);
     const twT = tw * .55;
 
-    const isDecid = ['dome', 'spreading', 'round', 'vase', 'linden'].includes(def.crown);
+    const isDecid = ['dome', 'spreading', 'round', 'vase'].includes(def.crown);
 
     // Stamm (nur Vordergrund)
     if (!isBg) {
@@ -3895,10 +3115,9 @@ function renderFront() {
       // === Z-Baum Markierung (Frontansicht) ===
       // Orangener Ring am Stammfuss + kleines "Z" Label
       if (t.isZBaum && S.showZBaum) {
-        const zbCol = t.isFromVJ ? '#2874a6' : '#e67300';
         const zbR = Math.max(tw * 2.5, 0.6);
-        svg += `<circle cx="${t.x}" cy="${gY - 0.2}" r="${zbR}" fill="none" stroke="${zbCol}" stroke-width=".18" stroke-dasharray=".3,.15"/>`;
-        svg += `<text x="${t.x}" y="${gY + 1.2}" font-size="1.1" fill="${zbCol}" text-anchor="middle" font-weight="700" font-family="sans-serif">Z</text>`;
+        svg += `<circle cx="${t.x}" cy="${gY - 0.2}" r="${zbR}" fill="none" stroke="#e67300" stroke-width=".18" stroke-dasharray=".3,.15"/>`;
+        svg += `<text x="${t.x}" y="${gY + 1.2}" font-size="1.1" fill="#e67300" text-anchor="middle" font-weight="700" font-family="sans-serif">Z</text>`;
       }
     }
   }
@@ -3952,87 +3171,26 @@ function renderBird() {
   svg += `<defs><pattern id="th" patternUnits="userSpaceOnUse" width="1.2" height="1.2" patternTransform="rotate(45)">` +
          `<line x1="0" y1="0" x2="0" y2="1.2" stroke="#d4960a" stroke-width=".2" opacity=".45"/></pattern></defs>`;
 
-  // === 1. Kronen rendern — 6 Schichten für korrekte z-Ordnung ===
-  // Schicht A: Unter-Schirm-VJ (zuunterst)
-  // Schicht B: Konkurrenten 2. Gen (VJ-Bäume, keine Z-Bäume)
-  // Schicht C: Z-Bäume 2. Gen (VJ-Nachfolger als Z-Baum)
-  // Schicht D: Konkurrenten 1. Gen (Bestandesbäume, keine Z-Bäume)
-  // Schicht E: Z-Bäume 1. Gen (ursprüngliche Bestandesbäume, herrschend)
-  // Schicht F: Z-Baum-Ringe (ganz oben, über Transekt)
+  // === 1. Kronen rendern (grösste zuerst) ===
   const bd = computeBR(S.trees);
+  const order = [...bd].sort((a, b) => S.trees[b.idx].cw - S.trees[a.idx].cw);
 
-  // --- Schicht A: Unter-Schirm-VJ (klein, unterhalb aller Kronenschichten) ---
-  const layerA = bd.filter(b => S.trees[b.idx].underCanopy);
-  const orderA = [...layerA].sort((a, b) => S.trees[b.idx].cw - S.trees[a.idx].cw);
-  for (const { idx, radii } of orderA) {
+  for (const { idx, radii } of order) {
     const t = S.trees[idx];
     const def = SP[t.sp];
-    const path = crownTopN(t.sp, t.x, t.y, radii, t.jit);
-    svg += `<path d="${path}" fill="${def.ct}" fill-opacity=".45" stroke="${def.cts}" stroke-width=".08"/>`;
-    svg += `<circle cx="${t.x}" cy="${t.y}" r="${Math.max(t.bhd / 200 * .5, .08)}" fill="#5a4018" opacity=".3"/>`;
-  }
 
-  // --- Schicht B: Konkurrenten 2. Gen (VJ-Bäume, keine Z-Bäume, nicht unter Schirm) ---
-  const layerB = bd.filter(b => {
-    const t = S.trees[b.idx];
-    return !t.underCanopy && !t.isZBaum && t.isFromVJ;
-  });
-  const orderB = [...layerB].sort((a, b) => S.trees[b.idx].cw - S.trees[a.idx].cw);
-  for (const { idx, radii } of orderB) {
-    const t = S.trees[idx];
-    const def = SP[t.sp];
-    svg += `<circle cx="${t.x + .10}" cy="${t.y + .10}" r="${t.cw / 2 * .75}" fill="#000" opacity=".02"/>`;
-    const path = crownTopN(t.sp, t.x, t.y, radii, t.jit);
-    svg += `<path d="${path}" fill="${def.ct}" fill-opacity=".70" stroke="${def.cts}" stroke-width=".10"/>`;
-    svg += `<circle cx="${t.x}" cy="${t.y}" r="${Math.max(t.bhd / 200 * .6, .10)}" fill="#5a4018" opacity=".35"/>`;
-  }
-
-  // --- Schicht C: Z-Bäume 2. Gen (VJ-Nachfolger die Z-Baum wurden) ---
-  const layerC = bd.filter(b => {
-    const t = S.trees[b.idx];
-    return !t.underCanopy && t.isZBaum && t.isFromVJ;
-  });
-  const orderC = [...layerC].sort((a, b) => S.trees[b.idx].cw - S.trees[a.idx].cw);
-  for (const { idx, radii } of orderC) {
-    const t = S.trees[idx];
-    const def = SP[t.sp];
-    svg += `<circle cx="${t.x + .13}" cy="${t.y + .13}" r="${t.cw / 2 * .82}" fill="#000" opacity=".035"/>`;
-    const path = crownTopN(t.sp, t.x, t.y, radii, t.jit);
-    svg += `<path d="${path}" fill="${def.ct}" fill-opacity=".90" stroke="${def.cts}" stroke-width=".14"/>`;
-    svg += `<circle cx="${t.x - t.cw / 8}" cy="${t.y - t.cw / 8}" r="${t.cw / 4}" fill="#fff" opacity=".06"/>`;
-    svg += `<circle cx="${t.x}" cy="${t.y}" r="${Math.max(t.bhd / 200 * .75, .13)}" fill="#5a4018" opacity=".45"/>`;
-  }
-
-  // --- Schicht D: Konkurrenten 1. Gen (Bestandesbäume, keine Z-Bäume, grösste zuerst) ---
-  const layerD = bd.filter(b => {
-    const t = S.trees[b.idx];
-    return !t.underCanopy && !t.isZBaum && !t.isFromVJ && !t.isVerjuengung;
-  });
-  const orderD = [...layerD].sort((a, b) => S.trees[b.idx].cw - S.trees[a.idx].cw);
-  for (const { idx, radii } of orderD) {
-    const t = S.trees[idx];
-    const def = SP[t.sp];
+    // Schatten
     svg += `<circle cx="${t.x + .12}" cy="${t.y + .12}" r="${t.cw / 2 * .8}" fill="#000" opacity=".025"/>`;
+
+    // Kronenpfad
     const path = crownTopN(t.sp, t.x, t.y, radii, t.jit);
     svg += `<path d="${path}" fill="${def.ct}" fill-opacity=".78" stroke="${def.cts}" stroke-width=".12"/>`;
-    svg += `<circle cx="${t.x - t.cw / 8}" cy="${t.y - t.cw / 8}" r="${t.cw / 4}" fill="#fff" opacity=".05"/>`;
-    svg += `<circle cx="${t.x}" cy="${t.y}" r="${Math.max(t.bhd / 200 * .7, .12)}" fill="#5a4018" opacity=".4"/>`;
-  }
 
-  // --- Schicht E: Z-Bäume 1. Gen (Bestandesbäume, herrschend, ÜBER allem) ---
-  const layerE = bd.filter(b => {
-    const t = S.trees[b.idx];
-    return !t.underCanopy && t.isZBaum && !t.isFromVJ;
-  });
-  const orderE = [...layerE].sort((a, b) => S.trees[b.idx].cw - S.trees[a.idx].cw);
-  for (const { idx, radii } of orderE) {
-    const t = S.trees[idx];
-    const def = SP[t.sp];
-    svg += `<circle cx="${t.x + .15}" cy="${t.y + .15}" r="${t.cw / 2 * .85}" fill="#000" opacity=".04"/>`;
-    const path = crownTopN(t.sp, t.x, t.y, radii, t.jit);
-    svg += `<path d="${path}" fill="${def.ct}" fill-opacity=".95" stroke="${def.cts}" stroke-width=".15"/>`;
-    svg += `<circle cx="${t.x - t.cw / 8}" cy="${t.y - t.cw / 8}" r="${t.cw / 4}" fill="#fff" opacity=".07"/>`;
-    svg += `<circle cx="${t.x}" cy="${t.y}" r="${Math.max(t.bhd / 200 * .8, .14)}" fill="#5a4018" opacity=".5"/>`;
+    // Lichtreflex
+    svg += `<circle cx="${t.x - t.cw / 8}" cy="${t.y - t.cw / 8}" r="${t.cw / 4}" fill="#fff" opacity=".05"/>`;
+
+    // Stammpunkt
+    svg += `<circle cx="${t.x}" cy="${t.y}" r="${Math.max(t.bhd / 200 * .7, .12)}" fill="#5a4018" opacity=".4"/>`;
   }
 
   // === 2. Transekt-Markierung ÜBER den Kronen (halbtransparent) ===
@@ -4043,15 +3201,12 @@ function renderBird() {
   svg += `<rect x="${PLOT + .4}" y="${tY - half}" width="2.2" height="${CONFIG.TRANSECT_WIDTH}" fill="#c88600" rx=".3"/>`;
   svg += `<text x="${PLOT + 1.5}" y="${tY + .4}" font-size="1" fill="#fff" text-anchor="middle" font-weight="700" font-family="sans-serif">T</text>`;
 
-  // === 3. Z-Baum-Ringe GANZ OBEN (Schicht F, über Transekt) ===
-  // Orange: Bestandesbäume (1. Gen), Blau: VJ-Bäume (2. Generation)
+  // === 3. Z-Baum-Ringe GANZ OBEN (über Kronen und Transekt) ===
   if (S.showZBaum) {
-    const allZB = [...orderC, ...orderE]; // Z-Bäume beider Generationen
-    for (const { idx } of allZB) {
+    for (const { idx } of order) {
       const t = S.trees[idx];
       if (t.isZBaum) {
-        const zbCol = t.isFromVJ ? '#2874a6' : '#e67300';
-        svg += `<circle cx="${t.x}" cy="${t.y}" r="${t.cw / 2 + 0.4}" fill="none" stroke="${zbCol}" stroke-width=".35" stroke-dasharray=".6,.3" opacity=".9"/>`;
+        svg += `<circle cx="${t.x}" cy="${t.y}" r="${t.cw / 2 + 0.4}" fill="none" stroke="#e67300" stroke-width=".35" stroke-dasharray=".6,.3" opacity=".9"/>`;
       }
     }
   }
@@ -4125,10 +3280,10 @@ function calcSt() {
   for (let i = 0; i < grid.length; i++) if (grid[i]) covered++;
   const dg = covered / (gSize * gSize) * 100;
 
-  // Z-Baum Zählung (Bestand + VJ getrennt)
-  let nZB = 0, nZBvj = 0;
+  // Z-Baum Zählung
+  let nZB = 0;
   for (const t of S.trees) {
-    if (t.isZBaum) { if (t.isFromVJ) nZBvj++; else nZB++; }
+    if (t.isZBaum) nZB++;
   }
 
   // === Vorrat (m³/ha) — Derbholzvolumen nach Tariffunktionen ===
@@ -4209,8 +3364,7 @@ function calcSt() {
   // Z-Baum Statistik (optional anzeigen)
   const zbEl = document.getElementById('szb');
   if (zbEl) {
-    zbEl.textContent = S.showZBaum && (nZB + nZBvj) > 0
-      ? nZB + (nZBvj > 0 ? ' + ' + nZBvj + ' VJ' : '') : '—';
+    zbEl.textContent = S.showZBaum && nZB > 0 ? nZB : '—';
   }
 }
 
@@ -4248,8 +3402,7 @@ let S = {
   age: 0,         // 0 = manuell, >0 = altersbasiert (Zeitschiene)
   timelineOn: false,
   showVerjuengung: true,  // Naturverjüngung anzeigen (ab Zielphase)
-  mixPatterns: {},         // Mischungsform PRO Baumart: {Bu:'trupp', Fi:'horst', ...}
-  mixPatternDefault: 'einzel',  // Fallback wenn Art keinen Eintrag hat
+  mixPattern: 'einzel',   // Mischungsform: einzel, trupp, gruppe, horst
   showZBaum: false,       // Z-Bäume hervorheben
   sp: {},
   trees: []
@@ -4266,7 +3419,6 @@ for (const [k, v] of Object.entries(SP)) {
     ka: v.d.ka,
     bhd: v.d.bhd
   };
-  S.mixPatterns[k] = 'einzel';  // Default: Einzelmischung pro Art
 }
 
 /**
@@ -4287,14 +3439,6 @@ function buildC() {
       `<div class="pb">` +
         `<input type="range" min="0" max="100" step="5" value="${s.pct}" ${s.on ? '' : 'disabled'} oninput="sP('${k}',this.value)" id="pct-${k}">` +
         `<span class="pv" id="pv-${k}">${s.pct}%</span>` +
-      `</div>` +
-      `<div class="mix-icons" id="mxi-${k}">` +
-        ['einzel','trupp','gruppe','horst','untergeordnet'].map(p => {
-          const icons = {einzel:'·', trupp:'⁘', gruppe:'◎', horst:'◉', untergeordnet:'↓'};
-          const tips = {einzel:'Einzelmischung', trupp:'Trupp (~12m)', gruppe:'Gruppe (~18m)', horst:'Horst (~30m)', untergeordnet:'Untergeordnet'};
-          const cur = S.mixPatterns[k] || 'einzel';
-          return `<button title="${tips[p]}" class="${cur===p?'mx-act':''}" ${s.on?'':'disabled'} onclick="setMixFor('${k}','${p}')">${icons[p]}</button>`;
-        }).join('') +
       `</div>` +
       `<div class="spp" id="spp-${k}">` +
         `<label>Höhe m<input type="number" value="${s.h}" min="5" max="55" step="1" onchange="sPr('${k}','h',this.value)"></label>` +
@@ -4317,8 +3461,6 @@ function tS(k, on) {
   document.getElementById(`pct-${k}`).value = S.sp[k].pct;
   document.getElementById(`pv-${k}`).textContent = S.sp[k].pct + '%';
   document.getElementById(`spb-${k}`).className = 'spb ' + (on ? '' : 'off');
-  updateMixIcons(k); // Mix-Icon Buttons en/dis-ablen
-  updateGlobalMixButtons();
   uP();
   render();
 }
@@ -4384,39 +3526,22 @@ function toggleVerjuengung() {
   render();
 }
 
-/** Mischungsform für EINE Baumart setzen */
-function setMixFor(sp, p) {
-  console.log('[DEBUG] setMixFor(' + sp + ', ' + p + ') aufgerufen');
-  try {
-    S.mixPatterns[sp] = p;
-    // Icons dieser Baumart aktualisieren
-    updateMixIcons(sp);
-    // Globale Buttons: Highlight falls ALLE gleich
-    updateGlobalMixButtons();
-    _masterKey = ''; // Force regeneration
-    render();
-  } catch(e) {
-    console.error('[DEBUG] setMixFor FEHLER:', e);
-    var d = document.getElementById('dbg-err');
-    if (d) { d.style.display = 'block'; d.textContent += 'setMixFor FEHLER: ' + e.message + '\n'; }
-  }
-}
-
-/** Mischungsform für ALLE Baumarten setzen (globaler Shortcut) */
+/** Mischungsform setzen */
 function setMixPattern(p) {
-  console.log('[DEBUG] setMixPattern(' + p + ') aufgerufen — setze alle Arten');
+  console.log('[DEBUG] setMixPattern(' + p + ') aufgerufen');
   try {
-    for (const k of Object.keys(S.sp)) {
-      S.mixPatterns[k] = p;
-      updateMixIcons(k);
-    }
-    updateGlobalMixButtons();
+    S.mixPattern = p;
+    const opts = ['einzel', 'untergeordnet', 'trupp', 'gruppe', 'horst'];
+    opts.forEach(o => {
+      const el = document.getElementById('mix-' + o);
+      if (el) el.className = o === p ? 'active' : '';
+    });
     const desc = {
-      einzel: 'Alle Arten: Einzelmischung (zufällig).',
-      untergeordnet: 'Alle Arten: Untergeordnete Mischung.',
-      trupp: 'Alle Arten: Truppweise (~12m).',
-      gruppe: 'Alle Arten: Gruppenweise (~18m).',
-      horst: 'Alle Arten: Horstweise (~30m).',
+      einzel: 'Einzeln: Zufällige Verteilung der Baumarten.',
+      untergeordnet: 'Untergeordnet: Hauptbaumart in Oberschicht, Nebenbaumarten in Unterschicht.',
+      trupp: 'Trupp: Kleine Gruppen ≤5 Aren (3-5 Bäume gleicher Art).',
+      gruppe: 'Gruppe: 5-10 Aren (10-20 Bäume gleicher Art).',
+      horst: 'Horst: Grosse Flächen 10-50 Aren (>20 Bäume gleicher Art).',
     };
     const el = document.getElementById('mi-mix');
     if (el) el.textContent = desc[p] || '';
@@ -4427,42 +3552,6 @@ function setMixPattern(p) {
     console.error('[DEBUG] setMixPattern FEHLER:', e);
     var d = document.getElementById('dbg-err');
     if (d) { d.style.display = 'block'; d.textContent += 'setMixPattern FEHLER: ' + e.message + '\n'; }
-  }
-}
-
-/** Aktualisiere Icon-Buttons einer einzelnen Baumart */
-function updateMixIcons(sp) {
-  const container = document.getElementById('mxi-' + sp);
-  if (!container) return;
-  const btns = container.querySelectorAll('button');
-  const opts = ['einzel','trupp','gruppe','horst','untergeordnet'];
-  const cur = S.mixPatterns[sp] || 'einzel';
-  btns.forEach((btn, i) => {
-    btn.className = opts[i] === cur ? 'mx-act' : '';
-    btn.disabled = !S.sp[sp].on;
-  });
-}
-
-/** Globale Mischungsform-Buttons: highlight wenn alle Arten gleich */
-function updateGlobalMixButtons() {
-  const activePatterns = Object.entries(S.sp)
-    .filter(([_, s]) => s.on && s.pct > 0)
-    .map(([k]) => S.mixPatterns[k] || 'einzel');
-  const allSame = activePatterns.length > 0 && activePatterns.every(p => p === activePatterns[0]);
-  const opts = ['einzel', 'untergeordnet', 'trupp', 'gruppe', 'horst'];
-  opts.forEach(o => {
-    const el = document.getElementById('mix-' + o);
-    if (el) el.className = allSame && activePatterns[0] === o ? 'active' : '';
-  });
-  // Info-Text aktualisieren
-  const el = document.getElementById('mi-mix');
-  if (el) {
-    if (allSame) {
-      const desc = {einzel:'Alle Arten: Einzelmischung.',trupp:'Alle: Trupp (~12m).',gruppe:'Alle: Gruppe (~18m).',horst:'Alle: Horst (~30m).',untergeordnet:'Alle: Untergeordnet.'};
-      el.textContent = desc[activePatterns[0]] || '';
-    } else {
-      el.textContent = 'Individuelle Mischung pro Baumart.';
-    }
   }
 }
 
@@ -4557,7 +3646,7 @@ function setTimeline(on) {
 
 /**
  * Alter setzen und alles aktualisieren
- * @param {number} age — Bestandesalter in Jahren (0-260)
+ * @param {number} age — Bestandesalter in Jahren (0-120)
  */
 function setAge(age) {
   const maxA = typeof getMaxAge === 'function' ? getMaxAge() : 120;
@@ -4771,15 +3860,7 @@ function uTitles() {
   const ageStr = S.timelineOn && S.age > 0 ? ` · ${S.age} Jahre` : '';
   const phaseStr = S.timelineOn && S.age > 0 && typeof getPhase === 'function'
     ? ` · ${getPhase(S.age).name}` : '';
-  // Mischungsform-String: kompakt anzeigen
-  const activeMP = Object.entries(S.sp)
-    .filter(([_, s]) => s.on && s.pct > 0)
-    .map(([k]) => S.mixPatterns[k] || 'einzel');
-  const allEinzel = activeMP.every(p => p === 'einzel');
-  const allSameMP = activeMP.length > 0 && activeMP.every(p => p === activeMP[0]);
-  const mixStr = allEinzel ? '' :
-    allSameMP ? ` · ${activeMP[0].charAt(0).toUpperCase() + activeMP[0].slice(1)}mischung` :
-    ' · Individuelle Mischung';
+  const mixStr = S.mixPattern !== 'einzel' ? ` · ${S.mixPattern.charAt(0).toUpperCase() + S.mixPattern.slice(1)}mischung` : '';
   document.getElementById('ft').textContent = `Frontansicht — Transekt ${CONFIG.TRANSECT_WIDTH} m · ${l}${ageStr}${phaseStr}${mixStr}`;
   document.getElementById('bt').textContent = `Vogelperspektive — 100 × 100 m · ${l}${ageStr}${mixStr}`;
   document.getElementById('mi').textContent = S.timelineOn
@@ -4793,41 +3874,16 @@ function uTitles() {
 
 /** Komplett-Rendering: Bäume generieren + alle Ansichten + Statistik */
 function render() {
-  // 1. Grundpopulation generieren (einheitliche Konkurrenz, identisch mit/ohne Z-Baum-Modus)
   genTrees();
-  // 2. Z-Bäume markieren nach FBB-Durchforstungskonzept
+  // Z-Bäume markieren (nach genTrees, vor Rendering)
   if (typeof markZBaeume === 'function') {
     markZBaeume(S.trees);
-  }
-  // 3. Voronoi → Konkurrenten zuweisen → FBB-Entnahme (innen→aussen)
-  if (typeof removeZBaumKonkurrenten === 'function') {
-    removeZBaumKonkurrenten(S.trees);
-  }
-  // 4. Z-Baum-Boost: Kronen und Höhe NACH Markierung + Konkurrentenentnahme
-  applyZBaumBoost(S.trees);
-  // 5. Z-Baum-spezifische Konkurrenz (90%/25%/0%) — NUR im Z-Baum-Modus
-  if (typeof applyZBaumCompetition === 'function') {
-    applyZBaumCompetition(S.trees);
   }
   renderFront();
   renderBird();
   renderLeg();
   calcSt();
   uTitles();
-  updateClusterWarnings();
-}
-
-/** Cluster-Warnungen anzeigen wenn Budget zu klein */
-function updateClusterWarnings() {
-  const el = document.getElementById('cluster-warn');
-  if (!el) return;
-  if (_clusterWarnings && _clusterWarnings.length > 0) {
-    el.style.display = 'block';
-    el.innerHTML = '<b>\u26A0</b> ' + _clusterWarnings.join('<br><b>\u26A0</b> ');
-  } else {
-    el.style.display = 'none';
-    el.innerHTML = '';
-  }
 }
 
 // === export.js ===

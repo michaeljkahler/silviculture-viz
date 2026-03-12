@@ -1,5 +1,33 @@
 # Changelog
 
+## [2.0.0] — 2026-03-12
+
+### Major: Voronoi-basierte Z-Baum Architektur
+
+#### Voronoi-basierte Z-Baum Konkurrenzlogik (NEU)
+- Jeder Z-Baum erhält ein Voronoi-Feld: Nicht-Z-Bäume werden dem nächsten Z-Baum zugeordnet
+- Durchforstung von innen nach aussen (FBB-konform)
+- Artübergreifende Abstandsberechnung: `(Endabstand_A/2 + Endabstand_B/2)`
+- Progressiver Kronenschluss nach Entnahme, begrenzt auf `ZB_ENDABSTAND`
+
+#### Generationentrennung (NEU)
+- 1. Generation (Bestandesbäume) und 2. Generation (VJ-Nachfolger) getrennt
+- Beide Generationen durchlaufen identische Z-Baum-Logik
+
+#### 6-Schichten SVG-Rendering (NEU)
+- Erweitert von 4 auf 6 Schichten: Unter-Schirm-VJ, Konkurrenten 2.Gen, Z-Bäume 2.Gen, Konkurrenten 1.Gen, Z-Bäume 1.Gen, Z-Baum-Ringe
+
+#### Differenzierte Konkurrenzlogik (NEU)
+- Z-Baum vs. Z-Baum: 90%, Z-Baum vs. Konkurrent: 25%, Z-Baum vs. VJ: 0%
+- Konsistente Zeitreihe unabhängig vom Z-Baum-Modus
+
+#### Kronendeformation mit Z-Baum-Dominanz (NEU)
+- 75/25 Dominanz-Split (Z-Baum nimmt 75% des Raums)
+- Z-Bäume werden nicht durch VJ beeinflusst
+
+#### Kronenwachstum begrenzt auf Endabstand (FIX)
+- Z-Baum-Kronen werden auf artspezifischen `ZB_ENDABSTAND` begrenzt
+
 ## [1.0.1] — 2026-03-09
 
 ### Bug-Fixes
