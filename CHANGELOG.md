@@ -1,5 +1,65 @@
 # Changelog
 
+## [2.2.0] — 2026-03-19
+
+### Minor: Waldbauliche Werkzeuge & Visualisierungs-Erweiterungen
+
+#### Z-Baum proportionale Verteilung (NEU)
+- Z-Bäume proportional zum Mischungsanteil verteilt
+- Lichtbaumarten +10% Aufschlag (aufgerundet), Schattenbaumarten abgerundet
+- 2. Generation Z-Bäume: Lichtbaumarten +25% Budget-Boost
+
+#### Birke als 11. Baumart (NEU)
+- Betula pendula mit SiWaWa-Kurve, Kronenform 'birch', FBB-Tabelle
+- Pionierbaumart: Umtrieb 80J, ZD 40cm, Lichtzahl 7
+
+#### Schicht-Toggles [O][M][U][V] (NEU)
+- Pro Baumart: Oberschicht, Mittelschicht, Unterschicht, Naturverjüngung
+- Nur bei Trupp/Gruppe/Horst aktiv (Dienerbaum-Konzept, Röhrig 2006)
+- Ausgebleicht bei Einzelmischung, ausgeblendet im Plenterwald
+
+#### Dienerbaum-Kopplung (NEU)
+- Pro Förderbaumart: Diener-Arten zuweisen (Schattenbaumarten als Schaftpfleger)
+- 10m-Buffer um Cluster-Rand (Distanz zum nächsten Förderbaum)
+- Proportionale Verteilung mit Interleaving bei mehreren Diener-Arten
+- Ring-Positionen exklusiv gesperrt (RESERVED-Marker)
+- Dienerbäume auch innerhalb der Cluster als Unterschicht-Bonus
+- Deckungsgrad-Warnung wenn < 90% im Ring
+
+#### Multi-Mischungsform pro Art (NEU)
+- Primäre + Overflow-Form gleichzeitig wählbar (z.B. Horst + Gruppe)
+- Auto-Downgrade: Horst → Gruppe → Trupp → Einzel bei zu wenig Bäumen
+- Überzählige-Warnung unterscheidet Budget vs. Platzproblem
+
+#### Cluster-Platzierung verbessert (FIX)
+- Farthest Point Sampling statt zufällig → gleichmässige Verteilung
+- ±10% Variation für natürlichen Charakter
+- Cluster-Kapazität: mittlere Kronenbreite (50% Endkrone) statt Maximum
+
+#### Lichtbaumart-Endabstand Sonderregel (NEU)
+- Lichtbaumarten (Ei, WFoe, Lae, Bi) bekommen mindestens ihren eigenen Endabstand
+- Gilt nur für O-Bäume (Dienerbäume ausgenommen)
+- Nur im Zeitstrahl (Z-Baum-Logik)
+
+#### Totholz stehend & liegend (NEU)
+- Toggle "Totholz": 3-5 stehende Snags + 5-8 liegende Logs
+- 20 m³/ha Zielwert (NaiS Biodiversität)
+- Mindestabstand 2m zu Oberschicht-Stämmen
+- Liegendes Totholz unter Kronen, stehendes über Kronen
+
+#### Habitatbäume pro Baumart (NEU)
+- 🌳 Toggle pro Art: grösste Bäume dauerhaft geschützt
+- Dendrohabitat-Score nach Bütler et al. (2020, WSL Merkblatt 64)
+- Keine Ernte bei Hiebreife oder ZD (Überhälter)
+- Grüner Ring + Spechtloch in Front-/Vogelansicht
+
+#### Visuelle Verbesserungen
+- 10m-Raster über Baumkronen (nicht darunter), Labels bold
+- Stämme 1.5× BHD-Breite mit Verjüngung nach oben (Trapez)
+- Export: Baumarten-Legende wird automatisch beigefügt
+- Einzelmischung-Buchen-Block-Bug gefixt (Positionen geschuffelt)
+- 2. Generation Timeline-Schritte für kurzlebige Arten (Birke)
+
 ## [2.1.0] — 2026-03-12
 
 ### Minor: Plenterwald-Rendering & Ernte-Ring Logik
