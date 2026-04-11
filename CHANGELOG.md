@@ -1,5 +1,44 @@
 # Changelog
 
+## [2.6.2] — 2026-04-11
+
+### Bugfix: Keine halluzinierten Bäume mehr im Timeline-Modus
+
+Im Rahmen der Z-Baum-Strategie erfand der Timeline-Renderer bei jedem Render zusätzliche Diener-Bäume **ausserhalb** der Master-Population. Das widerspricht dem Kernprinzip der Zeitschiene („dem Wald beim Wachsen zusehen"): jeder im Bestand sichtbare Baum muss aus der persistenten Master-Population stammen bzw. aus echter Verjüngung kommen.
+
+#### Ursache
+`render()` enthielt einen **Bonus-Diener-Block** (Zeilen ~6920–6955), der bei jedem Render-Durchgang nach `genTrees()` zusätzliche Diener-Bäume per `S.trees.push({..., isBonusDiener: true})` rund um Förderbäume einfügte:
+- Positionen per Zufallsgenerator (`mR(S.seed + 5555)`) neu berechnet — **nicht** persistent über Master
+- Höhen fest kodiert (1–12 m) statt aus `hdom(age)` abgeleitet — **keine** Wachstumsgeschichte
+- Anzahl abhängig von Master-Förderbäumen, aber Positionen unabhängig
+
+Das hatte zur Folge, dass Bäume in der Timeline auftauchten, die es in der Master-Population gar nicht gab — klassische Halluzination.
+
+#### Fix
+- **Bonus-Diener-Block komplett entfernt**. Ersetzt durch Kommentar, der die historische Funktion erklärt.
+- Ring-Diener sind jetzt ausschliesslich aus der Master-Population: `genTimelineMaster()` platziert sie einmal bei Bestands-Initialisierung, `genTrees()` leitet sie aus dem Master ab (mit Schaftpflege-Zyklus aus v2.6.1).
+- `calcSt()`-Filter vereinfacht: `!t.isDiener` statt `!t.isBonusDiener && !t.isDiener`.
+
+#### Verifikation
+QS v2.6.2 (5 Iterationen, 8/8 ✅):
+
+| Iter | Prüfung | Ergebnis |
+|---|---|---|
+| 1 | Keine `isBonusDiener`-Bäume im Bestand | 0/1430 ✅ |
+| 2 | Z-Baum-Toggle entfernt Bäume (entfernt Konkurrenten), fügt nie hinzu | mit Z-Baum 1430 ≤ ohne Z-Baum 2253 ✅ |
+| 3 | Non-VJ-Bäume sind Teilmenge der Master-Population | Non-VJ 2208 ≤ Master 2211 ✅ |
+| 4 | Diener-Positionen stabil über mehrere Renders | 1317 Diener, Positionen bit-identisch ✅ |
+| 5 | Master-Population unabhängig vom Alter | master(40)=master(80)=2211 ✅ |
+
+#### Tests
+- state_roundtrip: 36/36 ✅
+- validate: 63/63 ✅
+- QS v2.6.2: 8/8 ✅
+
+#### Betroffene Codestellen
+- `render()` Zeilen ~6920–6955: Bonus-Diener-Block entfernt
+- `calcSt()` Zeile ~5695: Filter vereinfacht
+
 ## [2.6.1] — 2026-04-11
 
 ### Schaftpflege-Zyklus: Diener mit Kronenansatz-Kappung + kontinuierlicher Verjüngung
