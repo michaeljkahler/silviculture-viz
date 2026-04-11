@@ -1,5 +1,20 @@
 # Changelog
 
+## [2.3.0] — 2026-04-11
+
+### Feature: Arbeitsstand-Speicherung (JSON)
+
+- **Speichern-Button** (💾): Exportiert den kompletten Arbeitsstand als JSON-Datei
+  - Enthält: Modus, Dichte, Seed, Alter, Timeline, Mischungsformen pro Art, Schicht-Toggles, Dienerbaum-Mappings, Z-Baum/Habitat/Totholz-Konfiguration, Pro-Art-Parameter (h, cw, kl, ka, bhd, pct, on, layers, habitat)
+  - Dateiname mit Modus + Zeitstempel: `waldbau-state_{mode}_{YYYY-MM-DD-HH-MM}.json`
+  - Schemaversion + Metadaten für zukünftige Migrations-Sicherheit
+- **Laden-Button** (📂): Lädt einen gespeicherten Arbeitsstand zurück
+  - Validiert App-Identität (`waldbau-viz`)
+  - Synchronisiert alle UI-Elemente (Slider, Buttons, Checkboxen, Mode-Toggles, Timeline)
+  - Re-rendert komplette Visualisierung mit neuem State
+  - Unbekannte Baumarten werden ignoriert (vorwärtskompatibel)
+- Generierte Bäume werden NICHT gespeichert — werden über den Seed reproduzierbar regeneriert
+
 ## [2.2.1] — 2026-04-11
 
 ### Hotfix: Dienerbäume als reine Bonus-Bäume
