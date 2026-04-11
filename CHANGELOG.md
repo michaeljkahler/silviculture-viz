@@ -1,5 +1,16 @@
 # Changelog
 
+## [2.2.1] — 2026-04-11
+
+### Hotfix: Dienerbäume als reine Bonus-Bäume
+
+- **Stammzahl/Grundfläche/Vorrat:** Dienerbäume werden vollständig aus `calcSt()` ausgeschlossen. Nur Oberschicht (Förderbäume + Einzelmischung) zählt zu den Bestandeskennzahlen.
+- **Dienergürtel 100% gefüllt:** `used[dSp]` wird bei Diener-Platzierung niemals inkrementiert → Dienerart behält volles globales Budget für Cluster/Einzelmischung. Keine `__RESERVED__` Lücken mehr, keine "Positionen unbesetzt"-Warnung.
+- **≥ 90% Deckungsgrad** strukturell garantiert durch 100% Füllung.
+- **Gürtelbreite bleibt 10m** (mehr Lichtdurchlass als 5m).
+- Betroffen: Timeline-Modus (`genTimelineMaster`) und manueller Modus.
+- Dienerbäume tragen weiterhin zum horizontalen/vertikalen Deckungsgrad und zur visuellen Darstellung bei.
+
 ## [2.2.0] — 2026-03-19
 
 ### Minor: Waldbauliche Werkzeuge & Visualisierungs-Erweiterungen

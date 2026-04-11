@@ -2469,15 +2469,22 @@ function genTimelineMaster() {
       const tP_diener = dienerArten.reduce((a, sp) => a + ((S.sp[sp] && S.sp[sp].pct) || 0), 0);
       if (tP_diener <= 0) continue;
 
-      // Budget pro Diener-Art
+      // Budget pro Diener-Art — OHNE globale Budgetgrenze.
+      // Dienerbäume sind "bonus" und zählen NICHT zur Stammzahl/ha.
+      // Dadurch wird der Dienergürtel immer zu 100% der Ring-Positionen gefüllt
+      // (→ ≥ 90% Deckungsgrad garantiert, waldbaulich gewünscht).
+      // Die globalen Budgets der Arten bleiben für Cluster/Einzelmischung erhalten.
       const ringBudgets = {};
-      let totalNeeded = 0;
-      for (const dSp of dienerArten) {
+      let assigned = 0;
+      for (let di = 0; di < dienerArten.length; di++) {
+        const dSp = dienerArten[di];
         const pct = (S.sp[dSp] && S.sp[dSp].pct) || 0;
-        const share = Math.round(ringPositions.length * pct / tP_diener);
-        const globalRemaining = (budget_tl[dSp] || 0) - (used[dSp] || 0);
-        ringBudgets[dSp] = Math.min(share, Math.max(0, globalRemaining));
-        totalNeeded += share;
+        // Letzte Art bekommt Rest → exakte Summe, kein Rundungsverlust
+        const share = (di === dienerArten.length - 1)
+          ? (ringPositions.length - assigned)
+          : Math.round(ringPositions.length * pct / tP_diener);
+        ringBudgets[dSp] = Math.max(0, share);
+        assigned += ringBudgets[dSp];
       }
 
       // Positionen zuweisen — Arten abwechselnd für gleichmässige Verteilung
@@ -2493,47 +2500,16 @@ function genTimelineMaster() {
         }
       }
 
-      // Zuweisen
-      let dienerUsedCount = 0;
-      for (let qi = 0; qi < dienerQueue.length && qi < ringPositions.length; qi++) {
-        const dSp = dienerQueue[qi];
+      // Zuweisen — ALLE Ring-Positionen werden gefüllt (kein __RESERVED__ mehr).
+      // Alle Dienerbäume sind BONUS: used[dSp] wird NIEMALS inkrementiert.
+      // Die Dienerart behält damit ihr volles globales Budget für Cluster und
+      // Einzelmischung (Restpool). Dienerbäume sind via isDiener=true aus
+      // Stammzahl, Grundfläche und Vorrat ausgeschlossen (siehe calcSt()).
+      for (let qi = 0; qi < ringPositions.length; qi++) {
+        const dSp = dienerQueue[qi % dienerQueue.length];
         const rp = ringPositions[qi];
         spArr[rp.idx] = dSp;
         _dienerPositions.set(rp.idx, { foerderSp, dist: rp.dist });
-        used[dSp] = (used[dSp] || 0) + 1;
-        dienerUsedCount++;
-      }
-
-      // Übrige Ring-Positionen explizit mit RESERVED markieren (verhindert Restpool-Füllung)
-      for (let qi = dienerUsedCount; qi < ringPositions.length; qi++) {
-        const rp = ringPositions[qi];
-        if (spArr[rp.idx] === null) {
-          spArr[rp.idx] = '__RESERVED__';  // Platzhalter, wird in Restpool ignoriert
-        }
-      }
-
-      // Warnung wenn Ring-Positionen leer geblieben sind (Budget erschöpft)
-      // Zähle: wie viele Positionen sind RESERVED (= leer) vs. besetzt?
-      let reservedCount = 0;
-      for (const rp of ringPositions) {
-        if (spArr[rp.idx] === '__RESERVED__' || spArr[rp.idx] === null) reservedCount++;
-      }
-      if (reservedCount > 0) {
-        // Welche Diener-Art hat zu wenig Budget?
-        for (const dSp of dienerArten) {
-          const globalBudget = budget_tl[dSp] || 0;
-          const globalUsed = used[dSp] || 0;
-          const needed = Math.round(ringPositions.length * ((S.sp[dSp] && S.sp[dSp].pct) || 0) / tP_diener);
-          const actuallyPlaced = ringBudgets[dSp];
-          if (actuallyPlaced < needed || globalUsed >= globalBudget * 0.85) {
-            const spName = SP[dSp]?.name || dSp;
-            const foerderName = SP[foerderSp]?.name || foerderSp;
-            const fehlend = ringPositions.length - dienerUsedCount;
-            _clusterWarnings.push(
-              `⚠ ${spName}: ${fehlend} Diener-Positionen um ${foerderName} unbesetzt! Nur ${globalBudget} Bäume verfügbar, ${globalUsed} bereits verwendet. Anteil von ${spName} erhöhen!`
-            );
-          }
-        }
       }
     }
   }
@@ -3373,18 +3349,29 @@ function genTrees() {
         ringPositions.sort((a, b) => a.dist - b.dist);
         if (ringPositions.length === 0) continue;
 
-        // Proportionale Verteilung mit Interleaving
+        // Proportionale Verteilung mit Interleaving — OHNE globale Budgetgrenze.
+        // Dienerbäume sind "bonus" und zählen NICHT zur Stammzahl/ha, dadurch
+        // wird der Dienergürtel immer zu 100% der Ring-Positionen gefüllt
+        // (→ ≥ 90% Deckungsgrad garantiert). Die globalen Budgets der Arten
+        // bleiben für Cluster/Einzelmischung erhalten.
         const tP_d = dienerArten.reduce((a, sp) => a + ((S.sp[sp] && S.sp[sp].pct) || 0), 0);
         if (tP_d <= 0) continue;
 
+        const ringBudgetsM = {};
+        let assignedM = 0;
+        for (let di = 0; di < dienerArten.length; di++) {
+          const dSp = dienerArten[di];
+          const pct = (S.sp[dSp] && S.sp[dSp].pct) || 0;
+          const share = (di === dienerArten.length - 1)
+            ? (ringPositions.length - assignedM)
+            : Math.round(ringPositions.length * pct / tP_d);
+          ringBudgetsM[dSp] = Math.max(0, share);
+          assignedM += ringBudgetsM[dSp];
+        }
+
         const dienerQueue = [];
         const remaining = {};
-        for (const dSp of dienerArten) {
-          const pct = (S.sp[dSp] && S.sp[dSp].pct) || 0;
-          const share = Math.round(ringPositions.length * pct / tP_d);
-          const globalRem = (budgetM[dSp] || 0) - (usedM[dSp] || 0);
-          remaining[dSp] = Math.min(share, Math.max(0, globalRem));
-        }
+        for (const dSp of dienerArten) { remaining[dSp] = ringBudgetsM[dSp]; }
         let anyLeft = true;
         while (anyLeft) {
           anyLeft = false;
@@ -3393,59 +3380,16 @@ function genTrees() {
           }
         }
 
-        let dienerUsedCount = 0;
-        for (let qi = 0; qi < dienerQueue.length && qi < ringPositions.length; qi++) {
-          const dSp = dienerQueue[qi];
+        // Zuweisen — ALLE Ring-Positionen werden gefüllt (kein __RESERVED__ mehr).
+        // Alle Dienerbäume sind BONUS: usedM[dSp] wird NIEMALS inkrementiert.
+        // Die Dienerart behält damit ihr volles globales Budget für Cluster und
+        // Einzelmischung (Restpool). Dienerbäume sind via isDiener=true aus
+        // Stammzahl, Grundfläche und Vorrat ausgeschlossen (siehe calcSt()).
+        for (let qi = 0; qi < ringPositions.length; qi++) {
+          const dSp = dienerQueue[qi % dienerQueue.length];
           const rp = ringPositions[qi];
           spAssign[rp.idx] = dSp;
           spAssign._dienerInfo[rp.idx] = { foerderSp, layer: (qi % 2 === 0) ? 'M' : 'U' };
-          usedM[dSp] = (usedM[dSp] || 0) + 1;
-          dienerUsedCount++;
-        }
-
-        // Übrige Ring-Positionen sperren
-        const reservedCountM = ringPositions.length - dienerUsedCount;
-        for (let qi = dienerUsedCount; qi < ringPositions.length; qi++) {
-          if (spAssign[ringPositions[qi].idx] === null) spAssign[ringPositions[qi].idx] = '__RESERVED__';
-        }
-
-        // Warnung wenn Ring-Positionen leer bleiben
-        if (reservedCountM > 0) {
-          for (const dSp of dienerArten) {
-            const spName = SP[dSp]?.name || dSp;
-            const foerderName = SP[foerderSp]?.name || foerderSp;
-            const globalBudget = budgetM[dSp] || 0;
-            const globalUsed = usedM[dSp] || 0;
-            _clusterWarnings.push(
-              `${spName}: ${reservedCountM} Diener-Positionen um ${foerderName} unbesetzt! Nur ${globalBudget} Bäume, ${globalUsed} verwendet. Anteil von ${spName} erhöhen!`
-            );
-          }
-        }
-      }
-
-      // RESERVED Positionen: bleiben als Marker bis NACH dem Restpool
-      // (werden dort übersprungen weil spAssign[i] !== null)
-
-      // Diener-Deckungsgrad prüfen: Ziel 90% im Ring
-      let totalReserved = 0, totalRingPos = 0, totalDienerPlaced = 0;
-      for (let i = 0; i < nT; i++) {
-        if (spAssign[i] === '__RESERVED__') totalReserved++;
-      }
-      // Deckungsgrad berechnen: platzierte Diener / (platzierte + reservierte)
-      for (let i = 0; i < nT; i++) {
-        if (spAssign._dienerInfo && spAssign._dienerInfo[i]) totalDienerPlaced++;
-      }
-      totalRingPos = totalDienerPlaced + totalReserved;
-      const dienerDG = totalRingPos > 0 ? (totalDienerPlaced / totalRingPos * 100) : 100;
-
-      if (dienerDG < 90 && totalRingPos > 0) {
-        for (const [fSp, dArten] of Object.entries(S.dienerMap)) {
-          if (!dArten || dArten.length === 0) continue;
-          const foerderName = SP[fSp]?.name || fSp;
-          const dienerNames = dArten.map(d => SP[d]?.name || d).join(', ');
-          _clusterWarnings.push(
-            `⚠ Diener-Ring um ${foerderName}: nur ${Math.round(dienerDG)}% Deckung (Ziel: 90%). ${totalReserved} Positionen unbesetzt. ${dienerNames} Anteil erhöhen oder zweite Dienerart beifügen!`
-          );
         }
       }
     }
@@ -5533,11 +5477,13 @@ function renderBird() {
  * - Grundfläche m²/ha
  */
 function calcSt() {
-  // Bonus-Dienerbäume nicht in Stammzahl zählen (visuelle Darstellung, keine reale Stammzahl)
-  const countTrees = S.trees.filter(t => !t.isBonusDiener);
+  // Dienerbäume (Bonus-Diener in Clustern + Ring-Diener im Gürtel) nicht in
+  // Stammzahl/Grundfläche/Vorrat zählen — nur Oberschicht (Förderbäume) werden
+  // bestandeskundlich erfasst. Dienerbäume sind nur visuell/waldbaulich relevant.
+  const countTrees = S.trees.filter(t => !t.isBonusDiener && !t.isDiener);
   const n = countTrees.length;
 
-  // Grundfläche (Kreisfläche auf Brusthöhe) — ohne Bonus-Diener
+  // Grundfläche (Kreisfläche auf Brusthöhe) — ohne Diener
   let gf = 0;
   for (const t of countTrees) {
     gf += Math.PI * (t.bhd / 200) ** 2;
@@ -5620,7 +5566,7 @@ function calcSt() {
   const TARIF_DEFAULT = { b0: -9.830, b1: 1.825, b2: 1.020 };
 
   let volHa = 0;
-  for (const t of S.trees) {
+  for (const t of countTrees) {  // Diener ausgeschlossen
     if (t.bhd > 0 && t.h > 1.3) {
       const tf = TARIF[t.sp] || TARIF_DEFAULT;
       // v_derb = exp(b0 + b1 × ln(d_cm) + b2 × ln(h_m))
