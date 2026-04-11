@@ -1,5 +1,68 @@
 # Changelog
 
+## [2.6.4] — 2026-04-11
+
+### Z-Baum-Kronen-Territorium: Hart-Radius + VJ in Lücken + Diener unter ka
+
+Drei visuelle Artefakte rund um Z-Bäume behoben, die die v2.6.3-Krone noch unsauber wirken liessen:
+
+1. **Hallucination gleichartiger Bäume** im Z-Baum-Kronenterritorium — adulte Konkurrenten der gleichen Art standen weiterhin innerhalb des Ziel-Endabstands und zerschnitten die Z-Baum-Krone.
+2. **Diener ragten in die Z-Baum-Krone** — obwohl v2.6.1 einen Diener-zu-Förderbaum-Cap hat, war kein Cap gegenüber der höheren, geboosteten Z-Baum-Krone vorhanden.
+3. **Lücken nach Z-Baum-Durchforstung blieben leer** — nur Hiebreife-Ernte-Lücken bekamen VJ, die Z-Baum-Durchforstungslücken wurden nicht mit natürlicher Verjüngung besetzt.
+
+#### 1. Hart-Radius-Filter in `removeZBaumKonkurrenten`
+
+Vor dem FBB-basierten `konZB`-Limit wird jetzt ein **harter Radius-Filter** angewendet: ALLE Konkurrenten (nicht-Diener, nicht-VJ), deren Kronenzentrum in das Kronenterritorium eines Z-Baums ragt (Distanz < `ZB_EA[sp] * 0.5 + tCw/2`), werden unabhängig von Höhe/FBB-Limit entfernt. Gen1 + Gen2 profitieren beide.
+
+Der bisherige `echteKon`-Filter (`h >= zb.h * 0.5`) liess bewusst kleinere Konkurrenten überleben — genau die waren im Z-Baum-Territorium als „Hallucinationen" sichtbar. Die Änderung macht das Ziel-Endabstand-Territorium zu einem exklusiven Z-Baum-Bereich.
+
+#### 2. VJ-Seeding in Z-Baum-Durchforstungslücken
+
+`removeZBaumKonkurrenten` sammelt die Positionen der in Gen1 entfernten Konkurrenten in `zbGapPositions`. Nach dem Filter-Step wird jede Position mit einer **unter-Schirm-VJ** besetzt (`isFromVJ: true, underCanopy: true`).
+
+- `gapAge = max(1, S.age - 25)` (erste Z-Baum-Durchforstung ca. Alter 25)
+- `h = hdom(sp, gapAge) * 0.55 * hVar` (Schattenwachstum)
+- **Cap**: VJ-Höhe wird auf `nearestZB.ka * 0.80` begrenzt (strikt unter Kronenunterkante)
+- Artzuwahl aus dem gewichteten `vjPool` nach `S.sp.pct` (analog zu Hiebreife-VJ)
+- Deterministischer RNG pro Position (`mR(S.seed + 7777 + x*137 + y*99700)`)
+
+Die Z-Baum-Krone wächst dank v2.6.3-Draw-Order visuell über die VJ hinweg.
+
+#### 3. `capDienerUnderZBaum` — Diener/VJ hart unter Z-Baum-ka
+
+Neue Funktion, nach `applyZBaumBoost` in der Render-Pipeline:
+
+- Iteriert alle Bäume mit `isDiener || underCanopy`
+- Sucht den nächsten Z-Baum (Spatial Grid, 3×3 Zellen bei 20 m)
+- Wenn im Kronenterritorium (`dist < ZB_EA/2 + cw/2`) und `h > zb.ka * 0.80`:
+  - Kappt `h = zb.ka * 0.80`
+  - Berechnet `cw`, `kl`, `ka`, `bhd` aus der neuen Höhe neu (via `bhdFromH`/`crownFromBHD`)
+
+Zusätzlich wurde `applyZBaumBoost` ergänzt: nach dem h-Boost wird `t.ka = h - kl` neu berechnet, damit die Z-Baum-ka den gekappten h-Wert korrekt widerspiegelt und als Referenz für andere Bäume stimmt.
+
+#### Verifikation
+
+QS v2.6.4 (6 Iterationen, 7/7 ✅):
+
+| Iter | Prüfung | Ergebnis |
+|---|---|---|
+| 1 | Keine adulten Non-VJ Bäume im Z-Baum-Kronenterritorium | 0 Bäume ✅ |
+| 2 | VJ underCanopy > 0 nach Z-Baum-Durchforstung | 2139 VJ in Z-Baum-Nähe ✅ |
+| 3 | Keine VJ oberhalb Z-Baum-ka im Territorium | 0 Überragungen ✅ |
+| 4 | Diener unter Z-Baum-ka (WFoe-Trupp + Ta-Diener) | 0 Überragungen ✅ |
+| 5 | Regression v2.6.3: Bu-Z-Baum cw = 11 m exakt | min=max=11.00 ✅ |
+| 6 | VJ-Seeding deterministisch über mehrere Renders | 2142 = 2142 = 2142 ✅ |
+
+- state_roundtrip: 36/36 ✅
+- validate: 63/63 ✅
+
+#### Betroffene Codestellen
+
+- `removeZBaumKonkurrenten()`: Hart-Radius-Filter pro Z-Baum, Gap-Collection, VJ-Seeding nach Filter-Step
+- `applyZBaumBoost()`: `t.ka` nach h-Boost neu berechnet
+- `capDienerUnderZBaum()`: neue Funktion
+- `render()`: Aufruf von `capDienerUnderZBaum` zwischen `applyZBaumBoost` und `applyZBaumCompetition`
+
 ## [2.6.3] — 2026-04-11
 
 ### Z-Baum-Kronen: autoritativ, gleichmässig, on-top + Timeline-Verlängerung
