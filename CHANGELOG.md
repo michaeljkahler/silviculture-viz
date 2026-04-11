@@ -1,5 +1,11 @@
 # Changelog
 
+## [2.5.1] — 2026-04-11
+
+### UI: Arbeitsstand-Sektion verschoben
+
+- Die Save/Load-Buttons (JSON + CSV) wurden vom unteren Ende der Sidebar nach **ganz oben** über die Zeitschiene verschoben — schneller erreichbar zu Beginn der Arbeit
+
 ## [2.5.0] — 2026-04-11
 
 ### Feature: Excel-Vorlage mit Dropdowns und Formel-CSV-Export
