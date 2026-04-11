@@ -1,5 +1,52 @@
 # Changelog
 
+## [2.6.0] — 2026-04-11
+
+### Feature-Parity Timeline ↔ Manuell + VJ-Deckungsgrad + Diener-Ernte-Bug
+
+Nach einem Feature-Audit beider Modi wurden 5 Lücken/Bugs behoben, um Manuell und Zeitschiene auf denselben Funktionsstand zu bringen.
+
+#### Fix 1: Timeline-Diener-Ernte-Bug
+- **Bug**: Diener wurden bei ihrer *eigenen* Art-Hiebreife geerntet, nicht bei der des Förderbaums. Beispiel: Ta-Diener (Hiebreife 60) unter WFoe-Förderbaum (Hiebreife 120) verschwanden bei `S.age ≥ 71`, während der Förderbaum bis 131 stand.
+- **Fix**: Neuer `isRingDiener`-Flag. Ring-Diener folgen jetzt dem hardCutoff ihres *Förderbaums*, nicht ihrer eigenen Art.
+- Sauberere Trennung von `isDiener` (nur Ring-Diener, für `calcSt`-Stammzahl-Ausschluss) und `isZBaum: false` (alle Nicht-O-Layer-Bäume).
+
+#### Fix 2: Timeline Master — Schicht-Toggle für Einzelmischung
+- **Vorher**: Schicht-Toggle (O/M/U/V) wirkte im Master nur bei Cluster-Mischungen (`trupp`/`gruppe`/`horst`), nicht bei Einzelmischung. Das führte zu Inkonsistenzen zwischen Master (`isMinorSpecies`) und genTrees (`_assignedLayer`).
+- **Fix**: `} else if (spLyM && isClusterM) { ... }` → `} else if (spLyM) { ... }` — Schicht-Toggle gilt jetzt für *alle* Mischungsformen.
+
+#### Fix 3: Manueller Modus — Schicht-Toggle für Einzelmischung
+- Gleicher Fix wie Change 2, aber in `genTrees()` für den manuellen Pfad (Zeile ~3495). Einzelbäume mit U/M-Toggle werden jetzt korrekt in der entsprechenden Schicht platziert.
+
+#### Fix 4: Manueller Modus — Z-Bäume aktivierbar
+- **Vorher**: `markZBaeume()` hatte einen harten Gate `!S.timelineOn → return`. Im Manual Mode waren Z-Bäume unmöglich.
+- **Fix**: Gate geöffnet. Neuer Initial-Markierungsschritt (Schritt 0) in `markZBaeume()` — wenn keine persistenten Z-Baum-Flags existieren (Manual Mode), werden Kandidaten greedy nach BHD sortiert und unter Berücksichtigung von Endabstand und Budget markiert.
+- `removeZBaumKonkurrenten()` Gate ebenfalls geöffnet (`!S.showZBaum` statt `!S.timelineOn`).
+- Konsequenz: Z-Baum-Pipeline (Markierung, Konkurrentenentnahme, Boost, Konkurrenz) läuft jetzt auch im Manual Mode.
+
+#### Fix 5: Manueller Modus — VJ auf 80 % Deckungsgrad umgestellt
+- **Vorher**: Harter Cap `maxVJ = 80` unabhängig von Lückengrösse → "zu zaghafte" Verjüngung.
+- **Neu**: Monte-Carlo-Schätzung der Lückenfläche (40×40 Sample-Raster), Zielwert `gapArea × 0.80` als kumulativer VJ-Kronenflächen-Cover.
+- Packing-Loop mit Spatial-Grid (`vjCell = 4m`) für O(1) Kollisionsprüfung.
+- VJ-Kronen visuell vergrössert (Faktor 1.2 für Sämlinge, 0.95 statt 0.85 für grössere) — repräsentieren Verjüngungs-Cluster statt Einzelpflanzen.
+- Lockere Packung (Kronen dürfen bis ~82 % überlappen) → natürliche Gruppen.
+- Saturation-Counter mit Break bei 500 fehlgeschlagenen Versuchen in Folge.
+- Messung: Von 9.7 % → 74 % Deckung bei Standard-Szenario (Fi 100 %, density 150, h 28 m).
+
+#### Tests
+- state_roundtrip: 36/36 ✅
+- validate: 63/63 ✅
+- QS-Szenarien Iter 1 (Schicht-Toggle, Z-Bäume, Ta/Bu-Layer, VJ-Stufenverteilung): 8/8 ✅
+- QS-Szenarien Iter 2 (Ta-Diener unter WFoe bei Alter 50/80/140, Deckungsgradmessung, Z-Baum-Budget): 6/6 ✅
+
+#### Betroffene Codestellen in `index.html`
+- `markZBaeume()` Zeile ~1544: Gate geöffnet + Initial-Markierung für Manual Mode (Schritt 0)
+- `removeZBaumKonkurrenten()` Zeile ~1719: Gate umgestellt auf `!S.showZBaum`
+- `genTimelineMaster()` Zeile ~2594: Schicht-Toggle unabhängig von Cluster
+- `genTrees()` Timeline-Pfad Zeile ~2895–2948: `isRingDiener`-Logik, saubere Flag-Trennung
+- `genTrees()` Manual-Pfad Zeile ~3495: Schicht-Toggle unabhängig von Cluster
+- `genTrees()` Manual-Pfad Zeile ~3600–3720: VJ auf 80 % Deckungsgrad mit Spatial-Grid
+
 ## [2.5.3] — 2026-04-11
 
 ### Revert v2.5.2 Caps + Neue VJ-Logik im manuellen Modus
