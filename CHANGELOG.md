@@ -1,5 +1,25 @@
 # Changelog
 
+## [2.5.2] — 2026-04-11
+
+### Fix: VJ-Dichte & gapAge-Cap gegen Mittelschicht-Artefakt
+
+Bei Gleich-Alter-Szenarien mit divergierenden Umtriebszeiten (z.B. Ta 60J + WFoe 120J bei S.age=120) entstanden zwei Rendering-Artefakte im Naturverjüngungs-Block von `genTimelineMaster()`:
+
+1. **Gap-VJ zu dicht:** ~45 Bäume pro Lücke, bis zu ~5.700 VJ pro Hektar
+2. **gapAge ungedeckelt:** "VJ" wuchs auf 20–25m und bildete eine scheinbare Mittelschicht, obwohl alle Arten nur `layers.O=true` hatten
+
+**Fix:**
+- **`VJ_AREA_PER_TREE = 25`** (vorher 2.5) → ~10× weniger dicht
+- **`VJ_MAX_PER_GAP = 8`** → harter Cap bei grossen Lücken
+- **`VJ_MAX_AGE = 30`** → `gapAge` und `canopyVjAge` werden gedeckelt
+  - Maximale VJ-Höhe (Ta) ~14.5m statt 23m → keine Mittelschicht-Artefakte
+- Unter-Schirm-VJ übernimmt denselben Alters-Cap (Konsistenz)
+
+**Nicht verändert:** `harvestedTrees`-Erfassung, Dienerbaum-Logik (v2.2.1), Plenterwald-Pfad, `calcSt`/Statistik.
+
+Verifiziert in 3 QA-Iterationen gegen Szenario T3_Hiebsreife_Ta_Ei_WFoe_120J (seed 42, density 149).
+
 ## [2.5.1] — 2026-04-11
 
 ### UI: Arbeitsstand-Sektion verschoben
