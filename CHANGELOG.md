@@ -1,5 +1,23 @@
 # Changelog
 
+## [2.4.0] — 2026-04-11
+
+### Feature: CSV Save/Load + QS-Verifikation der JSON-Speicherung
+
+#### Neue Features
+- **CSV Export** (📊): Speichert den Arbeitsstand als CSV-Datei (Multi-Section-Format mit ##GLOBALS und ##SPECIES)
+- **CSV Import** (📥): Lädt einen Arbeitsstand aus einer CSV-Datei
+- **Vorlagen-Datei** `waldbau-state_VORLAGE.csv`: Ausführlich kommentierte CSV-Maske die in Excel/LibreOffice ausgefüllt und dann importiert werden kann
+- CSV-Format unterstützt: Kommentare (`#`), leere Zeilen, CRLF/LF, ja/nein/true/false/1/0 als Boolean, semikolon-separierte Diener-Listen
+
+#### QS-Verifikation der JSON-Speicherung (5 Iterationen)
+- Vollständiger Round-Trip-Test mit Node.js Test-Runner
+- 36 automatisierte Tests (alle grün): State-Init, saveState-Vollständigkeit, alle 18 Top-Level-Felder, Per-Art-Werte (h/cw/kl/ka/bhd/layers/habitat), Edge Cases, CSV-Roundtrip
+- **Bug-Fixes als Teil der QS:**
+  - **Production-Bug:** `claimed`-Variable war im falschen Scope in `genTimelineMaster()` — crasht bei Diener ohne Cluster (existierte seit v2.2.0)
+  - **Load-UI-Sync:** mixOverflow-Styling, Totholz-Button, showHabitat-Re-Derive werden jetzt nach dem Laden korrekt aktualisiert
+  - **Load-Reset:** `setTimeline(false)` darf beim Laden nicht aufgerufen werden, da es per-Art h/cw/kl/ka/bhd auf Defaults zurücksetzt
+
 ## [2.3.0] — 2026-04-11
 
 ### Feature: Arbeitsstand-Speicherung (JSON)

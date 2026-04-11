@@ -1,0 +1,96 @@
+# waldbau-viz Arbeitsstand — VORLAGE / TEMPLATE
+# Schemaversion: 1
+#
+# ANLEITUNG:
+# 1. Diese Datei in Excel, LibreOffice Calc oder einem Texteditor öffnen
+# 2. Werte in den Sektionen GLOBALS und SPECIES anpassen
+# 3. Als CSV speichern (UTF-8 Encoding empfohlen)
+# 4. In waldbau-viz über "📥 CSV Laden" importieren
+#
+# FORMATREGELN:
+# - Sektionen beginnen mit ## (z.B. ##GLOBALS, ##SPECIES)
+# - Kommentare beginnen mit # und werden ignoriert
+# - Leere Zeilen werden ignoriert
+# - Boolean: true/false oder ja/nein oder yes/no oder 1/0
+# - Diener-Spalte: Mehrere Arten mit Semikolon trennen, z.B. "Ta;Bu;BAh"
+# - mixOverflow: Zweite Mischungsform wenn Primärform voll (leer lassen wenn nicht gewünscht)
+#
+# VERFÜGBARE BAUMARTEN:
+#   Bu=Buche, Ta=Weisstanne, Fi=Fichte, BAh=Bergahorn,
+#   Ei=Eiche, WFoe=Waldföhre, Lae=Lärche, Es=Esche,
+#   Dou=Douglasie, Li=Linde, Bi=Birke
+#
+# MISCHUNGSFORMEN:
+#   einzel  = Einzelmischung (zufällige Verteilung)
+#   trupp   = Trupp (~12m Cluster)
+#   gruppe  = Gruppe (~18m Cluster)
+#   horst   = Horst (~30m Cluster)
+#
+# SCHICHTEN (layerO/M/U/V):
+#   O = Oberschicht (Hauptbestand)
+#   M = Mittelschicht
+#   U = Unterschicht
+#   V = Verjüngung (Naturverjüngung)
+#
+# DIENERBÄUME (Schaftpfleger):
+#   Nur Schattenbaumarten: Ta, Bu, BAh, Fi, Li, Es, Dou
+#   Stehen im 10m-Mantel um den Förder-Cluster
+#
+# HINWEIS: Bei timelineOn=true werden h/cw/kl/ka/bhd automatisch aus dem
+# Alter berechnet (FBB/SiWaWa-Kurven). Im manuellen Modus (timelineOn=false)
+# sind die per-Art-Werte massgebend.
+
+##GLOBALS
+key,value
+mode,gleich
+density,220
+transectY,50
+transectWidth,10
+seed,42
+age,0
+timelineOn,false
+showVerjuengung,true
+showZBaum,false
+showTotholz,false
+showHabitat,false
+nHabitat,5
+dienerRadius,10
+mixPatternDefault,einzel
+
+##SPECIES
+species,on,pct,h,cw,kl,ka,bhd,layerO,layerM,layerU,layerV,habitat,mixPattern,mixOverflow,diener
+Bu,true,65,28,9,18,8,40,true,false,false,false,false,einzel,,
+Ta,true,15,30,7,20,7,45,true,false,false,false,false,einzel,,
+Fi,true,10,32,6,20,8,42,true,false,false,false,false,einzel,,
+BAh,true,10,28,9,16,8,38,true,false,false,false,false,einzel,,
+Ei,false,0,28,12,15,8,42,true,false,false,false,false,einzel,,
+WFoe,false,0,30,8,18,7,40,true,false,false,false,false,einzel,,
+Lae,false,0,32,9,15,8,42,true,false,false,false,false,einzel,,
+Es,false,0,28,9,16,8,38,true,false,false,false,false,einzel,,
+Dou,false,0,38,11,20,9,52,true,false,false,false,false,einzel,,
+Li,false,0,28,12,18,8,45,true,false,false,false,false,einzel,,
+Bi,false,0,25,8,15,7,30,true,false,false,false,false,einzel,,
+
+# === BEISPIELE ===
+#
+# Beispiel 1: Buchen-Tannen-Fichten-Wald mit Horst-Mischung
+#   mode = gleich
+#   Bu = horst (65%)
+#   Ta = einzel (15%)
+#   Fi = einzel (10%)
+#   BAh = einzel (10%)
+#
+# Beispiel 2: Eichen-Wertholzbestand mit Tanne+Buche als Diener
+#   Ei,true,60,...,horst,,Ta;Bu
+#   Ta,true,20,...,einzel,,
+#   Bu,true,20,...,einzel,,
+#
+# Beispiel 3: Plenterwald (Dauerwald)
+#   mode = ungleich
+#   Ta = einzel (40%)
+#   Fi = einzel (40%)
+#   Bu = einzel (20%)
+#
+# Beispiel 4: Mit Multi-Mischungsform (Overflow)
+#   Ei,true,40,...,horst,gruppe,
+#   → Eichen werden zuerst in Horsten gepflanzt, übrige in Gruppen
