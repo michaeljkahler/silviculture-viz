@@ -1,5 +1,27 @@
 # Changelog
 
+## [2.5.3] — 2026-04-11
+
+### Revert v2.5.2 Caps + Neue VJ-Logik im manuellen Modus
+
+#### Zeitschiene: gapAge-Cap entfernt, Dichte moderat reduziert
+- **Revert v2.5.2**: `VJ_MAX_AGE` und `VJ_MAX_PER_GAP` entfernt, `gapAge` und `canopyVjAge` wieder uncapped → VJ wächst in späten Phasen natürlich zum Folgebestand heran
+- **Neue Dichte**: `VJ_AREA_PER_TREE = 5` (vorher 25 in v2.5.2, 2.5 in v2.2.0) → Zieldichte 0.2 Pflanzen/m²
+- **Obergrenze**: `VJ_MAX_PER_M2 = 5` als harter Cap (greift nur bei Mini-Lücken)
+- Bei typischer Ta-Lücke (~78 m²): v2.5.3 liefert ~16 VJ (v2.2.0: 31, v2.5.2: 3–8)
+
+#### Manueller Modus: Verhältnisbasierte Höhenverteilung in 4 Stufen
+- **Gate**: VJ erscheint erst, wenn Oberschicht (Bäume mit `h ≥ 20 m`) existiert
+- **Oberschicht-Referenz**: Median der Höhen aller Bäume ≥ 20 m
+- **4 diskrete Stufen** mit gewichteter Zufallsauswahl (ähnlich Timeline-Verteilung):
+  - Sämlinge/Jungwuchs (2–10 % h_ober): **45 %**
+  - Dickung (15–30 % h_ober): **28 %**
+  - Stangenholz (35–50 % h_ober): **18 %**
+  - Vorwachser (55–70 % h_ober): **9 %**
+- **Natürlicher Eindruck** durch Clustering in Generationen + Streuung innerhalb jeder Stufe
+- VJ-Max-Höhe skaliert mit Oberschicht: bei 20 m → max 14 m, bei 35 m → max 24.5 m
+- Kronen werden über `bhdFromH` + `crownFromBHD` korrekt abgeleitet (statt simpler Proportionalität)
+
 ## [2.5.2] — 2026-04-11
 
 ### Fix: VJ-Dichte & gapAge-Cap gegen Mittelschicht-Artefakt
