@@ -1,5 +1,18 @@
 # Changelog
 
+## [2.5.0] — 2026-04-11
+
+### Feature: Excel-Vorlage mit Dropdowns und Formel-CSV-Export
+
+- **`waldbau-state_VORLAGE.xlsx`** — Benutzerfreundliche Excel-Vorlage mit:
+  - **Anleitung-Sheet:** Schritt-für-Schritt-Dokumentation in Deutsch
+  - **Eingabe-Sheet:** Alle Parameter mit Dropdown-Menüs (Mode, Booleans, Mischungsformen) und Wertebereich-Validierungen (Prozent 0-100, Höhe 0-200, etc.)
+  - **CSV-Export-Sheet:** Formel-basierte CSV-Ausgabe die sich automatisch aus den Eingaben aktualisiert
+- Workflow: User füllt Eingabe-Sheet aus → CSV-Export aktualisiert sich automatisch → Copy-Paste in Texteditor → als .csv speichern → in waldbau-viz importieren
+- **Tooltips/Comments** in den Spaltenheadern erklären jeden Parameter
+- **`tools/generate_xlsx_template.py`** — Generator-Script (öffnet via openpyxl)
+- **`tests/test_xlsx_template.py`** — Validierungstest: simuliert Excel-Formelauswertung in Python und füttert die generierte CSV durch `csvToState()` in Node.js (alle Prüfungen bestanden)
+
 ## [2.4.1] — 2026-04-11
 
 ### Cleanup + Farbänderungen
