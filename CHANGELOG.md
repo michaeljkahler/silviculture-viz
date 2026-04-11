@@ -1,5 +1,24 @@
 # Changelog
 
+## [2.4.1] — 2026-04-11
+
+### Cleanup + Farbänderungen
+
+- **Klebast-Logik entfernt:** Der Klebast-Code in `drawBranchStubs()` wurde entfernt (war für die Visualisierung unnötig)
+- **Neue Hauptfarben pro Baumart** (gemäss Standardpalette):
+  - Fichte: `#5a5a00` (war Blau)
+  - Weisstanne: `#b4b400` (war Türkis)
+  - Waldföhre: `#f5f51e` (war Beige)
+  - Lärche: `#f5f582` (war Hellgrün)
+  - Douglasie: `#000000` (war Grün)
+  - Buche: `#b4f5f5` (war Hellgrün)
+  - Eiche: `#7878eb` (war Beige)
+  - Ahorn: `#1e1e96` (war Pink)
+  - Esche: `#0a0ae1` (war Blaugrau)
+  - Birke: `#d9d9d9` (war Hellgrün)
+  - Linde: unverändert
+- Schatten- und Hell-Varianten (`cs`, `cd`, `ct`, `cts`) wurden konsistent aus den neuen Hauptfarben abgeleitet
+
 ## [2.4.0] — 2026-04-11
 
 ### Feature: CSV Save/Load + QS-Verifikation der JSON-Speicherung
