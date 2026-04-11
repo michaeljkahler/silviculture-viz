@@ -1,5 +1,45 @@
 # Changelog
 
+## [2.6.1] — 2026-04-11
+
+### Schaftpflege-Zyklus: Diener mit Kronenansatz-Kappung + kontinuierlicher Verjüngung
+
+Feinschliff der Timeline-Dienerlogik nach v2.6.0. Bisher bekamen Diener eine feste Höhenfraktion des Förderbaums (M=67 %, U=35 %), die vom Kronenansatz unabhängig war. Neu:
+
+#### Kronenansatz-Kappung
+- Diener-Höhe ≤ **Förderbaum-ka × 1.10** (Kronenunterkante +10 %)
+- Berechnung: `foerderKa = foerderH - foerderCrown.kl` (aus `crownFromBHD`)
+- Obergrenze für das Diener-Alter per Binärsuche: `hdom(dienerSp, maxAge) = maxDienerH`
+- **Physikalisch:** Diener wachsen nie in die Krone des Förderbaums hinein
+
+#### "Vorzu verjüngt" — zyklischer Schaftpflege-Durchlauf
+- Jeder Diener bekommt eine **Phase** (Golden-Ratio-Sequenz über `survivalRank`) → gleichmässige Verteilung über den gesamten Zyklus
+- Wachstumsfluss: `dienerFlow = S.age × 0.5 + phase × maxDienerAge` (Schattenwachstum = 50 %)
+- **Modulo** auf `maxDienerAge` → alter Diener nahe Obergrenze wird beim nächsten Zeitschritt automatisch durch Sämling ersetzt
+- Resultat: Im Bestand sind gleichzeitig Sämlinge, mittelhohe und beinahe-Maximal-Diener sichtbar → natürliche kontinuierliche Verjüngung
+
+#### Verifikation (QS Iter 1 bei WFoe-Trupp + Ta-Diener)
+| Alter | Föerder h | ka | max erlaubt | Diener min / med / max |
+|---|---|---|---|---|
+| 20 | 7.0 | 2.2 | 2.4 | 0.5 / 0.7 / 2.3 |
+| 40 | 19.0 | 9.2 | 10.1 | 0.5 / 3.4 / 10.0 |
+| 60 | 29.5 | 17.8 | 19.6 | 0.5 / 6.8 / 18.8 |
+| 80 | 33.5 | 21.7 | 23.8 | 0.5 / 8.6 / 22.4 |
+| 120 | 39.0 | 27.0 | 29.7 | 0.5 / 11.8 / 29.3 |
+
+- 0 Verletzungen der Kappung über alle Altersstufen
+- Bei Alter 80: 294 kleine (<3m) + 338 mittlere + 685 grosse Diener → breite Streuung
+- Diener-Median wächst mit Förderbaum-ka (mitwachsen ✓)
+- Sämling-Minimum 0.5 m über alle Altersstufen (kontinuierliche Verjüngung ✓)
+
+#### Tests
+- state_roundtrip: 36/36 ✅
+- validate: 63/63 ✅
+- QS v2.6.1 (Kappung + Streubreite + Wachstum über Zeit): 10/10 ✅
+
+#### Betroffene Codestelle
+- `genTrees()` Zeile ~2807–2846: Ring-Diener-Alter-Berechnung komplett neu
+
 ## [2.6.0] — 2026-04-11
 
 ### Feature-Parity Timeline ↔ Manuell + VJ-Deckungsgrad + Diener-Ernte-Bug
