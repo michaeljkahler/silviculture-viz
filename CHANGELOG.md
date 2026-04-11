@@ -1,5 +1,62 @@
 # Changelog
 
+## [2.6.3] — 2026-04-11
+
+### Z-Baum-Kronen: autoritativ, gleichmässig, on-top + Timeline-Verlängerung
+
+Nach v2.6.2 zeigte sich, dass Z-Baum-Kronen visuell uneinheitlich blieben: Verjüngung und Nachbarbäume drückten über `applyZBaumCompetition` in die Kronen zurück, 2. Gen-Z-Bäume erschienen beim Promotionsalter mit einem plötzlichen Kronensprung („Halluzination"), und der Zeichenreihenfolge fehlte eine klare on-top-Regel. Zusätzlich endete die Zeitschiene zu früh, wenn mehrere Arten mit unterschiedlichem Hiebreife-Alter im Bestand standen.
+
+#### 1. Z-Baum-Krone = Endabstand (autoritativ in `removeZBaumKonkurrenten`)
+
+`removeZBaumKonkurrenten` setzt `t.cw` jetzt direkt auf `ZB_EA[sp]` (Bu 11 m, Fi 8 m, Ei 15 m, …). Die Kronenberechnung ist damit **entkoppelt** von Konkurrenzfeedback und Verjüngungsdichte.
+
+- **1. Gen** (direkt bestanden): `cw = ZB_EA[sp] * spreadFactor`, wobei `spreadFactor` von 0.55 (Alter 15) linear auf 1.0 (Alter 30) ramp.
+- **2. Gen** (`isFromVJ`, nach Promotion via `markZBaeume`): Ramp von allometrischem `baseCw` auf `ZB_EA[sp]` über die Altersspanne 20 → 40, damit kein plötzlicher Kronensprung entsteht.
+- Ausserhalb der Timeline (`!S.timelineOn`): immer `cw = ZB_EA[sp]`.
+
+#### 2. `applyZBaumBoost` / `applyZBaumCompetition` respektieren die Z-Baum-Krone
+
+- `applyZBaumBoost`: `t.cw *= 1.3`-Multiplikator entfernt (die Krone ist bereits authoritativ gesetzt). Höhen-/KL-/BHD-Boosts bleiben erhalten.
+- `applyZBaumCompetition`: `if (t.isZBaum) continue;` — Z-Bäume werden komplett übersprungen, VJ und Nachbarn können die Krone nicht mehr reduzieren.
+
+#### 3. Draw-Order: Z-Bäume zuletzt (on-top)
+
+- `renderFront` sortiert `allT` primär nach `isZBaum` (0 vor 1), sekundär nach `y` → Z-Bäume werden **nach** allen Non-Z-Bäumen gezeichnet, liegen also visuell oben.
+- `renderBird` vertauscht Layer C (2. Gen) und Layer D (normale 1. Gen), sodass die gesamte Z-Baum-Schicht (Gen 1 + Gen 2) über allen Non-Z-Bäumen liegt.
+
+#### 4. Timeline: +1 Zyklus nach letzter 1.-Gen-Z-Baum-Ernte
+
+`getInterventionYears` leitete `endAge` und die Gen2-Schritte bisher vom `mainSp` ab. Bei gemischten Beständen mit unterschiedlichem `harvestAge` fehlte der Zyklus der spätreifen Art. Neu:
+
+- `lastHarvestAge = max(HIEBREIFE[sp].harvestAge)` über alle aktiven Arten
+- `endAge = lastHarvestAge + 11`
+- Die Schritte „1. Generation geerntet", „VJ dominant", „2. Gen markiert", „2. Gen ausgewachsen" referenzieren jetzt durchgängig `lastHarvestSp`.
+
+#### Verifikation
+
+QS v2.6.3 (6 Iterationen, 15/15 ✅):
+
+| Iter | Prüfung | Ergebnis |
+|---|---|---|
+| 1 | Bu-Z-Bäume bei Alter 60: `cw == 11 m` für alle | avg=11.00, span=0.000 ✅ |
+| 2 | Z-Baum-cw unabhängig von `showVerjuengung` | mit VJ = ohne VJ = 11 m ✅ |
+| 3 | Spread-Ramp monoton Alter 15→30 | 6.05 → 7.70 → 9.35 → 10.96 → 11.00 ✅ |
+| 4 | Non-Z-Bäume haben variable Kronen | span 3.5 m ✅ |
+| 5 | Draw-Order in renderFront: Z-Bäume nach Non-Z | firstZb=7 > lastNonZb=6 ✅ |
+| 6 | Mischbestand (Bu/Fi/Ei): jede Art trifft `ZB_EA[sp]` | Bu 11, Fi 8, Ei 15 — span=0 ✅ |
+
+- state_roundtrip: 36/36 ✅
+- validate: 63/63 ✅
+
+#### Betroffene Codestellen
+
+- `removeZBaumKonkurrenten()` ~Zeile 1863: Spread-Logik komplett neu (Gen1 direkt, Gen2 Ramp)
+- `applyZBaumBoost()` ~Zeile 1913: `cw *= 1.3` entfernt
+- `applyZBaumCompetition()` ~Zeile 1954: Z-Baum-Skip
+- `renderFront()` ~Zeile 5158: Sort-Key isZBaum zuerst
+- `renderBird()`: Layer C/D Reihenfolge getauscht
+- `getInterventionYears()` ~Zeile 1458: max(harvestAge) statt hrMain
+
 ## [2.6.2] — 2026-04-11
 
 ### Bugfix: Keine halluzinierten Bäume mehr im Timeline-Modus
